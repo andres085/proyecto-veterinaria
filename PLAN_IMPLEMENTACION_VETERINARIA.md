@@ -31,10 +31,10 @@
 
 #### 2.2 Seeds y Datos de Prueba
 
-- [ ] **2.2.1** Crear script seed_data.py con datos de prueba
-- [ ] **2.2.2** Insertar dueños de ejemplo (5-10 registros)
-- [ ] **2.2.3** Insertar turnos de ejemplo con diferentes estados
-- [ ] **2.2.4** Validar integridad referencial
+- [x] **2.2.1** Crear script seed_data.py con datos de prueba
+- [x] **2.2.2** Insertar dueños de ejemplo (5-10 registros)
+- [x] **2.2.3** Insertar turnos de ejemplo con diferentes estados
+- [x] **2.2.4** Validar integridad referencial
 
 ### ⚙️ FASE 3: Backend Flask - Infraestructura
 
