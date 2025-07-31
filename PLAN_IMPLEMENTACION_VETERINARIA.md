@@ -56,15 +56,15 @@
 
 #### 4.1 Modelo Dueño
 
-- [ ] **4.1.1** Crear app/duenios/\_model.py
-- [ ] **4.1.2** Implementar clase DuenioModel con métodos CRUD
-- [ ] **4.1.3** Implementar método get_all() para listar dueños
-- [ ] **4.1.4** Implementar método get_one(id) para obtener dueño específico
-- [ ] **4.1.5** Implementar método create() para crear nuevo dueño
-- [ ] **4.1.6** Implementar método update() para actualizar dueño
-- [ ] **4.1.7** Implementar método delete() para eliminar dueño
-- [ ] **4.1.8** Implementar método search(query) para búsqueda
-- [ ] **4.1.9** Implementar serialización/deserialización
+- [x] **4.1.1** Crear app/duenios/\_model.py
+- [x] **4.1.2** Implementar clase DuenioModel con métodos CRUD
+- [x] **4.1.3** Implementar método get_all() para listar dueños
+- [x] **4.1.4** Implementar método get_one(id) para obtener dueño específico
+- [x] **4.1.5** Implementar método create() para crear nuevo dueño
+- [x] **4.1.6** Implementar método update() para actualizar dueño
+- [x] **4.1.7** Implementar método delete() para eliminar dueño
+- [x] **4.1.8** Implementar método search(query) para búsqueda
+- [x] **4.1.9** Implementar serialización/deserialización
 
 #### 4.2 Controlador Dueño
 
