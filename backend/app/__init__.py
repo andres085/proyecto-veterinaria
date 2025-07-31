@@ -1,10 +1,11 @@
 """
 Factory Flask para la aplicación de Veterinaria
-Configuración inicial básica para verificar Docker
+Sistema de Gestión de Turnos con MySQL
 """
 
 from flask import Flask
 from flask_cors import CORS
+from .database import get_db_info
 
 
 def create_app():
@@ -29,10 +30,11 @@ def create_app():
     
     @app.route('/api/health')
     def health():
+        db_info = get_db_info()
         return {
             'status': 'healthy',
             'service': 'backend',
-            'database': 'pending_connection'
+            'database': db_info
         }
     
     return app
