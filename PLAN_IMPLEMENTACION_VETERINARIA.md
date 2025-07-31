@@ -46,11 +46,11 @@
 - [x] **3.1.4** Configurar manejo de variables de entorno
 - [x] **3.1.5** Crear run.py como punto de entrada
 
-#### 3.2 Configuración de Validaciones
+#### 3.2 Configuración de Validaciones (Manual)
 
-- [ ] **3.2.1** Instalar y configurar Marshmallow
-- [ ] **3.2.2** Crear schemas base para validación
-- [ ] **3.2.3** Configurar manejo de errores global
+- [x] **3.2.1** Crear funciones de validación manual para campos básicos
+- [x] **3.2.2** Implementar validadores específicos para Duenio y Turno
+- [x] **3.2.3** Configurar manejo de errores global para validaciones manuales
 
 ### 🏗️ FASE 4: Backend - Módulo Dueños
 

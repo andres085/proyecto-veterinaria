@@ -5,6 +5,7 @@ Sistema de Gestión de Turnos con MySQL
 
 from flask import Flask
 from .database import get_db_info
+from .error_handlers import register_error_handlers
 
 
 def create_app():
@@ -14,6 +15,9 @@ def create_app():
     
     # Configuración básica
     app.config['SECRET_KEY'] = 'veterinaria_secret_development'
+    
+    # Registrar manejadores de errores globales
+    register_error_handlers(app)
     
     # Ruta de prueba básica
     @app.route('/')

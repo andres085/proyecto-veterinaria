@@ -225,11 +225,8 @@ networks:
 ### Backend Dependencies (requirements.txt)
 ```
 Flask==3.1.0
-Flask-CORS==4.0.0
 mysql-connector-python==9.3.0
 python-dotenv==1.1.0
-marshmallow==3.22.0
-flask-marshmallow==0.15.0
 ```
 
 ### Frontend Dependencies (package.json)
@@ -286,8 +283,8 @@ npm run dev
 ## 📊 Características Técnicas
 
 ### Validaciones
-- **Backend**: Marshmallow para validación de esquemas
-- **Frontend**: Vee-Validate + Yup para formularios
+- **Backend**: Validaciones manuales básicas en controladores
+- **Frontend**: Validaciones HTML nativas (required, type, min/max)
 - **Base de Datos**: Constraints y foreign keys
 
 ### Seguridad
