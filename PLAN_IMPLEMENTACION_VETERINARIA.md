@@ -40,11 +40,11 @@
 
 #### 3.1 Configuración Base Flask
 
-- [ ] **3.1.1** Crear app/**init**.py con factory pattern
-- [ ] **3.1.2** Configurar Flask-CORS para comunicación frontend
-- [ ] **3.1.3** Implementar database.py con connection pooling MySQL
-- [ ] **3.1.4** Configurar manejo de variables de entorno
-- [ ] **3.1.5** Crear run.py como punto de entrada
+- [x] **3.1.1** Crear app/**init**.py con factory pattern
+- [x] **3.1.2** Configurar Flask-CORS para comunicación frontend
+- [x] **3.1.3** Implementar database.py con connection pooling MySQL
+- [x] **3.1.4** Configurar manejo de variables de entorno
+- [x] **3.1.5** Crear run.py como punto de entrada
 
 #### 3.2 Configuración de Validaciones
 

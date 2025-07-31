@@ -4,7 +4,6 @@ Sistema de Gestión de Turnos con MySQL
 """
 
 from flask import Flask
-from flask_cors import CORS
 from .database import get_db_info
 
 
@@ -12,9 +11,6 @@ def create_app():
     """Factory para crear la aplicación Flask"""
     
     app = Flask(__name__)
-    
-    # Configurar CORS para permitir comunicación con frontend
-    CORS(app, origins=['http://localhost:3000'])
     
     # Configuración básica
     app.config['SECRET_KEY'] = 'veterinaria_secret_development'
