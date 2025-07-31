@@ -1,0 +1,25 @@
+{
+  "name": "veterinaria-frontend",
+  "version": "1.0.0",
+  "description": "Sistema de gestión de turnos - Frontend Vue.js",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc && vite build",
+    "preview": "vite preview",
+    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
+  },
+  "dependencies": {
+    "vue": "^3.4.21",
+    "vue-router": "^4.5.1",
+    "pinia": "^2.3.1",
+    "axios": "^1.10.0",
+    "@vueuse/core": "^10.5.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.2.1",
+    "typescript": "~5.7.2",
+    "vite": "^6.2.0",
+    "vue-tsc": "^2.2.4"
+  }
+}
