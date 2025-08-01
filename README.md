@@ -285,19 +285,113 @@ docker compose exec backend python migrations/init_db.py
 docker compose exec backend python migrations/seed_data.py
 ```
 
-## 📡 API Endpoints (Planeados)
+## 📡 API Endpoints
 
-### Dueños (`/api/duenios`)
-```
-GET    /api/duenios/           # Listar todos
-GET    /api/duenios/:id        # Obtener uno específico
-POST   /api/duenios/           # Crear nuevo
-PUT    /api/duenios/:id        # Actualizar
-DELETE /api/duenios/:id        # Eliminar
-GET    /api/duenios/search?q=  # Buscar por nombre/email
+### 🔍 Endpoints de Sistema
+```bash
+# Información general de la API
+GET    http://localhost:5000/
+
+# Estado de salud del sistema
+GET    http://localhost:5000/api/health
 ```
 
-### Turnos (`/api/turnos`)
+### 🐾 Dueños (`/api/duenios`) - ✅ IMPLEMENTADO
+
+#### Listar Dueños
+```bash
+# Obtener todos los dueños
+GET    http://localhost:5000/api/duenios/
+
+# Con paginación
+GET    http://localhost:5000/api/duenios/?limit=10&offset=0
+
+# Ejemplo con curl
+curl "http://localhost:5000/api/duenios/?limit=5"
+```
+
+#### Dueño Específico
+```bash
+# Obtener dueño por ID
+GET    http://localhost:5000/api/duenios/1
+
+# Ejemplo con curl
+curl http://localhost:5000/api/duenios/1
+```
+
+#### Crear Dueño
+```bash
+# Crear nuevo dueño
+POST   http://localhost:5000/api/duenios/
+Content-Type: application/json
+
+{
+    "nombre_apellido": "Juan Pérez",
+    "telefono": "+54911234567",
+    "email": "juan.perez@email.com",
+    "direccion": "Av. Corrientes 1234, CABA"
+}
+
+# Ejemplo con curl
+curl -X POST http://localhost:5000/api/duenios/ \
+  -H "Content-Type: application/json" \
+  -d '{
+    "nombre_apellido": "Juan Pérez",
+    "telefono": "+54911234567", 
+    "email": "juan.perez@email.com",
+    "direccion": "Av. Corrientes 1234, CABA"
+  }'
+```
+
+#### Actualizar Dueño
+```bash
+# Actualizar dueño existente (campos opcionales)
+PUT    http://localhost:5000/api/duenios/1
+Content-Type: application/json
+
+{
+    "telefono": "+54911111111",
+    "direccion": "Nueva dirección 456"
+}
+
+# Ejemplo con curl
+curl -X PUT http://localhost:5000/api/duenios/1 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "telefono": "+54911111111",
+    "direccion": "Nueva dirección 456"
+  }'
+```
+
+#### Eliminar Dueño
+```bash
+# Eliminar dueño (elimina turnos asociados por CASCADE)
+DELETE http://localhost:5000/api/duenios/1
+
+# Ejemplo con curl
+curl -X DELETE http://localhost:5000/api/duenios/1
+```
+
+#### Buscar Dueños
+```bash
+# Buscar por nombre o email
+GET    http://localhost:5000/api/duenios/search?q=maria
+GET    http://localhost:5000/api/duenios/search?q=gmail.com&limit=20
+
+# Ejemplo con curl
+curl "http://localhost:5000/api/duenios/search?q=maria"
+```
+
+#### Estadísticas de Dueños
+```bash
+# Obtener estadísticas básicas
+GET    http://localhost:5000/api/duenios/statistics
+
+# Ejemplo con curl
+curl http://localhost:5000/api/duenios/statistics
+```
+
+### 📋 Turnos (`/api/turnos`) - 🔄 EN DESARROLLO
 ```
 GET    /api/turnos/                    # Listar todos
 GET    /api/turnos/:id                 # Obtener uno específico
@@ -309,6 +403,83 @@ GET    /api/turnos/fecha/:fecha        # Turnos por fecha
 PUT    /api/turnos/:id/estado          # Cambiar estado
 ```
 
+### 📝 Ejemplos de Respuestas
+
+#### Éxito - Lista de Dueños
+```json
+{
+  "success": true,
+  "message": "Dueños obtenidos correctamente",
+  "timestamp": "2024-01-15T10:30:00",
+  "data": {
+    "duenios": [
+      {
+        "id": 1,
+        "nombre_apellido": "María González",
+        "telefono": "+54911234567",
+        "email": "maria.gonzalez@email.com",
+        "direccion": "Av. Santa Fe 1234, CABA",
+        "created_at": "2024-01-15T09:00:00",
+        "updated_at": "2024-01-15T09:00:00"
+      }
+    ],
+    "metadata": {
+      "total": 8,
+      "count": 1,
+      "offset": 0,
+      "limit": 10,
+      "has_more": true
+    }
+  }
+}
+```
+
+#### Error - Validación
+```json
+{
+  "error": "Error de validación",
+  "message": "Los datos enviados no son válidos",
+  "validation_errors": [
+    "El campo 'email' es requerido",
+    "Formato de teléfono inválido (8-15 dígitos)"
+  ],
+  "code": 400,
+  "timestamp": "2024-01-15T10:30:00"
+}
+```
+
+### 🧪 Pruebas Rápidas
+
+#### Probar todas las operaciones CRUD
+```bash
+# 1. Listar dueños existentes
+curl http://localhost:5000/api/duenios/
+
+# 2. Crear nuevo dueño
+curl -X POST http://localhost:5000/api/duenios/ \
+  -H "Content-Type: application/json" \
+  -d '{
+    "nombre_apellido": "Test Usuario",
+    "telefono": "1122334455",
+    "email": "test@example.com",
+    "direccion": "Dirección de prueba 123"
+  }'
+
+# 3. Buscar el dueño creado
+curl "http://localhost:5000/api/duenios/search?q=Test"
+
+# 4. Actualizar el dueño (usar ID obtenido del paso 2)
+curl -X PUT http://localhost:5000/api/duenios/ID_AQUI \
+  -H "Content-Type: application/json" \
+  -d '{"telefono": "9988776655"}'
+
+# 5. Obtener dueño específico
+curl http://localhost:5000/api/duenios/ID_AQUI
+
+# 6. Eliminar dueño de prueba
+curl -X DELETE http://localhost:5000/api/duenios/ID_AQUI
+```
+
 ## 🎯 Estado del Proyecto
 
 ### ✅ Completado
@@ -317,11 +488,13 @@ PUT    /api/turnos/:id/estado          # Cambiar estado
 - [x] **Pool de Conexiones** - MySQL con reconexión automática
 - [x] **Datos de Prueba** - 8 dueños, 13 turnos con todos los estados
 - [x] **Scripts de Migración** - Inicialización y seeds
+- [x] **Validaciones Manuales** - Sistema de validación backend sin librerías externas
+- [x] **API Dueños** - CRUD completo con paginación, búsqueda y estadísticas
+- [x] **Error Handling** - Manejo global de errores con responses JSON consistentes
 
 ### 🔄 En Desarrollo
-- [ ] **Backend API** - Modelos, controladores, rutas
+- [ ] **API Turnos** - Modelos, controladores, rutas para turnos
 - [ ] **Frontend Vue** - Componentes, stores, vistas
-- [ ] **Validaciones** - Backend y frontend
 - [ ] **Interfaz de Usuario** - Formularios, tablas, navegación
 
 ### 📋 Por Implementar

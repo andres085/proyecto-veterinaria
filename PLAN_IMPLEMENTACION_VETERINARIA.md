@@ -68,25 +68,25 @@
 
 #### 4.2 Controlador Dueño
 
-- [ ] **4.2.1** Crear app/duenios/\_controller.py
-- [ ] **4.2.2** Implementar DuenioController.get_all()
-- [ ] **4.2.3** Implementar DuenioController.get_one(id)
-- [ ] **4.2.4** Implementar DuenioController.create(data) con validaciones
-- [ ] **4.2.5** Implementar DuenioController.update(id, data)
-- [ ] **4.2.6** Implementar DuenioController.delete(id)
-- [ ] **4.2.7** Implementar DuenioController.search(query)
-- [ ] **4.2.8** Agregar manejo de errores y validaciones Marshmallow
+- [x] **4.2.1** Crear app/duenios/\_controller.py
+- [x] **4.2.2** Implementar DuenioController.get_all()
+- [x] **4.2.3** Implementar DuenioController.get_one(id)
+- [x] **4.2.4** Implementar DuenioController.create(data) con validaciones
+- [x] **4.2.5** Implementar DuenioController.update(id, data)
+- [x] **4.2.6** Implementar DuenioController.delete(id)
+- [x] **4.2.7** Implementar DuenioController.search(query)
+- [x] **4.2.8** Agregar manejo de errores y validaciones manuales
 
 #### 4.3 Rutas Dueño
 
-- [ ] **4.3.1** Crear app/duenios/\_routes.py con Blueprint
-- [ ] **4.3.2** Implementar GET /api/duenios/ (listar todos)
-- [ ] **4.3.3** Implementar GET /api/duenios/:id (obtener uno)
-- [ ] **4.3.4** Implementar POST /api/duenios/ (crear)
-- [ ] **4.3.5** Implementar PUT /api/duenios/:id (actualizar)
-- [ ] **4.3.6** Implementar DELETE /api/duenios/:id (eliminar)
-- [ ] **4.3.7** Implementar GET /api/duenios/search?q= (buscar)
-- [ ] **4.3.8** Registrar Blueprint en app/**init**.py
+- [x] **4.3.1** Crear app/duenios/\_routes.py con Blueprint
+- [x] **4.3.2** Implementar GET /api/duenios/ (listar todos)
+- [x] **4.3.3** Implementar GET /api/duenios/:id (obtener uno)
+- [x] **4.3.4** Implementar POST /api/duenios/ (crear)
+- [x] **4.3.5** Implementar PUT /api/duenios/:id (actualizar)
+- [x] **4.3.6** Implementar DELETE /api/duenios/:id (eliminar)
+- [x] **4.3.7** Implementar GET /api/duenios/search?q= (buscar)
+- [x] **4.3.8** Registrar Blueprint en app/**init**.py
 
 ### 🏗️ FASE 5: Backend - Módulo Turnos
 

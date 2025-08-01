@@ -19,13 +19,23 @@ def create_app():
     # Registrar manejadores de errores globales
     register_error_handlers(app)
     
+    # Registrar Blueprints
+    from .duenios._routes import duenios_bp
+    app.register_blueprint(duenios_bp, url_prefix='/api')
+    
     # Ruta de prueba básica
     @app.route('/')
     def home():
         return {
             'message': '🐾 API Veterinaria Turnos',
             'status': 'running',
-            'version': '1.0.0'
+            'version': '1.0.0',
+            'endpoints': {
+                'health': '/api/health',
+                'duenios': '/api/duenios/',
+                'search_duenios': '/api/duenios/search?q=',
+                'duenios_stats': '/api/duenios/statistics'
+            }
         }
     
     @app.route('/api/health')
@@ -34,7 +44,8 @@ def create_app():
         return {
             'status': 'healthy',
             'service': 'backend',
-            'database': db_info
+            'database': db_info,
+            'modules': ['duenios']
         }
     
     return app
