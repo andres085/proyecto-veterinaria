@@ -391,19 +391,221 @@ GET    http://localhost:5000/api/duenios/statistics
 curl http://localhost:5000/api/duenios/statistics
 ```
 
-### 📋 Turnos (`/api/turnos`) - 🔄 EN DESARROLLO
+### 📋 Turnos (`/api/turnos`) - ✅ IMPLEMENTADO
+
+#### Listar Turnos
+```bash
+# Obtener todos los turnos
+GET    http://localhost:5000/api/turnos/
+
+# Con filtros y paginación
+GET    http://localhost:5000/api/turnos/?limit=10&offset=0&estado=pendiente
+GET    http://localhost:5000/api/turnos/?fecha_desde=2024-01-15&fecha_hasta=2024-01-31
+
+# Ejemplo con curl
+curl "http://localhost:5000/api/turnos/?estado=pendiente&limit=5"
 ```
-GET    /api/turnos/                    # Listar todos
-GET    /api/turnos/:id                 # Obtener uno específico
-POST   /api/turnos/                    # Crear nuevo
-PUT    /api/turnos/:id                 # Actualizar
-DELETE /api/turnos/:id                 # Eliminar
-GET    /api/turnos/duenio/:id_duenio   # Turnos de un dueño
-GET    /api/turnos/fecha/:fecha        # Turnos por fecha
-PUT    /api/turnos/:id/estado          # Cambiar estado
+
+#### Turno Específico
+```bash
+# Obtener turno por ID (incluye datos del dueño)
+GET    http://localhost:5000/api/turnos/1
+
+# Ejemplo con curl
+curl http://localhost:5000/api/turnos/1
+```
+
+#### Crear Turno
+```bash
+# Crear nuevo turno
+POST   http://localhost:5000/api/turnos/
+Content-Type: application/json
+
+{
+    "nombre_mascota": "Firulais",
+    "fecha_turno": "2024-01-20 14:30:00",
+    "tratamiento": "Vacunación antirrábica",
+    "id_duenio": 1,
+    "estado": "pendiente"
+}
+
+# Ejemplo con curl
+curl -X POST http://localhost:5000/api/turnos/ \
+  -H "Content-Type: application/json" \
+  -d '{
+    "nombre_mascota": "Firulais",
+    "fecha_turno": "2024-01-20 14:30:00",
+    "tratamiento": "Vacunación antirrábica",
+    "id_duenio": 1
+  }'
+```
+
+#### Actualizar Turno
+```bash
+# Actualizar turno existente (campos opcionales)
+PUT    http://localhost:5000/api/turnos/1
+Content-Type: application/json
+
+{
+    "fecha_turno": "2024-01-21 15:00:00",
+    "tratamiento": "Vacunación antirrábica + desparasitación"
+}
+
+# Ejemplo con curl
+curl -X PUT http://localhost:5000/api/turnos/1 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "fecha_turno": "2024-01-21 15:00:00",
+    "tratamiento": "Vacunación antirrábica + desparasitación"
+  }'
+```
+
+#### Eliminar Turno
+```bash
+# Eliminar turno
+DELETE http://localhost:5000/api/turnos/1
+
+# Ejemplo con curl
+curl -X DELETE http://localhost:5000/api/turnos/1
+```
+
+#### Turnos por Dueño
+```bash
+# Obtener todos los turnos de un dueño
+GET    http://localhost:5000/api/turnos/duenio/1
+GET    http://localhost:5000/api/turnos/duenio/1?limit=20
+
+# Ejemplo con curl
+curl http://localhost:5000/api/turnos/duenio/1
+```
+
+#### Turnos por Fecha
+```bash
+# Obtener turnos de una fecha específica
+GET    http://localhost:5000/api/turnos/fecha/2024-01-20
+GET    http://localhost:5000/api/turnos/fecha/2024-01-20?limit=50
+
+# Ejemplo con curl
+curl http://localhost:5000/api/turnos/fecha/2024-01-20
+```
+
+#### Cambiar Estado del Turno
+```bash
+# Cambiar estado con validaciones de transición
+PUT    http://localhost:5000/api/turnos/1/estado
+Content-Type: application/json
+
+{
+    "estado": "confirmado"
+}
+
+# Ejemplo con curl - Confirmar turno
+curl -X PUT http://localhost:5000/api/turnos/1/estado \
+  -H "Content-Type: application/json" \
+  -d '{"estado": "confirmado"}'
+
+# Completar turno
+curl -X PUT http://localhost:5000/api/turnos/1/estado \
+  -H "Content-Type: application/json" \
+  -d '{"estado": "completado"}'
+
+# Cancelar turno
+curl -X PUT http://localhost:5000/api/turnos/1/estado \
+  -H "Content-Type: application/json" \
+  -d '{"estado": "cancelado"}'
+```
+
+#### Estadísticas de Turnos
+```bash
+# Obtener estadísticas básicas
+GET    http://localhost:5000/api/turnos/statistics
+
+# Ejemplo con curl
+curl http://localhost:5000/api/turnos/statistics
 ```
 
 ### 📝 Ejemplos de Respuestas
+
+#### Éxito - Lista de Turnos
+```json
+{
+  "success": true,
+  "message": "Turnos obtenidos correctamente",
+  "timestamp": "2024-01-15T10:30:00",
+  "data": {
+    "turnos": [
+      {
+        "id": 1,
+        "nombre_mascota": "Firulais",
+        "fecha_turno": "2024-01-20T14:30:00",
+        "tratamiento": "Vacunación antirrábica",
+        "estado": "pendiente",
+        "dias_hasta_turno": 5,
+        "created_at": "2024-01-15T09:00:00",
+        "updated_at": "2024-01-15T09:00:00",
+        "duenio": {
+          "id": 1,
+          "nombre_apellido": "María González",
+          "telefono": "+54911234567",
+          "email": "maria.gonzalez@email.com",
+          "direccion": "Av. Santa Fe 1234, CABA"
+        }
+      }
+    ],
+    "metadata": {
+      "total": 13,
+      "count": 1,
+      "offset": 0,
+      "limit": 10,
+      "has_more": true,
+      "filters": {
+        "estado": "pendiente",
+        "fecha_desde": null,
+        "fecha_hasta": null
+      }
+    }
+  }
+}
+```
+
+#### Éxito - Cambio de Estado
+```json
+{
+  "success": true,
+  "message": "Estado cambiado de \"pendiente\" a \"confirmado\"",
+  "timestamp": "2024-01-15T10:30:00",
+  "data": {
+    "turno": {
+      "id": 1,
+      "nombre_mascota": "Firulais",
+      "fecha_turno": "2024-01-20T14:30:00",
+      "tratamiento": "Vacunación antirrábica",
+      "estado": "confirmado",
+      "dias_hasta_turno": 5,
+      "duenio": {
+        "id": 1,
+        "nombre_apellido": "María González",
+        "telefono": "+54911234567",
+        "email": "maria.gonzalez@email.com",
+        "direccion": "Av. Santa Fe 1234, CABA"
+      }
+    }
+  }
+}
+```
+
+#### Error - Transición de Estado Inválida
+```json
+{
+  "error": "Error de validación",
+  "message": "Los datos enviados no son válidos",
+  "validation_errors": [
+    "No se puede cambiar de \"completado\" a \"pendiente\""
+  ],
+  "code": 400,
+  "timestamp": "2024-01-15T10:30:00"
+}
+```
 
 #### Éxito - Lista de Dueños
 ```json
@@ -480,6 +682,55 @@ curl http://localhost:5000/api/duenios/ID_AQUI
 curl -X DELETE http://localhost:5000/api/duenios/ID_AQUI
 ```
 
+#### Probar operaciones completas con Turnos
+```bash
+# 1. Crear un dueño para los turnos
+curl -X POST http://localhost:5000/api/duenios/ \
+  -H "Content-Type: application/json" \
+  -d '{
+    "nombre_apellido": "Test Veterinario",
+    "telefono": "1122334455",
+    "email": "test.vet@example.com",
+    "direccion": "Dirección veterinaria 123"
+  }'
+
+# 2. Crear un turno (usar ID del dueño obtenido del paso 1)
+curl -X POST http://localhost:5000/api/turnos/ \
+  -H "Content-Type: application/json" \
+  -d '{
+    "nombre_mascota": "Mascota Test",
+    "fecha_turno": "2024-02-20 14:30:00",
+    "tratamiento": "Consulta de prueba",
+    "id_duenio": ID_DUENIO_AQUI
+  }'
+
+# 3. Listar turnos con filtros
+curl "http://localhost:5000/api/turnos/?estado=pendiente&limit=5"
+
+# 4. Obtener turnos del dueño
+curl http://localhost:5000/api/turnos/duenio/ID_DUENIO_AQUI
+
+# 5. Confirmar el turno (usar ID del turno obtenido del paso 2)
+curl -X PUT http://localhost:5000/api/turnos/ID_TURNO_AQUI/estado \
+  -H "Content-Type: application/json" \
+  -d '{"estado": "confirmado"}'
+
+# 6. Completar el turno
+curl -X PUT http://localhost:5000/api/turnos/ID_TURNO_AQUI/estado \
+  -H "Content-Type: application/json" \
+  -d '{"estado": "completado"}'
+
+# 7. Ver estadísticas
+curl http://localhost:5000/api/turnos/statistics
+
+# 8. Obtener turnos por fecha
+curl http://localhost:5000/api/turnos/fecha/2024-02-20
+
+# 9. Limpiar - eliminar turno y dueño
+curl -X DELETE http://localhost:5000/api/turnos/ID_TURNO_AQUI
+curl -X DELETE http://localhost:5000/api/duenios/ID_DUENIO_AQUI
+```
+
 ## 🎯 Estado del Proyecto
 
 ### ✅ Completado
@@ -490,10 +741,11 @@ curl -X DELETE http://localhost:5000/api/duenios/ID_AQUI
 - [x] **Scripts de Migración** - Inicialización y seeds
 - [x] **Validaciones Manuales** - Sistema de validación backend sin librerías externas
 - [x] **API Dueños** - CRUD completo con paginación, búsqueda y estadísticas
+- [x] **API Turnos** - CRUD completo con filtros, JOIN a dueños, transiciones de estado
 - [x] **Error Handling** - Manejo global de errores con responses JSON consistentes
+- [x] **Casos de Uso** - Todos los casos del sistema veterinaria implementados
 
 ### 🔄 En Desarrollo
-- [ ] **API Turnos** - Modelos, controladores, rutas para turnos
 - [ ] **Frontend Vue** - Componentes, stores, vistas
 - [ ] **Interfaz de Usuario** - Formularios, tablas, navegación
 
@@ -525,5 +777,5 @@ Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE.md](LICENSE.m
 
 ---
 
-**Estado actual**: Base de datos y infraestructura completadas ✅  
-**Siguiente paso**: Implementación de API REST Backend 🔄
+**Estado actual**: Backend API REST completamente funcional ✅  
+**Siguiente paso**: Implementación Frontend Vue.js 🔄

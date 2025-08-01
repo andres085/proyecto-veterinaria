@@ -21,7 +21,10 @@ def create_app():
     
     # Registrar Blueprints
     from .duenios._routes import duenios_bp
+    from .turnos._routes import turnos_bp
+    
     app.register_blueprint(duenios_bp, url_prefix='/api')
+    app.register_blueprint(turnos_bp, url_prefix='/api')
     
     # Ruta de prueba básica
     @app.route('/')
@@ -34,7 +37,12 @@ def create_app():
                 'health': '/api/health',
                 'duenios': '/api/duenios/',
                 'search_duenios': '/api/duenios/search?q=',
-                'duenios_stats': '/api/duenios/statistics'
+                'duenios_stats': '/api/duenios/statistics',
+                'turnos': '/api/turnos/',
+                'turnos_por_duenio': '/api/turnos/duenio/:id_duenio',
+                'turnos_por_fecha': '/api/turnos/fecha/:fecha',
+                'cambiar_estado_turno': '/api/turnos/:id/estado',
+                'turnos_stats': '/api/turnos/statistics'
             }
         }
     
@@ -45,7 +53,7 @@ def create_app():
             'status': 'healthy',
             'service': 'backend',
             'database': db_info,
-            'modules': ['duenios']
+            'modules': ['duenios', 'turnos']
         }
     
     return app

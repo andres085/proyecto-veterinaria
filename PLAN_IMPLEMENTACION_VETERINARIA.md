@@ -92,43 +92,43 @@
 
 #### 5.1 Modelo Turno
 
-- [ ] **5.1.1** Crear app/turnos/\_model.py
-- [ ] **5.1.2** Implementar clase TurnoModel con métodos CRUD
-- [ ] **5.1.3** Implementar método get_all() con join a dueños
-- [ ] **5.1.4** Implementar método get_one(id) con datos completos
-- [ ] **5.1.5** Implementar método create() con validación de dueño
-- [ ] **5.1.6** Implementar método update() para modificar turno
-- [ ] **5.1.7** Implementar método delete() para cancelar turno
-- [ ] **5.1.8** Implementar método get_by_duenio(id_duenio)
-- [ ] **5.1.9** Implementar método get_by_fecha(fecha)
-- [ ] **5.1.10** Implementar método update_estado(id, estado)
-- [ ] **5.1.11** Implementar serialización con datos de dueño
+- [x] **5.1.1** Crear app/turnos/\_model.py
+- [x] **5.1.2** Implementar clase TurnoModel con métodos CRUD
+- [x] **5.1.3** Implementar método get_all() con join a dueños
+- [x] **5.1.4** Implementar método get_one(id) con datos completos
+- [x] **5.1.5** Implementar método create() con validación de dueño
+- [x] **5.1.6** Implementar método update() para modificar turno
+- [x] **5.1.7** Implementar método delete() para cancelar turno
+- [x] **5.1.8** Implementar método get_by_duenio(id_duenio)
+- [x] **5.1.9** Implementar método get_by_fecha(fecha)
+- [x] **5.1.10** Implementar método update_estado(id, estado)
+- [x] **5.1.11** Implementar serialización con datos de dueño
 
 #### 5.2 Controlador Turno
 
-- [ ] **5.2.1** Crear app/turnos/\_controller.py
-- [ ] **5.2.2** Implementar TurnoController.get_all()
-- [ ] **5.2.3** Implementar TurnoController.get_one(id)
-- [ ] **5.2.4** Implementar TurnoController.create(data) con validaciones
-- [ ] **5.2.5** Implementar TurnoController.update(id, data)
-- [ ] **5.2.6** Implementar TurnoController.delete(id)
-- [ ] **5.2.7** Implementar TurnoController.get_by_duenio(id_duenio)
-- [ ] **5.2.8** Implementar TurnoController.get_by_fecha(fecha)
-- [ ] **5.2.9** Implementar TurnoController.update_estado(id, estado)
-- [ ] **5.2.10** Agregar validaciones de fecha y disponibilidad
+- [x] **5.2.1** Crear app/turnos/\_controller.py
+- [x] **5.2.2** Implementar TurnoController.get_all()
+- [x] **5.2.3** Implementar TurnoController.get_one(id)
+- [x] **5.2.4** Implementar TurnoController.create(data) con validaciones
+- [x] **5.2.5** Implementar TurnoController.update(id, data)
+- [x] **5.2.6** Implementar TurnoController.delete(id)
+- [x] **5.2.7** Implementar TurnoController.get_by_duenio(id_duenio)
+- [x] **5.2.8** Implementar TurnoController.get_by_fecha(fecha)
+- [x] **5.2.9** Implementar TurnoController.update_estado(id, estado)
+- [x] **5.2.10** Agregar validaciones de fecha y disponibilidad
 
 #### 5.3 Rutas Turno
 
-- [ ] **5.3.1** Crear app/turnos/\_routes.py con Blueprint
-- [ ] **5.3.2** Implementar GET /api/turnos/ (listar todos)
-- [ ] **5.3.3** Implementar GET /api/turnos/:id (obtener uno)
-- [ ] **5.3.4** Implementar POST /api/turnos/ (crear)
-- [ ] **5.3.5** Implementar PUT /api/turnos/:id (actualizar)
-- [ ] **5.3.6** Implementar DELETE /api/turnos/:id (eliminar)
-- [ ] **5.3.7** Implementar GET /api/turnos/duenio/:id_duenio
-- [ ] **5.3.8** Implementar GET /api/turnos/fecha/:fecha
-- [ ] **5.3.9** Implementar PUT /api/turnos/:id/estado
-- [ ] **5.3.10** Registrar Blueprint en app/**init**.py
+- [x] **5.3.1** Crear app/turnos/\_routes.py con Blueprint
+- [x] **5.3.2** Implementar GET /api/turnos/ (listar todos)
+- [x] **5.3.3** Implementar GET /api/turnos/:id (obtener uno)
+- [x] **5.3.4** Implementar POST /api/turnos/ (crear)
+- [x] **5.3.5** Implementar PUT /api/turnos/:id (actualizar)
+- [x] **5.3.6** Implementar DELETE /api/turnos/:id (eliminar)
+- [x] **5.3.7** Implementar GET /api/turnos/duenio/:id_duenio
+- [x] **5.3.8** Implementar GET /api/turnos/fecha/:fecha
+- [x] **5.3.9** Implementar PUT /api/turnos/:id/estado
+- [x] **5.3.10** Registrar Blueprint en app/**init**.py
 
 ### 🎨 FASE 6: Frontend Vue - Configuración Base
 
