@@ -1,14 +1,12 @@
-import axios, { AxiosInstance, AxiosResponse, AxiosRequestConfig } from 'axios'
+import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
 
 class ApiService {
   private api: AxiosInstance
 
   constructor() {
     // Use proxy in development or direct URL in production
-    const baseURL = import.meta.env.DEV 
-      ? '/api'  // Use Vite proxy in development
-      : import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'
-    
+    const baseURL = 'http://localhost:5000/api'
+
     this.api = axios.create({
       baseURL,
       timeout: 15000, // Increased timeout for development
