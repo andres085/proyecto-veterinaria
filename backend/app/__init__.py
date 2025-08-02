@@ -4,6 +4,7 @@ Sistema de Gestión de Turnos con MySQL
 """
 
 from flask import Flask
+from flask_cors import CORS
 from .database import get_db_info
 from .error_handlers import register_error_handlers
 
@@ -15,6 +16,16 @@ def create_app():
     
     # Configuración básica
     app.config['SECRET_KEY'] = 'veterinaria_secret_development'
+    
+    # Configuración CORS para desarrollo
+    CORS(app, resources={
+        r"/api/*": {
+            "origins": ["http://localhost:3000", "http://127.0.0.1:3000"],
+            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+            "allow_headers": ["Content-Type", "Authorization", "Accept"],
+            "supports_credentials": False
+        }
+    })
     
     # Registrar manejadores de errores globales
     register_error_handlers(app)

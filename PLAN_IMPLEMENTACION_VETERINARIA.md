@@ -134,109 +134,109 @@
 
 #### 6.1 Setup Inicial Frontend
 
-- [ ] **6.1.1** Crear proyecto Vue 3 con TypeScript
-- [ ] **6.1.2** Configurar Vite (vite.config.ts)
-- [ ] **6.1.3** Configurar TypeScript (tsconfig.json)
-- [ ] **6.1.4** Instalar dependencias (Vue Router, Pinia, Axios)
-- [ ] **6.1.5** Configurar estructura de directorios src/
+- [x] **6.1.1** Crear proyecto Vue 3 con TypeScript
+- [x] **6.1.2** Configurar Vite (vite.config.ts)
+- [x] **6.1.3** Configurar TypeScript (tsconfig.json)
+- [x] **6.1.4** Instalar dependencias (Vue Router, Pinia, Axios)
+- [x] **6.1.5** Configurar estructura de directorios src/
 
 #### 6.2 Configuración Base
 
-- [ ] **6.2.1** Crear src/main.ts con configuración base
-- [ ] **6.2.2** Crear src/App.vue como componente raíz
-- [ ] **6.2.3** Configurar src/router/index.ts con rutas principales
-- [ ] **6.2.4** Crear src/services/ApiService.ts para comunicación HTTP
-- [ ] **6.2.5** Configurar variables de entorno para API base URL
+- [x] **6.2.1** Crear src/main.ts con configuración base
+- [x] **6.2.2** Crear src/App.vue como componente raíz
+- [x] **6.2.3** Configurar src/router/index.ts con rutas principales
+- [x] **6.2.4** Crear src/services/ApiService.ts para comunicación HTTP
+- [x] **6.2.5** Configurar variables de entorno para API base URL
 
 #### 6.3 Tipos TypeScript
 
-- [ ] **6.3.1** Crear src/types/models.ts con interfaces
-- [ ] **6.3.2** Definir interface Duenio
-- [ ] **6.3.3** Definir interface Turno
-- [ ] **6.3.4** Definir types para payloads y responses
-- [ ] **6.3.5** Definir enums para estados de turno
+- [x] **6.3.1** Crear src/types/models.ts con interfaces
+- [x] **6.3.2** Definir interface Duenio
+- [x] **6.3.3** Definir interface Turno
+- [x] **6.3.4** Definir types para payloads y responses
+- [x] **6.3.5** Definir enums para estados de turno
 
 ### 🏬 FASE 7: Frontend - Stores Pinia
 
 #### 7.1 Store Dueños
 
-- [ ] **7.1.1** Crear src/stores/duenioStore.ts
-- [ ] **7.1.2** Implementar estado reactivo (dueños, loading, error)
-- [ ] **7.1.3** Implementar acción fetchAll() para listar dueños
-- [ ] **7.1.4** Implementar acción create(data) para crear dueño
-- [ ] **7.1.5** Implementar acción update(id, data) para actualizar
-- [ ] **7.1.6** Implementar acción remove(id) para eliminar
-- [ ] **7.1.7** Implementar acción search(query) para búsqueda
-- [ ] **7.1.8** Agregar manejo de errores y loading states
+- [x] **7.1.1** Crear src/stores/duenioStore.ts
+- [x] **7.1.2** Implementar estado reactivo (dueños, loading, error)
+- [x] **7.1.3** Implementar acción fetchAll() para listar dueños
+- [x] **7.1.4** Implementar acción create(data) para crear dueño
+- [x] **7.1.5** Implementar acción update(id, data) para actualizar
+- [x] **7.1.6** Implementar acción remove(id) para eliminar
+- [x] **7.1.7** Implementar acción search(query) para búsqueda
+- [x] **7.1.8** Agregar manejo de errores y loading states
 
 #### 7.2 Store Turnos
 
-- [ ] **7.2.1** Crear src/stores/turnoStore.ts
-- [ ] **7.2.2** Implementar estado reactivo (turnos, loading, error)
-- [ ] **7.2.3** Implementar acción fetchAll() para listar turnos
-- [ ] **7.2.4** Implementar acción create(data) para crear turno
-- [ ] **7.2.5** Implementar acción update(id, data) para actualizar
-- [ ] **7.2.6** Implementar acción remove(id) para eliminar
-- [ ] **7.2.7** Implementar acción fetchByDuenio(id) para turnos por dueño
-- [ ] **7.2.8** Implementar acción fetchByFecha(fecha) para turnos por fecha
-- [ ] **7.2.9** Implementar acción updateEstado(id, estado)
-- [ ] **7.2.10** Agregar getters para filtros y computadas
+- [x] **7.2.1** Crear src/stores/turnoStore.ts
+- [x] **7.2.2** Implementar estado reactivo (turnos, loading, error)
+- [x] **7.2.3** Implementar acción fetchAll() para listar turnos
+- [x] **7.2.4** Implementar acción create(data) para crear turno
+- [x] **7.2.5** Implementar acción update(id, data) para actualizar
+- [x] **7.2.6** Implementar acción remove(id) para eliminar
+- [x] **7.2.7** Implementar acción fetchByDuenio(id) para turnos por dueño
+- [x] **7.2.8** Implementar acción fetchByFecha(fecha) para turnos por fecha
+- [x] **7.2.9** Implementar acción updateEstado(id, estado)
+- [x] **7.2.10** Agregar getters para filtros y computadas
 
 ### 🧩 FASE 8: Frontend - Componentes Base
 
 #### 8.1 Componentes Compartidos
 
-- [ ] **8.1.1** Crear src/components/shared/ConfirmDialog.vue
-- [ ] **8.1.2** Crear src/components/shared/LoadingSpinner.vue
-- [ ] **8.1.3** Crear src/components/shared/DatePicker.vue
-- [ ] **8.1.4** Crear src/components/shared/SearchInput.vue
-- [ ] **8.1.5** Agregar estilos CSS globales básicos
+- [x] **8.1.1** Crear src/components/shared/ConfirmDialog.vue
+- [x] **8.1.2** Crear src/components/shared/LoadingSpinner.vue
+- [x] **8.1.3** Crear src/components/shared/DatePicker.vue
+- [x] **8.1.4** Crear src/components/shared/SearchInput.vue
+- [x] **8.1.5** Agregar estilos CSS globales básicos
 
 #### 8.2 Componentes Dueños
 
-- [ ] **8.2.1** Crear src/components/duenios/DuenioForm.vue
-- [ ] **8.2.2** Implementar formulario con validaciones (nombre, teléfono, email, dirección)
-- [ ] **8.2.3** Crear src/components/duenios/DuenioList.vue
-- [ ] **8.2.4** Implementar tabla con acciones (ver, editar, eliminar)
-- [ ] **8.2.5** Crear src/components/duenios/DuenioBuscar.vue
-- [ ] **8.2.6** Implementar búsqueda en tiempo real
-- [ ] **8.2.7** Agregar paginación y filtros
+- [x] **8.2.1** Crear src/components/duenios/DuenioForm.vue
+- [x] **8.2.2** Implementar formulario con validaciones (nombre, teléfono, email, dirección)
+- [x] **8.2.3** Crear src/components/duenios/DuenioList.vue
+- [x] **8.2.4** Implementar tabla con acciones (ver, editar, eliminar)
+- [x] **8.2.5** Crear src/components/duenios/DuenioBuscar.vue
+- [x] **8.2.6** Implementar búsqueda en tiempo real
+- [x] **8.2.7** Agregar paginación y filtros
 
 #### 8.3 Componentes Turnos
 
-- [ ] **8.3.1** Crear src/components/turnos/TurnoForm.vue
-- [ ] **8.3.2** Implementar formulario con selección de dueño y fecha
-- [ ] **8.3.3** Crear src/components/turnos/TurnoList.vue
-- [ ] **8.3.4** Implementar tabla con información completa
-- [ ] **8.3.5** Crear src/components/turnos/TurnoEstado.vue
-- [ ] **8.3.6** Implementar componente para cambio de estado
-- [ ] **8.3.7** Crear src/components/turnos/TurnoCalendario.vue
-- [ ] **8.3.8** Implementar vista de calendario básica
+- [x] **8.3.1** Crear src/components/turnos/TurnoForm.vue
+- [x] **8.3.2** Implementar formulario con selección de dueño y fecha
+- [x] **8.3.3** Crear src/components/turnos/TurnoList.vue
+- [x] **8.3.4** Implementar tabla con información completa
+- [x] **8.3.5** Crear src/components/turnos/TurnoEstado.vue
+- [x] **8.3.6** Implementar componente para cambio de estado
+- [x] **8.3.7** Crear src/components/turnos/TurnoCalendario.vue
+- [x] **8.3.8** Implementar vista de calendario básica
 
 ### 📱 FASE 9: Frontend - Vistas Principales
 
 #### 9.1 Vistas Base
 
-- [ ] **9.1.1** Crear src/views/HomeView.vue con dashboard
-- [ ] **9.1.2** Crear src/views/DueniosView.vue
-- [ ] **9.1.3** Integrar DuenioList, DuenioForm y DuenioBuscar
-- [ ] **9.1.4** Crear src/views/TurnosView.vue
-- [ ] **9.1.5** Integrar TurnoList, TurnoForm y filtros
-- [ ] **9.1.6** Crear src/views/CalendarioView.vue
-- [ ] **9.1.7** Integrar TurnoCalendario con navegación de fechas
+- [x] **9.1.1** Crear src/views/HomeView.vue con dashboard
+- [x] **9.1.2** Crear src/views/DueniosView.vue
+- [x] **9.1.3** Integrar DuenioList, DuenioForm y DuenioBuscar
+- [x] **9.1.4** Crear src/views/TurnosView.vue
+- [x] **9.1.5** Integrar TurnoList, TurnoForm y filtros
+- [x] **9.1.6** Crear src/views/CalendarioView.vue
+- [x] **9.1.7** Integrar TurnoCalendario con navegación de fechas
 
 #### 9.2 Navegación y Layout
 
-- [ ] **9.2.1** Implementar menú de navegación en App.vue
-- [ ] **9.2.2** Configurar rutas en router/index.ts
+- [x] **9.2.1** Implementar menú de navegación en App.vue
+- [x] **9.2.2** Configurar rutas en router/index.ts
 - [ ] **9.2.3** Agregar breadcrumbs y navegación activa
-- [ ] **9.2.4** Implementar layout responsive
+- [x] **9.2.4** Implementar layout responsive
 
 ### 🎯 FASE 10: Integración y Funcionalidades Avanzadas
 
 #### 10.1 Integración Completa
 
-- [ ] **10.1.1** Conectar todos los componentes con stores
+- [x] **10.1.1** Conectar todos los componentes con stores
 - [ ] **10.1.2** Implementar flujo completo: crear dueño → agendar turno
 - [ ] **10.1.3** Implementar búsqueda global
 - [ ] **10.1.4** Agregar filtros avanzados por estado y fecha

@@ -2,16 +2,16 @@
   <div id="app">
     <header class="header">
       <h1>🐾 Sistema Veterinaria - Gestión de Turnos</h1>
+      <nav class="nav">
+        <router-link to="/" class="nav-link">🏠 Inicio</router-link>
+        <router-link to="/duenios" class="nav-link">👥 Dueños</router-link>
+        <router-link to="/turnos" class="nav-link">📋 Turnos</router-link>
+        <router-link to="/calendario" class="nav-link">📅 Calendario</router-link>
+      </nav>
     </header>
     
     <main class="main">
-      <div class="welcome">
-        <h2>Bienvenido al Sistema de Turnos</h2>
-        <p>Frontend Vue.js funcionando correctamente</p>
-        <div class="status">
-          <span class="status-badge">Estado: Activo</span>
-        </div>
-      </div>
+      <router-view />
     </main>
   </div>
 </template>
@@ -36,25 +36,52 @@ console.log('📱 Componente App.vue cargado')
   text-align: center;
 }
 
+.header h1 {
+  margin: 0 0 1rem 0;
+}
+
+.nav {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.nav-link {
+  color: white;
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.nav-link.router-link-active {
+  background-color: rgba(255, 255, 255, 0.2);
+  font-weight: bold;
+}
+
 .main {
   padding: 2rem;
-  max-width: 800px;
+  max-width: 1200px;
   margin: 0 auto;
 }
 
-.welcome {
-  background: white;
-  padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  text-align: center;
-}
-
-.status-badge {
-  background-color: #4caf50;
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  font-size: 0.9rem;
+@media (max-width: 768px) {
+  .main {
+    padding: 1rem;
+  }
+  
+  .nav {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .nav-link {
+    margin: 0.25rem 0;
+  }
 }
 </style>
