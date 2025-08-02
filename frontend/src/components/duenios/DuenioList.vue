@@ -12,9 +12,9 @@
           <span class="stat-label">Filtrados</span>
         </div>
       </div>
-      
+
       <div class="duenio-list__actions">
-        <button 
+        <button
           @click="refreshList"
           class="btn btn--secondary btn--small"
           :disabled="loading"
@@ -61,44 +61,44 @@
         <table class="duenio-table">
           <thead>
             <tr>
-              <th 
+              <th
                 @click="setSortField('nombre_apellido')"
                 class="sortable"
-                :class="{ 'sorted': sortField === 'nombre_apellido' }"
+                :class="{ sorted: sortField === 'nombre_apellido' }"
               >
                 👤 Nombre
                 <span class="sort-indicator">
-                  {{ getSortIcon('nombre_apellido') }}
+                  {{ getSortIcon("nombre_apellido") }}
                 </span>
               </th>
               <th>📱 Teléfono</th>
-              <th 
+              <th
                 @click="setSortField('email')"
                 class="sortable"
-                :class="{ 'sorted': sortField === 'email' }"
+                :class="{ sorted: sortField === 'email' }"
               >
                 📧 Email
                 <span class="sort-indicator">
-                  {{ getSortIcon('email') }}
+                  {{ getSortIcon("email") }}
                 </span>
               </th>
               <th class="duenio-table__direccion">📍 Dirección</th>
-              <th 
+              <th
                 @click="setSortField('created_at')"
                 class="sortable"
-                :class="{ 'sorted': sortField === 'created_at' }"
+                :class="{ sorted: sortField === 'created_at' }"
               >
                 📅 Registro
                 <span class="sort-indicator">
-                  {{ getSortIcon('created_at') }}
+                  {{ getSortIcon("created_at") }}
                 </span>
               </th>
               <th class="duenio-table__actions">Acciones</th>
             </tr>
           </thead>
           <tbody>
-            <tr 
-              v-for="duenio in sortedDuenios" 
+            <tr
+              v-for="duenio in sortedDuenios"
               :key="duenio.id"
               class="duenio-row"
               @click="$emit('view', duenio)"
@@ -106,7 +106,9 @@
               <td class="duenio-table__nombre">
                 <div class="nombre-cell">
                   <strong>{{ duenio.nombre_apellido }}</strong>
-                  <small v-if="duenio.id" class="duenio-id">ID: {{ duenio.id }}</small>
+                  <small v-if="duenio.id" class="duenio-id"
+                    >ID: {{ duenio.id }}</small
+                  >
                 </div>
               </td>
               <td class="duenio-table__telefono">
@@ -126,8 +128,12 @@
               </td>
               <td class="duenio-table__fecha">
                 <div class="fecha-cell">
-                  <span class="fecha-main">{{ formatDate(duenio.created_at) }}</span>
-                  <small class="fecha-relative">{{ getRelativeTime(duenio.created_at) }}</small>
+                  <span class="fecha-main">{{
+                    formatDate(duenio.created_at)
+                  }}</span>
+                  <small class="fecha-relative">{{
+                    getRelativeTime(duenio.created_at)
+                  }}</small>
                 </div>
               </td>
               <td class="duenio-table__actions" @click.stop>
@@ -172,7 +178,7 @@
             <h3 class="duenio-card__name">{{ duenio.nombre_apellido }}</h3>
             <small class="duenio-card__id">ID: {{ duenio.id }}</small>
           </div>
-          
+
           <div class="duenio-card__body">
             <div class="duenio-card__contact">
               <a :href="`tel:${duenio.telefono}`" class="contact-item">
@@ -182,16 +188,14 @@
                 📧 {{ duenio.email }}
               </a>
             </div>
-            
-            <div class="duenio-card__address">
-              📍 {{ duenio.direccion }}
-            </div>
-            
+
+            <div class="duenio-card__address">📍 {{ duenio.direccion }}</div>
+
             <div class="duenio-card__date">
               📅 Registrado {{ getRelativeTime(duenio.created_at) }}
             </div>
           </div>
-          
+
           <div class="duenio-card__actions" @click.stop>
             <button
               @click="$emit('view', duenio)"
@@ -232,163 +236,161 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import LoadingSpinner from '@/components/shared/LoadingSpinner.vue'
-import ConfirmDialog from '@/components/shared/ConfirmDialog.vue'
-import type { Duenio } from '@/types/models'
+import { ref, computed } from "vue";
+import LoadingSpinner from "@/components/shared/LoadingSpinner.vue";
+import ConfirmDialog from "@/components/shared/ConfirmDialog.vue";
+import type { Duenio } from "@/types/models";
 
 // Types
 export interface DuenioListProps {
-  duenios: Duenio[]
-  loading?: boolean
-  error?: string | null
+  duenios: Duenio[];
+  loading?: boolean;
+  error?: string | null;
 }
 
 export interface DuenioListEmits {
-  (e: 'view', duenio: Duenio): void
-  (e: 'edit', duenio: Duenio): void
-  (e: 'delete', duenio: Duenio): void
-  (e: 'create'): void
-  (e: 'refresh'): void
+  (e: "view", duenio: Duenio): void;
+  (e: "edit", duenio: Duenio): void;
+  (e: "delete", duenio: Duenio): void;
+  (e: "create"): void;
+  (e: "refresh"): void;
 }
 
 // Props
 const props = withDefaults(defineProps<DuenioListProps>(), {
   loading: false,
-  error: null
-})
+  error: null,
+});
 
 // Emits
-const emit = defineEmits<DuenioListEmits>()
+const emit = defineEmits<DuenioListEmits>();
 
 // State
-const sortField = ref<string>('nombre_apellido')
-const sortDirection = ref<'asc' | 'desc'>('asc')
-const showDeleteDialog = ref(false)
-const duenioToDelete = ref<Duenio | null>(null)
-const deletingDuenio = ref(false)
+const sortField = ref<string>("nombre_apellido");
+const sortDirection = ref<"asc" | "desc">("asc");
+const showDeleteDialog = ref(false);
+const duenioToDelete = ref<Duenio | null>(null);
+const deletingDuenio = ref(false);
 
 // Delete dialog state
 const deleteDialog = computed(() => ({
-  title: 'Eliminar Dueño',
+  title: "Eliminar Dueño",
   message: `¿Estás seguro que deseas eliminar al dueño "${duenioToDelete.value?.nombre_apellido}"? Esta acción también eliminará todos los turnos asociados.`,
-  confirmText: 'Sí, Eliminar',
-  cancelText: 'Cancelar'
-}))
+  confirmText: "Sí, Eliminar",
+  cancelText: "Cancelar",
+}));
 
 // Computed
-const totalDuenios = computed(() => props.duenios.length)
-const filteredCount = computed(() => props.duenios.length) // Para filtros futuros
+const totalDuenios = computed(() => props.duenios.length);
+const filteredCount = computed(() => props.duenios.length); // Para filtros futuros
 
 const sortedDuenios = computed(() => {
-  if (!props.duenios.length) return []
-  
+  if (!props.duenios.length) return [];
+
   const sorted = [...props.duenios].sort((a, b) => {
-    let aValue: any = a[sortField.value as keyof Duenio]
-    let bValue: any = b[sortField.value as keyof Duenio]
-    
-    // Handle undefined values
-    if (aValue === undefined) aValue = ''
-    if (bValue === undefined) bValue = ''
-    
-    // Convert to string for comparison
-    aValue = String(aValue).toLowerCase()
-    bValue = String(bValue).toLowerCase()
-    
-    if (sortDirection.value === 'asc') {
-      return aValue < bValue ? -1 : aValue > bValue ? 1 : 0
+    let aValue: any = a[sortField.value as keyof Duenio];
+    let bValue: any = b[sortField.value as keyof Duenio];
+
+    if (aValue === undefined) aValue = "";
+    if (bValue === undefined) bValue = "";
+
+    aValue = String(aValue).toLowerCase();
+    bValue = String(bValue).toLowerCase();
+
+    if (sortDirection.value === "asc") {
+      return aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
     } else {
-      return aValue > bValue ? -1 : aValue < bValue ? 1 : 0
+      return aValue > bValue ? -1 : aValue < bValue ? 1 : 0;
     }
-  })
-  
-  return sorted
-})
+  });
+
+  return sorted;
+});
 
 // Methods
 const setSortField = (field: string) => {
   if (sortField.value === field) {
-    sortDirection.value = sortDirection.value === 'asc' ? 'desc' : 'asc'
+    sortDirection.value = sortDirection.value === "asc" ? "desc" : "asc";
   } else {
-    sortField.value = field
-    sortDirection.value = 'asc'
+    sortField.value = field;
+    sortDirection.value = "asc";
   }
-}
+};
 
 const getSortIcon = (field: string): string => {
-  if (sortField.value !== field) return '↕️'
-  return sortDirection.value === 'asc' ? '⬆️' : '⬇️'
-}
+  if (sortField.value !== field) return "↕️";
+  return sortDirection.value === "asc" ? "⬆️" : "⬇️";
+};
 
 const formatDate = (dateString?: string): string => {
-  if (!dateString) return 'N/A'
-  
+  if (!dateString) return "N/A";
+
   try {
-    const date = new Date(dateString)
-    return date.toLocaleDateString('es-ES', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    })
+    const date = new Date(dateString);
+    return date.toLocaleDateString("es-ES", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
   } catch {
-    return 'N/A'
+    return "N/A";
   }
-}
+};
 
 const getRelativeTime = (dateString?: string): string => {
-  if (!dateString) return 'Fecha desconocida'
-  
+  if (!dateString) return "Fecha desconocida";
+
   try {
-    const date = new Date(dateString)
-    const now = new Date()
-    const diffInMs = now.getTime() - date.getTime()
-    const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24))
-    
-    if (diffInDays === 0) return 'hoy'
-    if (diffInDays === 1) return 'ayer'
-    if (diffInDays < 7) return `hace ${diffInDays} días`
-    if (diffInDays < 30) return `hace ${Math.floor(diffInDays / 7)} semanas`
-    if (diffInDays < 365) return `hace ${Math.floor(diffInDays / 30)} meses`
-    return `hace ${Math.floor(diffInDays / 365)} años`
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInMs = now.getTime() - date.getTime();
+    const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+
+    if (diffInDays === 0) return "hoy";
+    if (diffInDays === 1) return "ayer";
+    if (diffInDays < 7) return `hace ${diffInDays} días`;
+    if (diffInDays < 30) return `hace ${Math.floor(diffInDays / 7)} semanas`;
+    if (diffInDays < 365) return `hace ${Math.floor(diffInDays / 30)} meses`;
+    return `hace ${Math.floor(diffInDays / 365)} años`;
   } catch {
-    return 'Fecha inválida'
+    return "Fecha inválida";
   }
-}
+};
 
 const truncateText = (text: string, maxLength: number): string => {
-  if (text.length <= maxLength) return text
-  return text.substring(0, maxLength) + '...'
-}
+  if (text.length <= maxLength) return text;
+  return text.substring(0, maxLength) + "...";
+};
 
 const handleDelete = (duenio: Duenio) => {
-  duenioToDelete.value = duenio
-  showDeleteDialog.value = true
-}
+  duenioToDelete.value = duenio;
+  showDeleteDialog.value = true;
+};
 
 const confirmDelete = async () => {
-  if (!duenioToDelete.value) return
-  
-  deletingDuenio.value = true
-  
+  if (!duenioToDelete.value) return;
+
+  deletingDuenio.value = true;
+
   try {
-    emit('delete', duenioToDelete.value)
-    showDeleteDialog.value = false
+    emit("delete", duenioToDelete.value);
+    showDeleteDialog.value = false;
   } finally {
-    deletingDuenio.value = false
-    duenioToDelete.value = null
+    deletingDuenio.value = false;
+    duenioToDelete.value = null;
   }
-}
+};
 
 const cancelDelete = () => {
-  showDeleteDialog.value = false
-  duenioToDelete.value = null
-}
+  showDeleteDialog.value = false;
+  duenioToDelete.value = null;
+};
 
 const refreshList = () => {
-  emit('refresh')
-}
+  emit("refresh");
+};
 
-console.log('🔧 Componente DuenioList cargado')
+console.log("🔧 Componente DuenioList cargado");
 </script>
 
 <style scoped>
@@ -627,15 +629,15 @@ console.log('🔧 Componente DuenioList cargado')
     gap: var(--spacing-md);
     align-items: stretch;
   }
-  
+
   .duenio-list__stats {
     justify-content: space-around;
   }
-  
+
   .duenio-table-wrapper {
     display: none;
   }
-  
+
   .duenio-cards {
     display: flex;
     flex-direction: column;

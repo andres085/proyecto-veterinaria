@@ -307,10 +307,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import LoadingSpinner from '@/components/shared/LoadingSpinner.vue'
 import ConfirmDialog from '@/components/shared/ConfirmDialog.vue'
-import type { Turno, EstadoTurno } from '@/types/models'
+import LoadingSpinner from '@/components/shared/LoadingSpinner.vue'
+import type { EstadoTurno, Turno } from '@/types/models'
+import { computed, ref } from 'vue'
 
 // Types
 export interface TurnoListProps {
@@ -345,7 +345,7 @@ const showDeleteDialog = ref(false)
 const turnoToDelete = ref<Turno | null>(null)
 const deletingTurno = ref(false)
 
-// Delete dialog state
+// Borrar dialogo de estado
 const deleteDialog = computed(() => ({
   title: 'Eliminar Turno',
   message: `¿Estás seguro que deseas eliminar el turno de "${turnoToDelete.value?.nombre_mascota}" programado para ${formatDateTime(turnoToDelete.value?.fecha_turno || '')}?`,
