@@ -1,8 +1,3 @@
-"""
-Modelo de Dueños para el sistema de gestión de turnos veterinaria
-Basado en el patrón MVC del proyecto anterior con mejoras
-"""
-
 import logging
 from typing import List, Dict, Optional, Any
 from datetime import datetime
@@ -11,33 +6,17 @@ from mysql.connector import Error as MySQLError
 from ..database import get_db_connection, execute_query, execute_transaction
 from ..validators import validate_duenio_data
 
-# Configurar logger
 logger = logging.getLogger(__name__)
 
 
 class DuenioModel:
-    """
-    Modelo para gestionar dueños de mascotas
-    Basado en tabla: duenios (id, nombre_apellido, telefono, email, direccion, timestamps)
-    """
     
     def __init__(self):
-        """Inicializar el modelo"""
         self.table_name = "duenios"
         logger.debug("DuenioModel inicializado")
     
     
     def get_all(self, limit: int = None, offset: int = 0) -> List[Dict[str, Any]]:
-        """
-        Obtiene todos los dueños con paginación opcional
-        
-        Args:
-            limit: Límite de registros (None = todos)
-            offset: Número de registros a saltar
-            
-        Returns:
-            List[Dict]: Lista de dueños
-        """
         try:
             query = f"""
                 SELECT id, nombre_apellido, telefono, email, direccion, 
@@ -48,14 +27,12 @@ class DuenioModel:
             
             params = ()
             
-            # Agregar paginación si se especifica
             if limit is not None:
                 query += " LIMIT %s OFFSET %s"
                 params = (limit, offset)
             
             result = execute_query(query, params, fetch=True)
             
-            # Serializar resultados
             duenios = [self._serialize_duenio(row) for row in result] if result else []
             
             logger.info(f"Retrieved {len(duenios)} dueños from database")
@@ -70,20 +47,7 @@ class DuenioModel:
     
     
     def get_one(self, duenio_id: int) -> Optional[Dict[str, Any]]:
-        """
-        Obtiene un dueño específico por ID
-        
-        Args:
-            duenio_id: ID del dueño
-            
-        Returns:
-            Dict: Datos del dueño o None si no existe
-        """
         try:
-            if not isinstance(duenio_id, int) or duenio_id <= 0:
-                logger.warning(f"Invalid duenio_id: {duenio_id}")
-                return None
-            
             query = f"""
                 SELECT id, nombre_apellido, telefono, email, direccion,
                        created_at, updated_at
@@ -93,13 +57,13 @@ class DuenioModel:
             
             result = execute_query(query, (duenio_id,), fetch_one=True)
             
-            if result:
-                duenio = self._serialize_duenio(result)
-                logger.debug(f"Found dueño with ID {duenio_id}")
-                return duenio
-            else:
+            if not result:
                 logger.debug(f"No dueño found with ID {duenio_id}")
                 return None
+
+            duenio = self._serialize_duenio(result)
+            logger.debug(f"Found dueño with ID {duenio_id}")
+            return duenio
                 
         except MySQLError as e:
             logger.error(f"MySQL error in get_one: {e}")
@@ -110,17 +74,7 @@ class DuenioModel:
     
     
     def create(self, data: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Crea un nuevo dueño
-        
-        Args:
-            data: Datos del dueño (nombre_apellido, telefono, email, direccion)
-            
-        Returns:
-            Dict: Resultado con 'success', 'data'/'errors', 'duenio_id'
-        """
         try:
-            # Validar datos usando validaciones manuales
             validation_result = validate_duenio_data(data)
             
             if not validation_result['is_valid']:
@@ -130,7 +84,6 @@ class DuenioModel:
                     'errors': validation_result['errors']
                 }
             
-            # Preparar query INSERT
             query = f"""
                 INSERT INTO {self.table_name} 
                 (nombre_apellido, telefono, email, direccion)
@@ -144,13 +97,11 @@ class DuenioModel:
                 data['direccion'].strip()
             )
             
-            # Ejecutar inserción
             duenio_id = execute_query(query, params)
             
             if duenio_id:
                 logger.info(f"Created new dueño with ID: {duenio_id}")
                 
-                # Obtener el registro creado
                 new_duenio = self.get_one(duenio_id)
                 
                 return {
@@ -168,8 +119,7 @@ class DuenioModel:
         except MySQLError as e:
             logger.error(f"MySQL error in create: {e}")
             
-            # Manejar errores específicos de MySQL
-            if e.errno == 1062:  # Duplicate entry
+            if e.errno == 1062:
                 return {
                     'success': False, 
                     'errors': ['El email ya está registrado']
@@ -183,18 +133,7 @@ class DuenioModel:
     
     
     def update(self, duenio_id: int, data: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Actualiza un dueño existente
-        
-        Args:
-            duenio_id: ID del dueño a actualizar
-            data: Datos a actualizar (campos opcionales)
-            
-        Returns:
-            Dict: Resultado con 'success', 'data'/'errors'
-        """
         try:
-            # Verificar que el dueño existe
             existing_duenio = self.get_one(duenio_id)
             if not existing_duenio:
                 return {
@@ -202,7 +141,6 @@ class DuenioModel:
                     'errors': [f'No existe un dueño con ID: {duenio_id}']
                 }
             
-            # Validar datos (solo los campos presentes)
             if data:
                 validation_result = validate_duenio_data(data)
                 if not validation_result['is_valid']:
@@ -212,7 +150,6 @@ class DuenioModel:
                         'errors': validation_result['errors']
                     }
             
-            # Construir query UPDATE dinámicamente
             update_fields = []
             params = []
             
@@ -232,7 +169,6 @@ class DuenioModel:
                     'errors': ['No hay campos para actualizar']
                 }
             
-            # Agregar ID al final de los parámetros
             params.append(duenio_id)
             
             query = f"""
@@ -241,13 +177,11 @@ class DuenioModel:
                 WHERE id = %s
             """
             
-            # Ejecutar actualización
             rows_affected = execute_query(query, tuple(params))
             
             if rows_affected > 0:
                 logger.info(f"Updated dueño ID: {duenio_id}")
                 
-                # Obtener el registro actualizado
                 updated_duenio = self.get_one(duenio_id)
                 
                 return {
@@ -277,17 +211,7 @@ class DuenioModel:
     
     
     def delete(self, duenio_id: int) -> Dict[str, Any]:
-        """
-        Elimina un dueño (CASCADE eliminará turnos asociados)
-        
-        Args:
-            duenio_id: ID del dueño a eliminar
-            
-        Returns:
-            Dict: Resultado con 'success', 'message'/'errors'
-        """
         try:
-            # Verificar que el dueño existe
             existing_duenio = self.get_one(duenio_id)
             if not existing_duenio:
                 return {
@@ -295,7 +219,6 @@ class DuenioModel:
                     'errors': [f'No existe un dueño con ID: {duenio_id}']
                 }
             
-            # Eliminar dueño (CASCADE eliminará turnos automáticamente)
             query = f"DELETE FROM {self.table_name} WHERE id = %s"
             rows_affected = execute_query(query, (duenio_id,))
             
@@ -320,16 +243,6 @@ class DuenioModel:
     
     
     def search(self, query: str, limit: int = 50) -> List[Dict[str, Any]]:
-        """
-        Busca dueños por nombre o email
-        
-        Args:
-            query: Término de búsqueda
-            limit: Límite de resultados
-            
-        Returns:
-            List[Dict]: Lista de dueños que coinciden
-        """
         try:
             if not query or not query.strip():
                 logger.warning("Empty search query provided")
@@ -364,15 +277,6 @@ class DuenioModel:
     
     
     def exists(self, duenio_id: int) -> bool:
-        """
-        Verifica si existe un dueño con el ID especificado
-        
-        Args:
-            duenio_id: ID del dueño
-            
-        Returns:
-            bool: True si existe, False si no
-        """
         try:
             query = f"SELECT 1 FROM {self.table_name} WHERE id = %s LIMIT 1"
             result = execute_query(query, (duenio_id,), fetch_one=True)
@@ -387,12 +291,6 @@ class DuenioModel:
     
     
     def get_count(self) -> int:
-        """
-        Obtiene el número total de dueños
-        
-        Returns:
-            int: Número total de dueños
-        """
         try:
             query = f"SELECT COUNT(*) as total FROM {self.table_name}"
             result = execute_query(query, fetch_one=True)
@@ -406,16 +304,7 @@ class DuenioModel:
             raise
     
     
-    def _serialize_duenio(self, row: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Serializa un registro de dueño para respuesta JSON
-        
-        Args:
-            row: Fila de la base de datos
-            
-        Returns:
-            Dict: Dueño serializado
-        """
+    def _serialize_duenio(row: Dict[str, Any]) -> Dict[str, Any]:
         if not row:
             return {}
         

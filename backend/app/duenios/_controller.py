@@ -1,8 +1,3 @@
-"""
-Controlador de Dueños para el sistema de gestión de turnos veterinaria
-Basado en el patrón MVC del proyecto anterior con validaciones manuales
-"""
-
 import logging
 from typing import Dict, Any, Optional, List
 from flask import request
@@ -15,35 +10,18 @@ from ..error_handlers import (
     safe_int_conversion
 )
 
-# Configurar logger
 logger = logging.getLogger(__name__)
 
 
 class DuenioController:
-    """
-    Controlador para gestionar la lógica de negocio de dueños
-    Actúa como intermediario entre las rutas y el modelo
-    """
     
     def __init__(self):
-        """Inicializar el controlador"""
         self.duenio_model = DuenioModel()
         logger.debug("DuenioController inicializado")
     
     
     def get_all(self, limit: Optional[int] = None, offset: int = 0) -> tuple:
-        """
-        Obtiene todos los dueños con paginación
-        
-        Args:
-            limit: Límite de resultados (opcional)
-            offset: Número de registros a saltar
-            
-        Returns:
-            tuple: (response_data, status_code)
-        """
         try:
-            # Validar parámetros de paginación
             if limit is not None:
                 if limit <= 0 or limit > 100:
                     return create_error_response(
@@ -59,13 +37,10 @@ class DuenioController:
                     "Parámetro inválido"
                 )
             
-            # Obtener dueños del modelo
             duenios = self.duenio_model.get_all(limit=limit, offset=offset)
             
-            # Obtener count total para metadata
             total_count = self.duenio_model.get_count()
             
-            # Preparar metadata de paginación
             metadata = {
                 'total': total_count,
                 'count': len(duenios),
@@ -96,17 +71,7 @@ class DuenioController:
     
     
     def get_one(self, duenio_id: int) -> tuple:
-        """
-        Obtiene un dueño específico por ID
-        
-        Args:
-            duenio_id: ID del dueño
-            
-        Returns:
-            tuple: (response_data, status_code)
-        """
         try:
-            # Validar ID
             if not isinstance(duenio_id, int) or duenio_id <= 0:
                 return create_error_response(
                     "ID de dueño debe ser un número entero positivo", 
@@ -114,7 +79,6 @@ class DuenioController:
                     "Parámetro inválido"
                 )
             
-            # Obtener dueño del modelo
             duenio = self.duenio_model.get_one(duenio_id)
             
             if not duenio:
@@ -141,17 +105,7 @@ class DuenioController:
     
     
     def create(self, data: Dict[str, Any]) -> tuple:
-        """
-        Crea un nuevo dueño
-        
-        Args:
-            data: Datos del dueño a crear
-            
-        Returns:
-            tuple: (response_data, status_code)
-        """
         try:
-            # El modelo ya maneja las validaciones manuales
             result = self.duenio_model.create(data)
             
             if result['success']:

@@ -187,6 +187,7 @@ export const useDuenioStore = defineStore("duenio", () => {
       const response = await ApiService.searchDuenios(query);
 
       searchResults.value = response.data || response || [];
+      console.log("ACAAAA", searchResults.value);
       console.log(`✅ ${searchResults.value.length} resultados encontrados`);
     } catch (err: any) {
       error.value =

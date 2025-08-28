@@ -1,8 +1,3 @@
-"""
-Rutas (endpoints) para el módulo de Dueños
-Sistema de gestión de turnos veterinaria - API REST
-"""
-
 import logging
 from flask import Blueprint, request, jsonify
 
@@ -14,41 +9,24 @@ from ..error_handlers import (
     log_request_info
 )
 
-# Configurar logger
 logger = logging.getLogger(__name__)
 
-# Crear Blueprint para dueños
 duenios_bp = Blueprint('duenios', __name__)
 
-# Instanciar controlador
 duenios_controller = DuenioController()
 
 
 @duenios_bp.before_request
 def before_request():
-    """Log de información de la petición"""
     log_request_info()
 
 
 @duenios_bp.route('/duenios/', methods=['GET'])
 def get_all_duenios():
-    """
-    GET /api/duenios/
-    Obtiene todos los dueños con paginación opcional
-    
-    Query Parameters:
-        - limit (int, opcional): Número máximo de resultados (1-100)
-        - offset (int, opcional): Número de registros a saltar (default: 0)
-    
-    Returns:
-        JSON: Lista de dueños con metadata de paginación
-    """
     try:
-        # Obtener parámetros de query string
         limit_param = request.args.get('limit')
         offset_param = request.args.get('offset', '0')
         
-        # Convertir parámetros de forma segura  
         limit = None
         if limit_param:
             limit, error = safe_int_conversion(limit_param, 'limit')
@@ -59,7 +37,6 @@ def get_all_duenios():
         if error:
             return create_error_response(error, 400, "Parámetro inválido")
         
-        # Llamar al controlador
         response_data, status_code = duenios_controller.get_all(limit=limit, offset=offset)
         return response_data, status_code
         

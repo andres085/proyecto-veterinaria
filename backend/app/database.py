@@ -108,18 +108,6 @@ def get_db_connection():
             raise
 
 def execute_query(query, params=None, fetch=False, fetch_one=False):
-    """
-    Ejecuta una consulta SQL usando el pool de conexiones
-    
-    Args:
-        query (str): Consulta SQL a ejecutar
-        params (tuple): Parámetros para la consulta
-        fetch (bool): Si debe devolver resultados (SELECT)
-        fetch_one (bool): Si debe devolver solo un resultado
-        
-    Returns:
-        list/tuple/int: Resultados según el tipo de consulta
-    """
     connection = None
     cursor = None
     

@@ -1,8 +1,3 @@
-"""
-Controlador de Turnos para el sistema de gestión de turnos veterinaria
-Basado en el patrón MVC del proyecto anterior con validaciones manuales
-"""
-
 import logging
 from typing import Dict, Any, Optional, List
 from datetime import datetime
@@ -15,38 +10,18 @@ from ..error_handlers import (
     safe_int_conversion
 )
 
-# Configurar logger
 logger = logging.getLogger(__name__)
 
 
 class TurnoController:
-    """
-    Controlador para gestionar la lógica de negocio de turnos
-    Actúa como intermediario entre las rutas y el modelo
-    """
     
     def __init__(self):
-        """Inicializar el controlador"""
         self.turno_model = TurnoModel()
         logger.debug("TurnoController inicializado")
     
     
     def get_all(self, limit: Optional[int] = None, offset: int = 0, estado: str = None, fecha_desde: str = None, fecha_hasta: str = None) -> tuple:
-        """
-        Obtiene todos los turnos con filtros y paginación
-        
-        Args:
-            limit: Límite de resultados (opcional)
-            offset: Número de registros a saltar
-            estado: Filtro por estado ('pendiente', 'confirmado', etc.)
-            fecha_desde: Filtro desde fecha (YYYY-MM-DD)
-            fecha_hasta: Filtro hasta fecha (YYYY-MM-DD)
-            
-        Returns:
-            tuple: (response_data, status_code)
-        """
         try:
-            # Validar parámetros de paginación
             if limit is not None:
                 if limit <= 0 or limit > 100:
                     return create_error_response(
@@ -62,7 +37,6 @@ class TurnoController:
                     "Parámetro inválido"
                 )
             
-            # Validar estado si se proporciona
             if estado:
                 estados_validos = ['pendiente', 'confirmado', 'completado', 'cancelado']
                 if estado not in estados_validos:
@@ -72,7 +46,6 @@ class TurnoController:
                         "Parámetro inválido"
                     )
             
-            # Validar fechas si se proporcionan
             if fecha_desde:
                 try:
                     datetime.strptime(fecha_desde, '%Y-%m-%d')
@@ -93,7 +66,6 @@ class TurnoController:
                         "Formato de fecha inválido"
                     )
             
-            # Obtener turnos del modelo
             turnos = self.turno_model.get_all(
                 limit=limit, 
                 offset=offset, 
@@ -102,14 +74,12 @@ class TurnoController:
                 fecha_hasta=fecha_hasta
             )
             
-            # Obtener count total para metadata
             total_count = self.turno_model.get_count(
                 estado=estado, 
                 fecha_desde=fecha_desde, 
                 fecha_hasta=fecha_hasta
             )
             
-            # Preparar metadata de paginación
             metadata = {
                 'total': total_count,
                 'count': len(turnos),
@@ -125,7 +95,7 @@ class TurnoController:
                 metadata['limit'] = limit
                 metadata['has_more'] = (offset + limit) < total_count
             
-            logger.info(f"Retrieved {len(turnos)} turnos (offset: {offset}, limit: {limit}, filters: {estado})")
+            logger.info(f"Recuperado {len(turnos)} turnos (offset: {offset}, limit: {limit}, filters: {estado})")
             
             return create_success_response(
                 data={

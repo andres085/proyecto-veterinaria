@@ -29,14 +29,17 @@
       </div>
 
       <!-- Advanced filters -->
-      <div class="search-filters" :class="{ 'filters-expanded': showAdvancedFilters }">
+      <div
+        class="search-filters"
+        :class="{ 'filters-expanded': showAdvancedFilters }"
+      >
         <button
           @click="toggleAdvancedFilters"
           class="btn btn--ghost btn--small filters-toggle"
         >
           ⚙️ Filtros Avanzados
           <span class="toggle-icon">
-            {{ showAdvancedFilters ? '▲' : '▼' }}
+            {{ showAdvancedFilters ? "▲" : "▼" }}
           </span>
         </button>
 
@@ -108,10 +111,7 @@
               >
                 🧹 Limpiar Filtros
               </button>
-              <button
-                @click="applyFilters"
-                class="btn btn--primary btn--small"
-              >
+              <button @click="applyFilters" class="btn btn--primary btn--small">
                 ✅ Aplicar
               </button>
             </div>
@@ -124,14 +124,20 @@
     <div v-if="hasSearched" class="duenio-buscar__results">
       <div class="results-summary">
         <div class="results-info">
-          <span v-if="loading" class="results-text">
-            🔍 Buscando...
-          </span>
-          <span v-else-if="searchQuery && resultsCount === 0" class="results-text results-empty">
+          <span v-if="loading" class="results-text"> 🔍 Buscando... </span>
+          <span
+            v-else-if="searchQuery && resultsCount === 0"
+            class="results-text results-empty"
+          >
             ❌ No se encontraron dueños que coincidan con "{{ searchQuery }}"
           </span>
-          <span v-else-if="searchQuery && resultsCount > 0" class="results-text results-found">
-            ✅ {{ formatResultsText(resultsCount) }} que coinciden con "{{ searchQuery }}"
+          <span
+            v-else-if="searchQuery && resultsCount > 0"
+            class="results-text results-found"
+          >
+            ✅ {{ formatResultsText(resultsCount) }} que coinciden con "{{
+              searchQuery
+            }}"
           </span>
           <span v-else class="results-text">
             📋 Mostrando todos los dueños ({{ totalDuenios }})
@@ -147,7 +153,7 @@
           >
             ❌ Limpiar
           </button>
-          
+
           <button
             @click="handleRefresh"
             class="btn btn--ghost btn--small"
@@ -160,7 +166,10 @@
       </div>
 
       <!-- Search suggestions -->
-      <div v-if="searchQuery && resultsCount === 0 && !loading" class="search-suggestions">
+      <div
+        v-if="searchQuery && resultsCount === 0 && !loading"
+        class="search-suggestions"
+      >
         <h4>💡 Sugerencias:</h4>
         <ul>
           <li>Verifica la ortografía</li>
@@ -172,31 +181,28 @@
     </div>
 
     <!-- Quick Actions -->
-    <div v-if="!hasSearched || (searchQuery && resultsCount === 0)" class="duenio-buscar__quick-actions">
+    <div
+      v-if="!hasSearched || (searchQuery && resultsCount === 0)"
+      class="duenio-buscar__quick-actions"
+    >
       <h4>🚀 Acciones Rápidas:</h4>
       <div class="quick-actions-grid">
-        <button
-          @click="$emit('create')"
-          class="quick-action-btn"
-        >
+        <button @click="$emit('create')" class="quick-action-btn">
           <div class="quick-action-icon">➕</div>
           <div class="quick-action-text">
             <strong>Nuevo Dueño</strong>
             <small>Registrar propietario</small>
           </div>
         </button>
-        
-        <button
-          @click="$emit('view-all')"
-          class="quick-action-btn"
-        >
+
+        <button @click="$emit('view-all')" class="quick-action-btn">
           <div class="quick-action-icon">📋</div>
           <div class="quick-action-text">
             <strong>Ver Todos</strong>
             <small>Lista completa</small>
           </div>
         </button>
-        
+
         <button
           @click="handleRefresh"
           class="quick-action-btn"
@@ -214,125 +220,130 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, watch } from 'vue'
-import SearchInput from '@/components/shared/SearchInput.vue'
+import { ref, reactive, computed, watch } from "vue";
+import SearchInput from "@/components/shared/SearchInput.vue";
+import { useDuenioStore } from "@/stores/duenioStore";
 
+const duenioStore = useDuenioStore();
 // Types
 export interface DuenioBuscarProps {
-  loading?: boolean
-  resultsCount?: number
-  totalDuenios?: number
+  loading?: boolean;
+  resultsCount?: number;
+  totalDuenios?: number;
 }
 
 export interface DuenioBuscarEmits {
-  (e: 'search', query: string, filters: SearchFilters): void
-  (e: 'clear'): void
-  (e: 'refresh'): void
-  (e: 'create'): void
-  (e: 'view-all'): void
+  (e: "search", query: string, filters: SearchFilters): void;
+  (e: "clear"): void;
+  (e: "refresh"): void;
+  (e: "create"): void;
+  (e: "view-all"): void;
 }
 
 export interface SearchFilters {
-  searchInName: boolean
-  searchInEmail: boolean
-  searchInPhone: boolean
-  dateFrom: string
-  sortBy: string
+  searchInName: boolean;
+  searchInEmail: boolean;
+  searchInPhone: boolean;
+  dateFrom: string;
+  sortBy: string;
 }
 
 // Props
 const props = withDefaults(defineProps<DuenioBuscarProps>(), {
   loading: false,
   resultsCount: 0,
-  totalDuenios: 0
-})
+  totalDuenios: 0,
+});
 
 // Emits
-const emit = defineEmits<DuenioBuscarEmits>()
+const emit = defineEmits<DuenioBuscarEmits>();
 
 // State
-const searchQuery = ref<string>('')
-const hasSearched = ref<boolean>(false)
-const showAdvancedFilters = ref<boolean>(false)
+const searchQuery = ref<string>("");
+const hasSearched = ref<boolean>(false);
+const showAdvancedFilters = ref<boolean>(false);
 
 const searchFilters = reactive<SearchFilters>({
   searchInName: true,
   searchInEmail: true,
   searchInPhone: true,
-  dateFrom: '',
-  sortBy: 'nombre_apellido'
-})
+  dateFrom: "",
+  sortBy: "nombre_apellido",
+});
 
 // Computed
 const activeFiltersCount = computed(() => {
-  let count = 0
-  if (!searchFilters.searchInName) count++
-  if (!searchFilters.searchInEmail) count++
-  if (!searchFilters.searchInPhone) count++
-  if (searchFilters.dateFrom) count++
-  if (searchFilters.sortBy !== 'nombre_apellido') count++
-  return count
-})
+  let count = 0;
+  if (!searchFilters.searchInName) count++;
+  if (!searchFilters.searchInEmail) count++;
+  if (!searchFilters.searchInPhone) count++;
+  if (searchFilters.dateFrom) count++;
+  if (searchFilters.sortBy !== "nombre_apellido") count++;
+  return count;
+});
 
 // Methods
 const handleSearch = (query: string) => {
-  hasSearched.value = true
-  emit('search', query, { ...searchFilters })
-  console.log('🔍 Búsqueda:', query, searchFilters)
-}
+  hasSearched.value = true;
+  emit("search", query, { ...searchFilters });
+  console.log("🔍 Búsqueda:", query, searchFilters);
+};
 
 const handleClear = () => {
-  searchQuery.value = ''
-  hasSearched.value = false
-  emit('clear')
-  console.log('🧹 Búsqueda limpiada')
-}
+  searchQuery.value = "";
+  hasSearched.value = false;
+  emit("clear");
+  console.log("🧹 Búsqueda limpiada");
+};
 
 const handleEnter = (query: string) => {
-  handleSearch(query)
-}
+  handleSearch(query);
+};
 
 const handleRefresh = () => {
-  emit('refresh')
-  console.log('🔄 Actualizando resultados')
-}
+  emit("refresh");
+  console.log("🔄 Actualizando resultados");
+};
 
 const toggleAdvancedFilters = () => {
-  showAdvancedFilters.value = !showAdvancedFilters.value
-}
+  showAdvancedFilters.value = !showAdvancedFilters.value;
+};
 
 const applyFilters = () => {
   if (searchQuery.value || hasSearched.value) {
-    handleSearch(searchQuery.value)
+    handleSearch(searchQuery.value);
   }
-}
+};
 
 const clearAllFilters = () => {
-  searchFilters.searchInName = true
-  searchFilters.searchInEmail = true
-  searchFilters.searchInPhone = true
-  searchFilters.dateFrom = ''
-  searchFilters.sortBy = 'nombre_apellido'
-  
+  searchFilters.searchInName = true;
+  searchFilters.searchInEmail = true;
+  searchFilters.searchInPhone = true;
+  searchFilters.dateFrom = "";
+  searchFilters.sortBy = "nombre_apellido";
+
   if (hasSearched.value) {
-    applyFilters()
+    applyFilters();
   }
-}
+};
 
 const formatResultsText = (count: number): string => {
-  if (count === 0) return 'No se encontraron dueños'
-  if (count === 1) return '1 dueño encontrado'
-  return `${count} dueños encontrados`
-}
+  if (count === 0) return "No se encontraron dueños";
+  if (count === 1) return "1 dueño encontrado";
+  return `${count} dueños encontrados`;
+};
 
 // Watch for external changes
-watch(() => props.resultsCount, (newValue) => {
-  if (newValue !== undefined && hasSearched.value) {
-    console.log(`📊 Resultados actualizados: ${newValue}`)
+watch(
+  () => props.resultsCount,
+  (newValue) => {
+    if (newValue !== undefined && hasSearched.value) {
+      console.log(`📊 Resultados actualizados: ${newValue}`);
+    }
   }
-})
+);
 
-console.log('🔧 Componente DuenioBuscar cargado')
+console.log("🔧 Componente DuenioBuscar cargado");
 </script>
 
 <style scoped>
@@ -585,25 +596,25 @@ console.log('🔧 Componente DuenioBuscar cargado')
   .duenio-buscar__quick-actions {
     padding: var(--spacing-md);
   }
-  
+
   .advanced-filters {
     grid-template-columns: 1fr;
   }
-  
+
   .results-summary {
     flex-direction: column;
     gap: var(--spacing-md);
     align-items: stretch;
   }
-  
+
   .results-actions {
     justify-content: center;
   }
-  
+
   .quick-actions-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .filter-actions {
     flex-direction: column;
   }

@@ -1,8 +1,3 @@
-"""
-Factory Flask para la aplicación de Veterinaria
-Sistema de Gestión de Turnos con MySQL
-"""
-
 from flask import Flask
 from flask_cors import CORS
 from .database import get_db_info
@@ -10,14 +5,11 @@ from .error_handlers import register_error_handlers
 
 
 def create_app():
-    """Factory para crear la aplicación Flask"""
     
     app = Flask(__name__)
     
-    # Configuración básica
     app.config['SECRET_KEY'] = 'veterinaria_secret_development'
     
-    # Configuración CORS para desarrollo
     CORS(app, resources={
         r"/api/*": {
             "origins": ["http://localhost:3000", "http://127.0.0.1:3000"],
@@ -27,17 +19,14 @@ def create_app():
         }
     })
     
-    # Registrar manejadores de errores globales
     register_error_handlers(app)
     
-    # Registrar Blueprints
     from .duenios._routes import duenios_bp
     from .turnos._routes import turnos_bp
     
     app.register_blueprint(duenios_bp, url_prefix='/api')
     app.register_blueprint(turnos_bp, url_prefix='/api')
     
-    # Ruta de prueba básica
     @app.route('/')
     def home():
         return {

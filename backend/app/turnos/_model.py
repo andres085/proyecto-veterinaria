@@ -1,8 +1,3 @@
-"""
-Modelo de Turnos para el sistema de gestión de turnos veterinaria
-Basado en el patrón MVC del proyecto anterior con validaciones manuales
-"""
-
 import logging
 from typing import List, Dict, Optional, Any
 from datetime import datetime, date
@@ -12,39 +7,19 @@ from ..database import get_db_connection, execute_query, execute_transaction
 from ..validators import validate_turno_data, validate_turno_update_data
 from ..duenios._model import DuenioModel
 
-# Configurar logger
 logger = logging.getLogger(__name__)
 
 
 class TurnoModel:
-    """
-    Modelo para gestionar turnos de mascotas
-    Basado en tabla: turnos (id, nombre_mascota, fecha_turno, tratamiento, id_duenio, estado, timestamps)
-    """
     
     def __init__(self):
-        """Inicializar el modelo"""
         self.table_name = "turnos"
         self.duenio_model = DuenioModel()
         logger.debug("TurnoModel inicializado")
     
     
     def get_all(self, limit: int = None, offset: int = 0, estado: str = None, fecha_desde: str = None, fecha_hasta: str = None) -> List[Dict[str, Any]]:
-        """
-        Obtiene todos los turnos con JOIN a dueños y filtros opcionales
-        
-        Args:
-            limit: Límite de registros (None = todos)
-            offset: Número de registros a saltar
-            estado: Filtrar por estado ('pendiente', 'confirmado', etc.)
-            fecha_desde: Filtrar desde fecha (YYYY-MM-DD)
-            fecha_hasta: Filtrar hasta fecha (YYYY-MM-DD)
-            
-        Returns:
-            List[Dict]: Lista de turnos con datos del dueño
-        """
         try:
-            # Query base con JOIN
             query = f"""
                 SELECT 
                     t.id, t.nombre_mascota, t.fecha_turno, t.tratamiento, 
@@ -95,15 +70,6 @@ class TurnoModel:
     
     
     def get_one(self, turno_id: int) -> Optional[Dict[str, Any]]:
-        """
-        Obtiene un turno específico por ID con datos completos del dueño
-        
-        Args:
-            turno_id: ID del turno
-            
-        Returns:
-            Dict: Datos del turno con información del dueño o None si no existe
-        """
         try:
             if not isinstance(turno_id, int) or turno_id <= 0:
                 logger.warning(f"Invalid turno_id: {turno_id}")
@@ -121,13 +87,13 @@ class TurnoModel:
             
             result = execute_query(query, (turno_id,), fetch_one=True)
             
-            if result:
-                turno = self._serialize_turno_with_duenio(result)
-                logger.debug(f"Found turno with ID {turno_id}")
-                return turno
-            else:
+            if not result:
                 logger.debug(f"No turno found with ID {turno_id}")
                 return None
+
+            turno = self._serialize_turno_with_duenio(result)
+            logger.debug(f"Found turno with ID {turno_id}")
+            return turno
                 
         except MySQLError as e:
             logger.error(f"MySQL error in get_one: {e}")
@@ -138,17 +104,7 @@ class TurnoModel:
     
     
     def create(self, data: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Crea un nuevo turno
-        
-        Args:
-            data: Datos del turno (nombre_mascota, fecha_turno, tratamiento, id_duenio, estado?)
-            
-        Returns:
-            Dict: Resultado con 'success', 'data'/'errors', 'turno_id'
-        """
         try:
-            # Validar datos usando validaciones manuales con función duenio_exists
             validation_result = validate_turno_data(data, self.duenio_model.exists)
             
             if not validation_result['is_valid']:
@@ -158,10 +114,8 @@ class TurnoModel:
                     'errors': validation_result['errors']
                 }
             
-            # Estado por defecto si no se proporciona
             estado = data.get('estado', 'pendiente')
             
-            # Preparar query INSERT
             query = f"""
                 INSERT INTO {self.table_name} 
                 (nombre_mascota, fecha_turno, tratamiento, id_duenio, estado)
@@ -179,23 +133,22 @@ class TurnoModel:
             # Ejecutar inserción
             turno_id = execute_query(query, params)
             
-            if turno_id:
-                logger.info(f"Created new turno with ID: {turno_id}")
-                
-                # Obtener el registro creado con datos del dueño
-                new_turno = self.get_one(turno_id)
-                
-                return {
-                    'success': True,
-                    'data': new_turno,
-                    'turno_id': turno_id
-                }
-            else:
+            if not turno_id:
                 logger.error("Failed to create turno - no ID returned")
                 return {
                     'success': False,
                     'errors': ['Error al crear el turno']
                 }
+
+            logger.info(f"Created new turno with ID: {turno_id}")
+            
+            new_turno = self.get_one(turno_id)
+            
+            return {
+                'success': True,
+                'data': new_turno,
+                'turno_id': turno_id
+            }
                 
         except MySQLError as e:
             logger.error(f"MySQL error in create: {e}")
@@ -215,16 +168,6 @@ class TurnoModel:
     
     
     def update(self, turno_id: int, data: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Actualiza un turno existente
-        
-        Args:
-            turno_id: ID del turno a actualizar
-            data: Datos a actualizar (campos opcionales)
-            
-        Returns:
-            Dict: Resultado con 'success', 'data'/'errors'
-        """
         try:
             # Verificar que el turno existe
             existing_turno = self.get_one(turno_id)
@@ -320,15 +263,6 @@ class TurnoModel:
     
     
     def delete(self, turno_id: int) -> Dict[str, Any]:
-        """
-        Elimina un turno
-        
-        Args:
-            turno_id: ID del turno a eliminar
-            
-        Returns:
-            Dict: Resultado con 'success', 'message'/'errors'
-        """
         try:
             # Verificar que el turno existe
             existing_turno = self.get_one(turno_id)
@@ -363,16 +297,6 @@ class TurnoModel:
     
     
     def get_by_duenio(self, id_duenio: int, limit: int = 50) -> List[Dict[str, Any]]:
-        """
-        Obtiene turnos de un dueño específico
-        
-        Args:
-            id_duenio: ID del dueño
-            limit: Límite de resultados
-            
-        Returns:
-            List[Dict]: Lista de turnos del dueño
-        """
         try:
             # Verificar que el dueño existe
             if not self.duenio_model.exists(id_duenio):
@@ -408,16 +332,6 @@ class TurnoModel:
     
     
     def get_by_fecha(self, fecha: str, limit: int = 100) -> List[Dict[str, Any]]:
-        """
-        Obtiene turnos por fecha específica
-        
-        Args:
-            fecha: Fecha en formato YYYY-MM-DD
-            limit: Límite de resultados
-            
-        Returns:
-            List[Dict]: Lista de turnos de la fecha
-        """
         try:
             # Validar formato de fecha
             try:
@@ -455,16 +369,6 @@ class TurnoModel:
     
     
     def update_estado(self, turno_id: int, nuevo_estado: str) -> Dict[str, Any]:
-        """
-        Actualiza solo el estado de un turno con validaciones de transición
-        
-        Args:
-            turno_id: ID del turno
-            nuevo_estado: Nuevo estado ('pendiente', 'confirmado', 'completado', 'cancelado')
-            
-        Returns:
-            Dict: Resultado con 'success', 'data'/'errors'
-        """
         try:
             # Verificar que el turno existe
             existing_turno = self.get_one(turno_id)
@@ -542,17 +446,6 @@ class TurnoModel:
     
     
     def get_count(self, estado: str = None, fecha_desde: str = None, fecha_hasta: str = None) -> int:
-        """
-        Obtiene el número total de turnos con filtros opcionales
-        
-        Args:
-            estado: Filtrar por estado
-            fecha_desde: Filtrar desde fecha
-            fecha_hasta: Filtrar hasta fecha
-            
-        Returns:
-            int: Número total de turnos
-        """
         try:
             query = f"SELECT COUNT(*) as total FROM {self.table_name} WHERE 1=1"
             params = []
@@ -581,15 +474,6 @@ class TurnoModel:
     
     
     def _serialize_turno_with_duenio(self, row: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Serializa un registro de turno con datos del dueño para respuesta JSON
-        
-        Args:
-            row: Fila de la base de datos con JOIN
-            
-        Returns:
-            Dict: Turno serializado con datos anidados del dueño
-        """
         if not row:
             return {}
         
