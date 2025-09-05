@@ -220,25 +220,12 @@
       </div>
     </div>
 
-    <!-- Confirm Dialog -->
-    <ConfirmDialog
-      :is-visible="showDeleteDialog"
-      :title="deleteDialog.title"
-      :message="deleteDialog.message"
-      :confirm-text="deleteDialog.confirmText"
-      :cancel-text="deleteDialog.cancelText"
-      type="danger"
-      :loading="deletingDuenio"
-      @confirm="confirmDelete"
-      @cancel="cancelDelete"
-    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import LoadingSpinner from "@/components/shared/LoadingSpinner.vue";
-import ConfirmDialog from "@/components/shared/ConfirmDialog.vue";
 import type { Duenio } from "@/types/models";
 
 // Types
@@ -268,17 +255,6 @@ const emit = defineEmits<DuenioListEmits>();
 // State
 const sortField = ref<string>("nombre_apellido");
 const sortDirection = ref<"asc" | "desc">("asc");
-const showDeleteDialog = ref(false);
-const duenioToDelete = ref<Duenio | null>(null);
-const deletingDuenio = ref(false);
-
-// Delete dialog state
-const deleteDialog = computed(() => ({
-  title: "Eliminar Dueño",
-  message: `¿Estás seguro que deseas eliminar al dueño "${duenioToDelete.value?.nombre_apellido}"? Esta acción también eliminará todos los turnos asociados.`,
-  confirmText: "Sí, Eliminar",
-  cancelText: "Cancelar",
-}));
 
 // Computed
 const totalDuenios = computed(() => props.duenios.length);
@@ -363,27 +339,7 @@ const truncateText = (text: string, maxLength: number): string => {
 };
 
 const handleDelete = (duenio: Duenio) => {
-  duenioToDelete.value = duenio;
-  showDeleteDialog.value = true;
-};
-
-const confirmDelete = async () => {
-  if (!duenioToDelete.value) return;
-
-  deletingDuenio.value = true;
-
-  try {
-    emit("delete", duenioToDelete.value);
-    showDeleteDialog.value = false;
-  } finally {
-    deletingDuenio.value = false;
-    duenioToDelete.value = null;
-  }
-};
-
-const cancelDelete = () => {
-  showDeleteDialog.value = false;
-  duenioToDelete.value = null;
+  emit("delete", duenio);
 };
 
 const refreshList = () => {

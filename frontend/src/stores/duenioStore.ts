@@ -82,12 +82,13 @@ export const useDuenioStore = defineStore("duenio", () => {
       console.log("➕ Creando nuevo dueño:", data.nombre_apellido);
       const response = await ApiService.createDuenio(data);
 
-      const newDuenio = response.data || response;
-      duenios.value.push(newDuenio);
-      currentDuenio.value = newDuenio;
+      const { duenio } = response.data;
 
-      console.log("✅ Dueño creado exitosamente:", newDuenio.nombre_apellido);
-      return newDuenio;
+      duenios.value.push(duenio);
+      currentDuenio.value = duenio;
+
+      console.log("✅ Dueño creado exitosamente:", duenio.nombre_apellido);
+      return duenio;
     } catch (err: any) {
       error.value =
         err.response?.data?.message || err.message || "Error al crear dueño";

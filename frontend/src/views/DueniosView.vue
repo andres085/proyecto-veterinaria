@@ -20,6 +20,70 @@
         </div>
       </div>
 
+      <!-- Modal para ver dueño (solo lectura) -->
+      <div v-if="showViewModal" class="modal-overlay" @click="closeViewModal">
+        <div class="modal-content" @click.stop>
+          <div class="view-modal">
+            <div class="view-modal__header">
+              <h2>👤 Información del Dueño</h2>
+              <button @click="closeViewModal" class="close-btn">✕</button>
+            </div>
+            
+            <div class="view-modal__content" v-if="viewedDuenio">
+              <div class="info-grid">
+                <div class="info-item">
+                  <label>ID:</label>
+                  <span>{{ viewedDuenio.id }}</span>
+                </div>
+                
+                <div class="info-item">
+                  <label>Nombre y Apellido:</label>
+                  <span>{{ viewedDuenio.nombre_apellido }}</span>
+                </div>
+                
+                <div class="info-item">
+                  <label>Teléfono:</label>
+                  <a :href="`tel:${viewedDuenio.telefono}`" class="contact-link">
+                    📱 {{ viewedDuenio.telefono }}
+                  </a>
+                </div>
+                
+                <div class="info-item">
+                  <label>Email:</label>
+                  <a :href="`mailto:${viewedDuenio.email}`" class="contact-link">
+                    📧 {{ viewedDuenio.email }}
+                  </a>
+                </div>
+                
+                <div class="info-item">
+                  <label>Dirección:</label>
+                  <span>📍 {{ viewedDuenio.direccion }}</span>
+                </div>
+                
+                <div class="info-item">
+                  <label>Fecha de Registro:</label>
+                  <span>📅 {{ formatDate(viewedDuenio.created_at) }}</span>
+                </div>
+                
+                <div class="info-item" v-if="viewedDuenio.updated_at">
+                  <label>Última Actualización:</label>
+                  <span>🔄 {{ formatDate(viewedDuenio.updated_at) }}</span>
+                </div>
+              </div>
+              
+              <div class="view-modal__actions">
+                <button @click="editFromView" class="btn btn--primary">
+                  ✏️ Editar
+                </button>
+                <button @click="closeViewModal" class="btn btn--secondary">
+                  Cerrar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Sección de búsqueda -->
       <DuenioBuscar
         :loading="duenioStore.loading"
@@ -98,13 +162,15 @@ const duenioStore = useDuenioStore();
 
 // State
 const showDuenioForm = ref(false);
+const showViewModal = ref(false);
 const showDeleteDialog = ref(false);
 const selectedDuenio = ref<Duenio | null>(null);
+const viewedDuenio = ref<Duenio | null>(null);
 const duenioFormMode = ref<"create" | "edit">("create");
 const duenioToDelete = ref<Duenio | null>(null);
 const deletingDuenio = ref(false);
 const searchQuery = ref("");
-const searchResults = ref<Duenio[]>([]);
+let searchResults = ref<Duenio[]>([]);
 const isSearching = ref(false);
 const notification = ref<{ message: string; type: "success" | "error" } | null>(
   null
@@ -129,8 +195,8 @@ const editDuenio = (duenio: Duenio) => {
 };
 
 const viewDuenio = (duenio: Duenio) => {
-  // For now, just edit the duenio when viewed
-  editDuenio(duenio);
+  viewedDuenio.value = duenio;
+  showViewModal.value = true;
 };
 
 const deleteDuenio = (duenio: Duenio) => {
@@ -141,6 +207,20 @@ const deleteDuenio = (duenio: Duenio) => {
 const closeDuenioForm = () => {
   showDuenioForm.value = false;
   selectedDuenio.value = null;
+};
+
+const closeViewModal = () => {
+  showViewModal.value = false;
+  viewedDuenio.value = null;
+};
+
+const editFromView = () => {
+  if (viewedDuenio.value) {
+    selectedDuenio.value = viewedDuenio.value;
+    duenioFormMode.value = "edit";
+    showViewModal.value = false;
+    showDuenioForm.value = true;
+  }
 };
 
 const handleDuenioSubmit = async (
@@ -256,6 +336,23 @@ const showNotification = (message: string, type: "success" | "error") => {
   setTimeout(() => {
     notification.value = null;
   }, 3000);
+};
+
+const formatDate = (dateString?: string): string => {
+  if (!dateString) return "N/A";
+  
+  try {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("es-ES", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  } catch {
+    return "N/A";
+  }
 };
 
 const loadInitialData = async () => {
@@ -393,6 +490,113 @@ console.log("📱 Vista DueniosView integrada con stores cargada");
     opacity: 1;
     transform: translateX(0);
   }
+}
+
+/* View Modal Styles */
+.view-modal {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.view-modal__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-lg);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.view-modal__header h2 {
+  margin: 0;
+  color: var(--primary-color);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: var(--font-size-lg);
+  color: var(--text-light);
+  cursor: pointer;
+  padding: var(--spacing-xs);
+  border-radius: var(--border-radius-md);
+  transition: all var(--transition-normal);
+}
+
+.close-btn:hover {
+  background-color: var(--danger-light);
+  color: var(--danger-color);
+}
+
+.view-modal__content {
+  padding: var(--spacing-lg);
+}
+
+.info-grid {
+  display: grid;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-xl);
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.info-item label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.info-item span {
+  font-size: var(--font-size-md);
+  color: var(--text-color);
+  padding: var(--spacing-sm);
+  background-color: var(--background-color);
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--border-light);
+}
+
+.contact-link {
+  color: var(--primary-color);
+  text-decoration: none;
+  padding: var(--spacing-sm);
+  background-color: var(--primary-light);
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--primary-color);
+  transition: all var(--transition-normal);
+  display: inline-block;
+}
+
+.contact-link:hover {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.view-modal__actions {
+  display: flex;
+  gap: var(--spacing-md);
+  justify-content: flex-end;
+  padding-top: var(--spacing-lg);
+  border-top: 1px solid var(--border-light);
+}
+
+.btn--secondary {
+  background-color: var(--background-color);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+}
+
+.btn--secondary:hover:not(:disabled) {
+  background-color: var(--border-color);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
 }
 
 /* Responsive */
