@@ -10,14 +10,7 @@ def create_app():
     
     app.config['SECRET_KEY'] = 'veterinaria_secret_development'
     
-    CORS(app, resources={
-        r"/api/*": {
-            "origins": ["http://localhost:3000", "http://127.0.0.1:3000"],
-            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-            "allow_headers": ["Content-Type", "Authorization", "Accept"],
-            "supports_credentials": False
-        }
-    })
+    CORS(app)
     
     register_error_handlers(app)
     

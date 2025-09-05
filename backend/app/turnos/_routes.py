@@ -30,7 +30,7 @@ def before_request():
     log_request_info()
 
 
-@turnos_bp.route('/turnos/', methods=['GET'])
+@turnos_bp.route('/turnos', methods=['GET'])
 def get_all_turnos():
     """
     GET /api/turnos/
@@ -110,7 +110,7 @@ def get_turno(turno_id):
         )
 
 
-@turnos_bp.route('/turnos/', methods=['POST'])
+@turnos_bp.route('/turnos', methods=['POST'])
 def create_turno():
     """
     POST /api/turnos/

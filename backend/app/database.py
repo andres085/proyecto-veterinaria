@@ -1,22 +1,14 @@
-"""
-Módulo de conexión a base de datos MySQL con Connection Pooling
-Sistema de Gestión de Turnos - Veterinaria
-"""
-
 import os
 import mysql.connector
 from mysql.connector import pooling, Error
 from dotenv import load_dotenv
 import logging
 
-# Cargar variables de entorno
 load_dotenv()
 
-# Configurar logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Configuración del pool de conexiones
 DB_CONFIG = {
     'host': os.getenv('DB_HOST', 'mysql'),
     'user': os.getenv('DB_USER', 'veterinaria_user'),

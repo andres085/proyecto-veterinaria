@@ -22,6 +22,7 @@ def before_request():
 
 
 @duenios_bp.route('/duenios/', methods=['GET'])
+@duenios_bp.route('/duenios', methods=['GET'])
 def get_all_duenios():
     try:
         limit_param = request.args.get('limit')
@@ -76,6 +77,7 @@ def get_duenio(duenio_id):
 
 
 @duenios_bp.route('/duenios/', methods=['POST'])
+@duenios_bp.route('/duenios', methods=['POST'])
 def create_duenio():
     """
     POST /api/duenios/

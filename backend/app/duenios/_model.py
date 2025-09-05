@@ -304,7 +304,7 @@ class DuenioModel:
             raise
     
     
-    def _serialize_duenio(row: Dict[str, Any]) -> Dict[str, Any]:
+    def _serialize_duenio(self, row: Dict[str, Any]) -> Dict[str, Any]:
         if not row:
             return {}
         

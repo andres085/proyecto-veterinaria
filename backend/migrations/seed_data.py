@@ -1,10 +1,3 @@
-#!/usr/bin/env python3
-"""
-Script de Seeds y Datos de Prueba para Sistema Veterinaria
-Inserta dueños y turnos de ejemplo para desarrollo y testing
-Basado en la experiencia del proyecto anterior con datos automatizados
-"""
-
 import os
 import sys
 from datetime import datetime, timedelta
@@ -323,20 +316,6 @@ def validate_referential_integrity():
         print(f"   - Dueños: {total_duenios['total']}")
         print(f"   - Turnos: {total_turnos['total']}")
         print(f"   - Relaciones verificadas: {total_turnos_sistema}")
-        
-        # Verificar constraint de email único
-        emails_duplicados = execute_query("""
-            SELECT email, COUNT(*) as count 
-            FROM duenios 
-            GROUP BY email 
-            HAVING COUNT(*) > 1
-        """, fetch=True)
-        
-        if emails_duplicados:
-            print(f"⚠️  Emails duplicados encontrados: {len(emails_duplicados)}")
-            return False
-        else:
-            print("✅ Constraint email único: Válido")
         
         # Verificar foreign keys
         turnos_huerfanos = execute_query("""

@@ -1,20 +1,12 @@
-#!/usr/bin/env python3
-"""
-Script de inicialización de base de datos para Sistema Veterinaria
-Crea las tablas duenios y turnos con sus relaciones y constraints
-"""
-
 import os
 import sys
 import mysql.connector
 from mysql.connector import Error
 from dotenv import load_dotenv
 
-# Cargar variables de entorno
 load_dotenv()
 
 def get_db_config():
-    """Obtiene la configuración de base de datos desde variables de entorno"""
     return {
         'host': os.getenv('DB_HOST', 'localhost'),
         'user': os.getenv('DB_USER', 'veterinaria_user'),
@@ -26,16 +18,13 @@ def get_db_config():
     }
 
 def create_database_if_not_exists():
-    """Crea la base de datos si no existe"""
     config = get_db_config()
     db_name = config.pop('database')
     
     try:
-        # Conectar sin especificar database
         connection = mysql.connector.connect(**config)
         cursor = connection.cursor()
         
-        # Crear database si no existe
         cursor.execute(f"CREATE DATABASE IF NOT EXISTS {db_name} CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci")
         print(f"✅ Base de datos '{db_name}' verificada/creada exitosamente")
         
@@ -49,8 +38,6 @@ def create_database_if_not_exists():
     return True
 
 def create_tables():
-    """Crea las tablas duenios y turnos con sus constraints"""
-    
     # SQL para crear tabla duenios
     create_duenios_table = """
     CREATE TABLE IF NOT EXISTS duenios (
@@ -108,7 +95,7 @@ def create_tables():
         cursor.execute(create_turnos_table)
         print("✅ Tabla 'turnos' creada exitosamente")
         
-        # Commit changes
+        # Commit de los cambios
         connection.commit()
         print("✅ Todas las tablas fueron creadas correctamente")
         
@@ -141,7 +128,7 @@ def verify_tables():
         if 'duenios' in table_names:
             cursor.execute("DESCRIBE duenios")
             columns = cursor.fetchall()
-            print("\n🏗️  Estructura tabla 'duenios':")
+            print("\n Estructura tabla 'duenios':")
             for column in columns:
                 print(f"   - {column[0]}: {column[1]} ({column[2]})")
         
@@ -149,7 +136,7 @@ def verify_tables():
         if 'turnos' in table_names:
             cursor.execute("DESCRIBE turnos")
             columns = cursor.fetchall()
-            print("\n🏗️  Estructura tabla 'turnos':")
+            print("\n Estructura tabla 'turnos':")
             for column in columns:
                 print(f"   - {column[0]}: {column[1]} ({column[2]})")
         
@@ -168,7 +155,7 @@ def verify_tables():
         
         foreign_keys = cursor.fetchall()
         if foreign_keys:
-            print("\n🔗 Foreign Keys configuradas:")
+            print("\n Foreign Keys configuradas:")
             for fk in foreign_keys:
                 print(f"   - {fk[1]}.{fk[2]} -> {fk[3]}.{fk[4]}")
         
