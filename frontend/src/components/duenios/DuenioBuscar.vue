@@ -14,7 +14,7 @@
       <div class="search-main">
         <SearchInput
           v-model="searchQuery"
-          placeholder="Buscar por nombre, email o teléfono..."
+          placeholder="Buscar por nombre o email..."
           :loading="loading"
           :clearable="true"
           :debounce="300"
@@ -28,96 +28,6 @@
         />
       </div>
 
-      <!-- Advanced filters -->
-      <div
-        class="search-filters"
-        :class="{ 'filters-expanded': showAdvancedFilters }"
-      >
-        <button
-          @click="toggleAdvancedFilters"
-          class="btn btn--ghost btn--small filters-toggle"
-        >
-          ⚙️ Filtros Avanzados
-          <span class="toggle-icon">
-            {{ showAdvancedFilters ? "▲" : "▼" }}
-          </span>
-        </button>
-
-        <Transition name="filters-slide">
-          <div v-if="showAdvancedFilters" class="advanced-filters">
-            <!-- Search type filter -->
-            <div class="filter-group">
-              <label class="filter-label">Buscar en:</label>
-              <div class="filter-options">
-                <label class="filter-option">
-                  <input
-                    v-model="searchFilters.searchInName"
-                    type="checkbox"
-                    @change="applyFilters"
-                  />
-                  <span>👤 Nombre</span>
-                </label>
-                <label class="filter-option">
-                  <input
-                    v-model="searchFilters.searchInEmail"
-                    type="checkbox"
-                    @change="applyFilters"
-                  />
-                  <span>📧 Email</span>
-                </label>
-                <label class="filter-option">
-                  <input
-                    v-model="searchFilters.searchInPhone"
-                    type="checkbox"
-                    @change="applyFilters"
-                  />
-                  <span>📱 Teléfono</span>
-                </label>
-              </div>
-            </div>
-
-            <!-- Date filter -->
-            <div class="filter-group">
-              <label class="filter-label">Registrado desde:</label>
-              <input
-                v-model="searchFilters.dateFrom"
-                type="date"
-                class="filter-input"
-                @change="applyFilters"
-              />
-            </div>
-
-            <!-- Sort options -->
-            <div class="filter-group">
-              <label class="filter-label">Ordenar por:</label>
-              <select
-                v-model="searchFilters.sortBy"
-                class="filter-input"
-                @change="applyFilters"
-              >
-                <option value="nombre_apellido">Nombre A-Z</option>
-                <option value="nombre_apellido_desc">Nombre Z-A</option>
-                <option value="email">Email A-Z</option>
-                <option value="created_at">Más recientes</option>
-                <option value="created_at_desc">Más antiguos</option>
-              </select>
-            </div>
-
-            <!-- Filter actions -->
-            <div class="filter-actions">
-              <button
-                @click="clearAllFilters"
-                class="btn btn--secondary btn--small"
-              >
-                🧹 Limpiar Filtros
-              </button>
-              <button @click="applyFilters" class="btn btn--primary btn--small">
-                ✅ Aplicar
-              </button>
-            </div>
-          </div>
-        </Transition>
-      </div>
     </div>
 
     <!-- Search Results Summary -->
@@ -220,7 +130,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, watch } from "vue";
+import { ref, computed, watch } from "vue";
 import SearchInput from "@/components/shared/SearchInput.vue";
 import { useDuenioStore } from "@/stores/duenioStore";
 
@@ -240,13 +150,6 @@ export interface DuenioBuscarEmits {
   (e: "view-all"): void;
 }
 
-export interface SearchFilters {
-  searchInName: boolean;
-  searchInEmail: boolean;
-  searchInPhone: boolean;
-  dateFrom: string;
-  sortBy: string;
-}
 
 // Props
 const props = withDefaults(defineProps<DuenioBuscarProps>(), {
@@ -261,32 +164,12 @@ const emit = defineEmits<DuenioBuscarEmits>();
 // State
 const searchQuery = ref<string>("");
 const hasSearched = ref<boolean>(false);
-const showAdvancedFilters = ref<boolean>(false);
-
-const searchFilters = reactive<SearchFilters>({
-  searchInName: true,
-  searchInEmail: true,
-  searchInPhone: true,
-  dateFrom: "",
-  sortBy: "nombre_apellido",
-});
-
-// Computed
-const activeFiltersCount = computed(() => {
-  let count = 0;
-  if (!searchFilters.searchInName) count++;
-  if (!searchFilters.searchInEmail) count++;
-  if (!searchFilters.searchInPhone) count++;
-  if (searchFilters.dateFrom) count++;
-  if (searchFilters.sortBy !== "nombre_apellido") count++;
-  return count;
-});
 
 // Methods
 const handleSearch = (query: string) => {
   hasSearched.value = true;
-  emit("search", query, { ...searchFilters });
-  console.log("🔍 Búsqueda:", query, searchFilters);
+  emit("search", query, {});
+  console.log("🔍 Búsqueda:", query);
 };
 
 const handleClear = () => {
@@ -305,27 +188,6 @@ const handleRefresh = () => {
   console.log("🔄 Actualizando resultados");
 };
 
-const toggleAdvancedFilters = () => {
-  showAdvancedFilters.value = !showAdvancedFilters.value;
-};
-
-const applyFilters = () => {
-  if (searchQuery.value || hasSearched.value) {
-    handleSearch(searchQuery.value);
-  }
-};
-
-const clearAllFilters = () => {
-  searchFilters.searchInName = true;
-  searchFilters.searchInEmail = true;
-  searchFilters.searchInPhone = true;
-  searchFilters.dateFrom = "";
-  searchFilters.sortBy = "nombre_apellido";
-
-  if (hasSearched.value) {
-    applyFilters();
-  }
-};
 
 const formatResultsText = (count: number): string => {
   if (count === 0) return "No se encontraron dueños";
@@ -383,77 +245,6 @@ console.log("🔧 Componente DuenioBuscar cargado");
   margin-bottom: var(--spacing-md);
 }
 
-.search-filters {
-  border-top: 1px solid var(--border-light);
-  padding-top: var(--spacing-md);
-}
-
-.filters-toggle {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  margin-bottom: var(--spacing-md);
-}
-
-.toggle-icon {
-  font-size: var(--font-size-sm);
-}
-
-/* Advanced Filters */
-.advanced-filters {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: var(--spacing-md);
-  padding: var(--spacing-md);
-  background-color: var(--background-color);
-  border-radius: var(--border-radius-md);
-}
-
-.filter-group {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-sm);
-}
-
-.filter-label {
-  font-weight: var(--font-weight-medium);
-  color: var(--text-color);
-  font-size: var(--font-size-sm);
-}
-
-.filter-options {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xs);
-}
-
-.filter-option {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  font-size: var(--font-size-sm);
-  cursor: pointer;
-}
-
-.filter-option input[type="checkbox"] {
-  margin: 0;
-}
-
-.filter-input {
-  padding: var(--spacing-sm);
-  border: 1px solid var(--border-color);
-  border-radius: var(--border-radius-sm);
-  font-size: var(--font-size-sm);
-}
-
-.filter-actions {
-  grid-column: 1 / -1;
-  display: flex;
-  gap: var(--spacing-sm);
-  justify-content: flex-end;
-  padding-top: var(--spacing-md);
-  border-top: 1px solid var(--border-light);
-}
 
 /* Results */
 .duenio-buscar__results {
@@ -576,17 +367,6 @@ console.log("🔧 Componente DuenioBuscar cargado");
   font-size: var(--font-size-sm);
 }
 
-/* Transitions */
-.filters-slide-enter-active,
-.filters-slide-leave-active {
-  transition: all 0.3s ease;
-}
-
-.filters-slide-enter-from,
-.filters-slide-leave-to {
-  opacity: 0;
-  transform: translateY(-10px);
-}
 
 /* Responsive */
 @media (max-width: 768px) {
@@ -595,10 +375,6 @@ console.log("🔧 Componente DuenioBuscar cargado");
   .duenio-buscar__results,
   .duenio-buscar__quick-actions {
     padding: var(--spacing-md);
-  }
-
-  .advanced-filters {
-    grid-template-columns: 1fr;
   }
 
   .results-summary {
