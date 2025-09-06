@@ -8,23 +8,18 @@ import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 
 export const useDuenioStore = defineStore("duenio", () => {
-  // 🏪 Estado reactivo
+  // Estado reactivo
   const duenios = ref<Duenio[]>([]);
   const currentDuenio = ref<Duenio | null>(null);
   const searchResults = ref<Duenio[]>([]);
   const loading = ref<boolean>(false);
   const error = ref<string | null>(null);
 
-  // 📊 Getters computados
+  // Getters computados
   const totalDuenios = computed(() => duenios.value.length);
   const hasError = computed(() => error.value !== null);
   const isLoading = computed(() => loading.value);
 
-  // 🔄 Acciones
-
-  /**
-   * 7.1.3 - Obtener todos los dueños
-   */
   const fetchAll = async (): Promise<void> => {
     try {
       loading.value = true;
@@ -71,9 +66,6 @@ export const useDuenioStore = defineStore("duenio", () => {
     }
   };
 
-  /**
-   * 7.1.4 - Crear nuevo dueño
-   */
   const create = async (data: CreateDuenioPayload): Promise<Duenio | null> => {
     try {
       loading.value = true;
@@ -99,9 +91,6 @@ export const useDuenioStore = defineStore("duenio", () => {
     }
   };
 
-  /**
-   * 7.1.5 - Actualizar dueño existente
-   */
   const update = async (
     id: number,
     data: UpdateDuenioPayload
@@ -140,9 +129,6 @@ export const useDuenioStore = defineStore("duenio", () => {
     }
   };
 
-  /**
-   * 7.1.6 - Eliminar dueño
-   */
   const remove = async (id: number): Promise<boolean> => {
     try {
       loading.value = true;
@@ -171,9 +157,6 @@ export const useDuenioStore = defineStore("duenio", () => {
     }
   };
 
-  /**
-   * 7.1.7 - Buscar dueños por nombre/email
-   */
   const search = async (query: string): Promise<void> => {
     try {
       loading.value = true;
@@ -187,9 +170,14 @@ export const useDuenioStore = defineStore("duenio", () => {
       console.log(`🔍 Buscando dueños: "${query}"`);
       const response = await ApiService.searchDuenios(query);
 
-      searchResults.value = response.data || response || [];
-      console.log("ACAAAA", searchResults.value);
-      console.log(`✅ ${searchResults.value.length} resultados encontrados`);
+      const dueniosEncontrados =
+        response.data?.duenios || response.data || response || [];
+
+      searchResults.value = dueniosEncontrados;
+      console.log(
+        `✅ ${searchResults.value.length} resultados encontrados:`,
+        searchResults.value
+      );
     } catch (err: any) {
       error.value =
         err.response?.data?.message || err.message || "Error en la búsqueda";

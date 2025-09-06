@@ -93,7 +93,7 @@
       <!-- Sección de búsqueda -->
       <DuenioBuscar
         :loading="duenioStore.loading"
-        :results-count="searchResults.length"
+        :results-count="duenioStore.searchResults.length"
         :total-duenios="duenioStore.duenios.length"
         @search="handleSearch"
         @clear="handleClearSearch"
@@ -176,14 +176,13 @@ const duenioFormMode = ref<"create" | "edit">("create");
 const duenioToDelete = ref<Duenio | null>(null);
 const deletingDuenio = ref(false);
 const searchQuery = ref("");
-let searchResults = ref<Duenio[]>([]);
 const isSearching = ref(false);
 const notification = ref<{ message: string; type: "success" | "error" } | null>(
   null
 );
 
 const displayedDuenios = computed(() => {
-  return isSearching.value ? searchResults.value : duenioStore.duenios;
+  return isSearching.value ? duenioStore.searchResults : duenioStore.duenios;
 });
 
 const createDuenio = () => {
@@ -291,9 +290,9 @@ const handleSearch = async (query: string, filters: any) => {
 
   try {
     isSearching.value = true;
-    searchResults = await duenioStore.search(query);
+    await duenioStore.search(query);
     console.log(
-      `🔍 Búsqueda: "${query}" - ${searchResults.value.length} resultados`
+      `🔍 Búsqueda: "${query}" - ${duenioStore.searchResults.length} resultados`
     );
   } catch (error) {
     console.error("Error en búsqueda:", error);
@@ -301,13 +300,13 @@ const handleSearch = async (query: string, filters: any) => {
       error instanceof Error ? error.message : "Error en la búsqueda",
       "error"
     );
-    searchResults.value = [];
+    duenioStore.clearSearch();
   }
 };
 
 const handleClearSearch = () => {
   searchQuery.value = "";
-  searchResults.value = [];
+  duenioStore.clearSearch();
   isSearching.value = false;
 };
 
