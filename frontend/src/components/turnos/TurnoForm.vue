@@ -341,11 +341,13 @@ const maxDate = computed(() => {
 })
 
 const isFormValid = computed(() => {
+  const hasValidDuenio = (formData.id_duenio > 0) || (selectedDuenio.value && selectedDuenio.value.id)
+  
   return formData.nombre_mascota.length >= 1 &&
          fechaSeleccionada.value.length > 0 &&
          horaSeleccionada.value.length > 0 &&
          formData.tratamiento.length >= 3 &&
-         formData.id_duenio > 0 &&
+         hasValidDuenio &&
          !Object.values(errors).some(error => error)
 })
 
@@ -373,7 +375,7 @@ const validateField = (field: keyof typeof formData): boolean => {
       break
       
     case 'id_duenio':
-      if (!formData.id_duenio || formData.id_duenio <= 0) {
+      if ((!formData.id_duenio || formData.id_duenio <= 0) && !selectedDuenio.value) {
         errors[field] = 'Debe seleccionar un dueño'
       }
       break
@@ -531,13 +533,29 @@ const loadTurnoData = () => {
     formData.id_duenio = props.turno.id_duenio
     formData.estado = props.turno.estado
     
-    // Find and set the selected duenio
-    const duenio = props.duenios.find(d => d.id === props.turno?.id_duenio) ||
-                   duenioStore.duenios.find(d => d.id === props.turno?.id_duenio)
+    // El dueño viene directamente en props.turno.duenio
+    const duenio = props.turno.duenio
     
     if (duenio) {
+      console.log('✅ Dueño encontrado:', duenio.nombre_apellido)
       selectedDuenio.value = duenio
       showDuenioSelector.value = false
+      // Asegurar que el formData también tenga el ID correcto
+      formData.id_duenio = duenio.id || 0
+    } else {
+      console.log('❌ Dueño no encontrado, usando fallback por ID')
+      // Fallback: buscar por ID
+      const duenioFallback = props.duenios.find(d => d.id === props.turno?.id_duenio) ||
+                            duenioStore.duenios.find(d => d.id === props.turno?.id_duenio)
+      
+      if (duenioFallback) {
+        selectedDuenio.value = duenioFallback
+        showDuenioSelector.value = false
+        formData.id_duenio = duenioFallback.id || 0
+      } else {
+        selectedDuenio.value = null
+        showDuenioSelector.value = true
+      }
     }
   }
 }

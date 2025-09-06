@@ -102,7 +102,7 @@ export const useTurnoStore = defineStore("turno", () => {
       console.log(`🔍 Obteniendo turno ID: ${id}`);
       const response = await ApiService.getTurno(id);
 
-      currentTurno.value = response.data || response;
+      currentTurno.value = response.data?.turno || response.data || response;
       console.log("✅ Turno obtenido:", currentTurno.value?.nombre_mascota);
 
       return currentTurno.value;
@@ -160,8 +160,10 @@ export const useTurnoStore = defineStore("turno", () => {
 
       console.log(`✏️ Actualizando turno ID: ${id}`);
       const response = await ApiService.updateTurno(id, data);
+      
+      console.log('🔧 Respuesta del update:', response);
 
-      const updatedTurno = response.data || response;
+      const updatedTurno = response.data?.turno || response.data || response;
 
       // Actualizar en la lista
       const index = turnos.value.findIndex((t) => t.id === id);

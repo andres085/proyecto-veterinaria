@@ -175,7 +175,7 @@ const availableStates = computed((): EstadoOption[] => {
       label: 'Pendiente',
       icon: '⏳',
       description: 'En espera de confirmación',
-      enabled: false // Can't go back to pendiente
+      enabled: false // No se puede volver a pendiente - eliminar turno si es necesario
     },
     {
       value: 'confirmado',
