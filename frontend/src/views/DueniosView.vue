@@ -28,49 +28,55 @@
               <h2>👤 Información del Dueño</h2>
               <button @click="closeViewModal" class="close-btn">✕</button>
             </div>
-            
+
             <div class="view-modal__content" v-if="viewedDuenio">
               <div class="info-grid">
                 <div class="info-item">
                   <label>ID:</label>
                   <span>{{ viewedDuenio.id }}</span>
                 </div>
-                
+
                 <div class="info-item">
                   <label>Nombre y Apellido:</label>
                   <span>{{ viewedDuenio.nombre_apellido }}</span>
                 </div>
-                
+
                 <div class="info-item">
                   <label>Teléfono:</label>
-                  <a :href="`tel:${viewedDuenio.telefono}`" class="contact-link">
+                  <a
+                    :href="`tel:${viewedDuenio.telefono}`"
+                    class="contact-link"
+                  >
                     📱 {{ viewedDuenio.telefono }}
                   </a>
                 </div>
-                
+
                 <div class="info-item">
                   <label>Email:</label>
-                  <a :href="`mailto:${viewedDuenio.email}`" class="contact-link">
+                  <a
+                    :href="`mailto:${viewedDuenio.email}`"
+                    class="contact-link"
+                  >
                     📧 {{ viewedDuenio.email }}
                   </a>
                 </div>
-                
+
                 <div class="info-item">
                   <label>Dirección:</label>
                   <span>📍 {{ viewedDuenio.direccion }}</span>
                 </div>
-                
+
                 <div class="info-item">
                   <label>Fecha de Registro:</label>
                   <span>📅 {{ formatDate(viewedDuenio.created_at) }}</span>
                 </div>
-                
+
                 <div class="info-item" v-if="viewedDuenio.updated_at">
                   <label>Última Actualización:</label>
                   <span>🔄 {{ formatDate(viewedDuenio.updated_at) }}</span>
                 </div>
               </div>
-              
+
               <div class="view-modal__actions">
                 <button @click="editFromView" class="btn btn--primary">
                   ✏️ Editar
@@ -176,12 +182,10 @@ const notification = ref<{ message: string; type: "success" | "error" } | null>(
   null
 );
 
-// Computed
 const displayedDuenios = computed(() => {
   return isSearching.value ? searchResults.value : duenioStore.duenios;
 });
 
-// Methods
 const createDuenio = () => {
   selectedDuenio.value = null;
   duenioFormMode.value = "create";
@@ -340,7 +344,7 @@ const showNotification = (message: string, type: "success" | "error") => {
 
 const formatDate = (dateString?: string): string => {
   if (!dateString) return "N/A";
-  
+
   try {
     const date = new Date(dateString);
     return date.toLocaleDateString("es-ES", {

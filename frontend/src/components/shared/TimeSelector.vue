@@ -1,45 +1,63 @@
 <template>
-  <div class="date-picker" :class="{ 'date-picker--disabled': disabled }">
+  <div class="time-selector" :class="{ 'time-selector--disabled': disabled }">
     <label
       v-if="label"
       :for="inputId"
-      class="date-picker__label"
-      :class="{ 'date-picker__label--required': required }"
+      class="time-selector__label"
+      :class="{ 'time-selector__label--required': required }"
     >
       {{ label }}
     </label>
     
-    <div class="date-picker__wrapper">
-      <input
+    <div class="time-selector__wrapper">
+      <select
         :id="inputId"
-        ref="dateInput"
-        type="date"
-        class="date-picker__input"
+        ref="timeSelect"
+        class="time-selector__input"
         :class="{
-          'date-picker__input--error': hasError,
-          'date-picker__input--disabled': disabled
+          'time-selector__input--error': hasError,
+          'time-selector__input--disabled': disabled
         }"
         :value="modelValue"
-        :min="minDate"
-        :max="maxDate"
         :required="required"
         :disabled="disabled"
-        :placeholder="placeholder"
         @input="handleInput"
         @change="handleChange"
         @focus="handleFocus"
         @blur="handleBlur"
-      />
+      >
+        <option value="" disabled>{{ placeholder }}</option>
+        <optgroup label="🌅 Turno Mañana (9:00 - 13:00)">
+          <option value="09:00">09:00</option>
+          <option value="09:30">09:30</option>
+          <option value="10:00">10:00</option>
+          <option value="10:30">10:30</option>
+          <option value="11:00">11:00</option>
+          <option value="11:30">11:30</option>
+          <option value="12:00">12:00</option>
+          <option value="12:30">12:30</option>
+          <option value="13:00">13:00</option>
+        </optgroup>
+        <optgroup label="🌆 Turno Tarde (17:00 - 20:00)">
+          <option value="17:00">17:00</option>
+          <option value="17:30">17:30</option>
+          <option value="18:00">18:00</option>
+          <option value="18:30">18:30</option>
+          <option value="19:00">19:00</option>
+          <option value="19:30">19:30</option>
+          <option value="20:00">20:00</option>
+        </optgroup>
+      </select>
       
-      <div class="date-picker__icon">
-        📅
+      <div class="time-selector__icon">
+        🕐
       </div>
     </div>
     
     <!-- Error message -->
     <div
       v-if="errorMessage"
-      class="date-picker__error"
+      class="time-selector__error"
       role="alert"
       :aria-live="hasError ? 'polite' : 'off'"
     >
@@ -49,7 +67,7 @@
     <!-- Helper text -->
     <div
       v-if="helperText && !errorMessage"
-      class="date-picker__helper"
+      class="time-selector__helper"
     >
       {{ helperText }}
     </div>
@@ -57,24 +75,22 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed } from 'vue'
 
 // Types
-export interface DatePickerProps {
+export interface TimeSelectorProps {
   modelValue: string
   label?: string
   placeholder?: string
   required?: boolean
   disabled?: boolean
-  minDate?: string
-  maxDate?: string
   helperText?: string
   errorMessage?: string
   validateOnBlur?: boolean
   id?: string
 }
 
-export interface DatePickerEmits {
+export interface TimeSelectorEmits {
   (e: 'update:modelValue', value: string): void
   (e: 'change', value: string): void
   (e: 'focus', event: FocusEvent): void
@@ -83,103 +99,55 @@ export interface DatePickerEmits {
 }
 
 // Props
-const props = withDefaults(defineProps<DatePickerProps>(), {
-  placeholder: '',
+const props = withDefaults(defineProps<TimeSelectorProps>(), {
+  placeholder: 'Selecciona una hora',
   required: false,
   disabled: false,
   validateOnBlur: true
 })
 
 // Emits
-const emit = defineEmits<DatePickerEmits>()
+const emit = defineEmits<TimeSelectorEmits>()
 
 // Refs
-const dateInput = ref<HTMLInputElement>()
+const timeSelect = ref<HTMLSelectElement>()
 const internalError = ref<string>('')
 const isFocused = ref(false)
 
 // Computed
-const inputId = computed(() => props.id || `date-picker-${Math.random().toString(36).substr(2, 9)}`)
+const inputId = computed(() => props.id || `time-selector-${Math.random().toString(36).substr(2, 9)}`)
 
 const hasError = computed(() => !!(props.errorMessage || internalError.value))
 
-const effectiveErrorMessage = computed(() => props.errorMessage || internalError.value)
-
-
 // Methods
-const validateDate = (value: string): string => {
+const validateTime = (value: string): string => {
   if (!value && props.required) {
-    return 'Este campo es requerido'
-  }
-  
-  if (value) {
-    const date = new Date(value)
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
-    
-    // Validar fecha válida
-    if (isNaN(date.getTime())) {
-      return 'Fecha inválida'
-    }
-    
-    // Validar fecha mínima
-    if (props.minDate) {
-      const minDate = new Date(props.minDate)
-      if (date < minDate) {
-        return `La fecha debe ser posterior a ${formatDate(props.minDate)}`
-      }
-    }
-    
-    // Validar fecha máxima
-    if (props.maxDate) {
-      const maxDate = new Date(props.maxDate)
-      if (date > maxDate) {
-        return `La fecha debe ser anterior a ${formatDate(props.maxDate)}`
-      }
-    }
-    
-    // Validar que no sea fecha pasada (solo si no hay minDate específica)
-    if (!props.minDate && date < today) {
-      return 'No se puede seleccionar una fecha pasada'
-    }
+    return 'Debe seleccionar una hora'
   }
   
   return ''
 }
 
-const formatDate = (dateString: string): string => {
-  try {
-    const date = new Date(dateString)
-    return date.toLocaleDateString('es-ES', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    })
-  } catch {
-    return dateString
-  }
-}
-
 const handleInput = (event: Event) => {
-  const target = event.target as HTMLInputElement
+  const target = event.target as HTMLSelectElement
   const value = target.value
   
   emit('update:modelValue', value)
   
-  // Limpiar error interno al escribir
+  // Limpiar error interno al seleccionar
   if (internalError.value) {
     internalError.value = ''
   }
 }
 
 const handleChange = (event: Event) => {
-  const target = event.target as HTMLInputElement
+  const target = event.target as HTMLSelectElement
   const value = target.value
   
   emit('change', value)
   
   // Validar inmediatamente en change
-  const error = validateDate(value)
+  const error = validateTime(value)
   internalError.value = error
   emit('validation', !error)
 }
@@ -195,7 +163,7 @@ const handleBlur = (event: FocusEvent) => {
   
   // Validar en blur si está habilitado
   if (props.validateOnBlur) {
-    const error = validateDate(props.modelValue)
+    const error = validateTime(props.modelValue)
     internalError.value = error
     emit('validation', !error)
   }
@@ -203,24 +171,15 @@ const handleBlur = (event: FocusEvent) => {
 
 // Public methods
 const focus = () => {
-  dateInput.value?.focus()
+  timeSelect.value?.focus()
 }
 
 const validate = (): boolean => {
-  const error = validateDate(props.modelValue)
+  const error = validateTime(props.modelValue)
   internalError.value = error
   emit('validation', !error)
   return !error
 }
-
-// Watch for external validation
-watch(() => props.modelValue, (newValue) => {
-  if (props.validateOnBlur && !isFocused.value) {
-    const error = validateDate(newValue)
-    internalError.value = error
-    emit('validation', !error)
-  }
-})
 
 // Expose methods
 defineExpose({
@@ -228,40 +187,40 @@ defineExpose({
   validate
 })
 
-console.log('🔧 Componente DatePicker cargado')
+console.log('🔧 Componente TimeSelector cargado')
 </script>
 
 <style scoped>
-.date-picker {
+.time-selector {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
 
-.date-picker--disabled {
+.time-selector--disabled {
   opacity: 0.6;
   pointer-events: none;
 }
 
-.date-picker__label {
+.time-selector__label {
   font-weight: 500;
   color: #333;
   font-size: 0.875rem;
   margin-bottom: 0.25rem;
 }
 
-.date-picker__label--required::after {
+.time-selector__label--required::after {
   content: ' *';
   color: #dc3545;
 }
 
-.date-picker__wrapper {
+.time-selector__wrapper {
   position: relative;
   display: flex;
   align-items: center;
 }
 
-.date-picker__input {
+.time-selector__input {
   width: 100%;
   padding: 0.75rem 2.5rem 0.75rem 1rem;
   border: 2px solid #ddd;
@@ -271,33 +230,34 @@ console.log('🔧 Componente DatePicker cargado')
   background-color: white;
   transition: all 0.2s ease;
   color: #333;
+  cursor: pointer;
 }
 
-.date-picker__input:focus {
+.time-selector__input:focus {
   outline: none;
   border-color: #2c5aa0;
   box-shadow: 0 0 0 3px rgba(44, 90, 160, 0.1);
 }
 
-.date-picker__input:hover:not(:disabled) {
+.time-selector__input:hover:not(:disabled) {
   border-color: #999;
 }
 
-.date-picker__input--error {
+.time-selector__input--error {
   border-color: #dc3545;
 }
 
-.date-picker__input--error:focus {
+.time-selector__input--error:focus {
   border-color: #dc3545;
   box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
 }
 
-.date-picker__input--disabled {
+.time-selector__input--disabled {
   background-color: #f8f9fa;
   cursor: not-allowed;
 }
 
-.date-picker__icon {
+.time-selector__icon {
   position: absolute;
   right: 1rem;
   top: 50%;
@@ -307,7 +267,7 @@ console.log('🔧 Componente DatePicker cargado')
   font-size: 1.125rem;
 }
 
-.date-picker__error {
+.time-selector__error {
   color: #dc3545;
   font-size: 0.875rem;
   margin-top: 0.25rem;
@@ -316,35 +276,38 @@ console.log('🔧 Componente DatePicker cargado')
   gap: 0.375rem;
 }
 
-.date-picker__error::before {
+.time-selector__error::before {
   content: '⚠️';
   font-size: 0.75rem;
 }
 
-.date-picker__helper {
+.time-selector__helper {
   color: #666;
   font-size: 0.875rem;
   margin-top: 0.25rem;
 }
 
-/* Custom date input styling */
-.date-picker__input::-webkit-calendar-picker-indicator {
-  opacity: 0;
-  position: absolute;
-  right: 0;
-  width: 2.5rem;
-  height: 100%;
-  cursor: pointer;
+/* Custom select styling */
+.time-selector__input option {
+  padding: 0.5rem;
+  background-color: white;
+  color: #333;
 }
 
-/* Firefox */
-.date-picker__input::-moz-focus-inner {
-  border: 0;
+.time-selector__input optgroup {
+  font-weight: 600;
+  color: #2c5aa0;
+  background-color: #f8f9fa;
+}
+
+.time-selector__input option:checked {
+  background-color: #2c5aa0;
+  color: white;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
-  .date-picker__input {
+  .time-selector__input {
     padding: 1rem 2.5rem 1rem 1rem;
     font-size: 16px; /* Prevents zoom on iOS */
   }
@@ -352,40 +315,50 @@ console.log('🔧 Componente DatePicker cargado')
 
 /* Dark theme support */
 @media (prefers-color-scheme: dark) {
-  .date-picker__label {
+  .time-selector__label {
     color: #e0e0e0;
   }
   
-  .date-picker__input {
+  .time-selector__input {
     background-color: #2d2d2d;
     border-color: #555;
     color: #e0e0e0;
   }
   
-  .date-picker__input:focus {
+  .time-selector__input:focus {
     border-color: #4a90e2;
   }
   
-  .date-picker__input--disabled {
+  .time-selector__input--disabled {
     background-color: #1a1a1a;
   }
   
-  .date-picker__icon {
+  .time-selector__icon {
     color: #ccc;
   }
   
-  .date-picker__helper {
+  .time-selector__helper {
     color: #ccc;
+  }
+  
+  .time-selector__input option {
+    background-color: #2d2d2d;
+    color: #e0e0e0;
+  }
+  
+  .time-selector__input optgroup {
+    background-color: #1a1a1a;
+    color: #4a90e2;
   }
 }
 
 /* High contrast mode */
 @media (prefers-contrast: high) {
-  .date-picker__input {
+  .time-selector__input {
     border-width: 3px;
   }
   
-  .date-picker__input:focus {
+  .time-selector__input:focus {
     box-shadow: 0 0 0 3px;
   }
 }

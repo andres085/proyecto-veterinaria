@@ -109,22 +109,21 @@
         </span>
       </div>
 
-      <!-- Fecha y Hora del Turno -->
+      <!-- Fecha del Turno -->
       <div class="form-group">
         <label for="fecha_turno" class="form-label form-label--required">
-          📅 Fecha y Hora del Turno
+          📅 Fecha del Turno
         </label>
         
         <div class="datetime-container">
           <DatePicker
-            v-model="formData.fecha_turno"
+            v-model="fechaSeleccionada"
             :disabled="loading"
-            :min="minDate"
-            :max="maxDate"
-            :error="errors.fecha_turno"
-            placeholder="Selecciona fecha y hora"
-            show-time
-            @change="validateField('fecha_turno')"
+            :min-date="minDate"
+            :max-date="maxDate"
+            :error-message="errors.fecha_turno"
+            placeholder="Selecciona la fecha"
+            @change="validateFechaHora"
             @input="clearFieldError('fecha_turno')"
           />
         </div>
@@ -133,7 +132,32 @@
           {{ errors.fecha_turno }}
         </span>
         <span v-else class="form-help">
-          Fecha y hora de la cita veterinaria
+          Fecha de la cita veterinaria
+        </span>
+      </div>
+
+      <!-- Hora del Turno -->
+      <div class="form-group">
+        <label for="hora_turno" class="form-label form-label--required">
+          🕐 Hora del Turno
+        </label>
+        
+        <div class="datetime-container">
+          <TimeSelector
+            v-model="horaSeleccionada"
+            :disabled="loading"
+            :error-message="errors.hora_turno"
+            placeholder="Selecciona la hora"
+            @change="validateFechaHora"
+            @input="clearFieldError('hora_turno')"
+          />
+        </div>
+        
+        <span v-if="errors.hora_turno" class="form-error">
+          {{ errors.hora_turno }}
+        </span>
+        <span v-else class="form-help">
+          Hora de la cita (turnos: 9:00-13:00 y 17:00-20:00)
         </span>
       </div>
 
@@ -233,6 +257,7 @@
 import { ref, reactive, computed, watch, nextTick, onMounted } from 'vue'
 import LoadingSpinner from '@/components/shared/LoadingSpinner.vue'
 import DatePicker from '@/components/shared/DatePicker.vue'
+import TimeSelector from '@/components/shared/TimeSelector.vue'
 import { useDuenioStore } from '@/stores/duenioStore'
 import type { 
   Turno, 
@@ -282,9 +307,14 @@ const formData = reactive<CreateTurnoPayload>({
   estado: 'pendiente' as EstadoTurno
 })
 
+// Campos separados para fecha y hora
+const fechaSeleccionada = ref<string>('')
+const horaSeleccionada = ref<string>('')
+
 const errors = reactive<Record<string, string>>({
   nombre_mascota: '',
   fecha_turno: '',
+  hora_turno: '',
   tratamiento: '',
   id_duenio: '',
   estado: ''
@@ -301,18 +331,19 @@ const loadingDuenios = ref<boolean>(false)
 // Computed
 const minDate = computed(() => {
   const today = new Date()
-  return today.toISOString().slice(0, 16) // YYYY-MM-DDTHH:MM format
+  return today.toISOString().slice(0, 10) // YYYY-MM-DD format
 })
 
 const maxDate = computed(() => {
   const futureDate = new Date()
   futureDate.setMonth(futureDate.getMonth() + 6) // 6 months from now
-  return futureDate.toISOString().slice(0, 16)
+  return futureDate.toISOString().slice(0, 10)
 })
 
 const isFormValid = computed(() => {
   return formData.nombre_mascota.length >= 1 &&
-         formData.fecha_turno.length > 0 &&
+         fechaSeleccionada.value.length > 0 &&
+         horaSeleccionada.value.length > 0 &&
          formData.tratamiento.length >= 3 &&
          formData.id_duenio > 0 &&
          !Object.values(errors).some(error => error)
@@ -328,19 +359,6 @@ const validateField = (field: keyof typeof formData): boolean => {
         errors[field] = 'El nombre de la mascota es requerido'
       } else if (formData.nombre_mascota.length > 80) {
         errors[field] = 'El nombre no puede exceder 80 caracteres'
-      }
-      break
-      
-    case 'fecha_turno':
-      if (!formData.fecha_turno) {
-        errors[field] = 'La fecha y hora son requeridas'
-      } else {
-        const selectedDate = new Date(formData.fecha_turno)
-        const now = new Date()
-        
-        if (selectedDate <= now) {
-          errors[field] = 'La fecha debe ser futura'
-        }
       }
       break
       
@@ -364,9 +382,52 @@ const validateField = (field: keyof typeof formData): boolean => {
   return !errors[field]
 }
 
+const validateFechaHora = (): boolean => {
+  errors.fecha_turno = ''
+  errors.hora_turno = ''
+  
+  // Validar fecha
+  if (!fechaSeleccionada.value) {
+    errors.fecha_turno = 'La fecha es requerida'
+  } else {
+    const selectedDate = new Date(fechaSeleccionada.value)
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    
+    if (selectedDate < today) {
+      errors.fecha_turno = 'La fecha debe ser futura'
+    }
+  }
+  
+  // Validar hora
+  if (!horaSeleccionada.value) {
+    errors.hora_turno = 'La hora es requerida'
+  }
+  
+  // Si ambos están presentes, combinar para fecha_turno
+  if (fechaSeleccionada.value && horaSeleccionada.value) {
+    const fechaCompleta = `${fechaSeleccionada.value} ${horaSeleccionada.value}:00`
+    formData.fecha_turno = fechaCompleta
+    
+    // Validar que no sea fecha/hora pasada
+    const fechaHoraCompleta = new Date(`${fechaSeleccionada.value}T${horaSeleccionada.value}`)
+    const ahora = new Date()
+    
+    if (fechaHoraCompleta <= ahora) {
+      errors.hora_turno = 'La fecha y hora deben ser futuras'
+    }
+  }
+  
+  return !errors.fecha_turno && !errors.hora_turno
+}
+
 const validateAllFields = (): boolean => {
-  const fields: (keyof typeof formData)[] = ['nombre_mascota', 'fecha_turno', 'tratamiento', 'id_duenio']
-  return fields.every(field => validateField(field))
+  const fieldsValid = ['nombre_mascota', 'tratamiento', 'id_duenio'].every(field => 
+    validateField(field as keyof typeof formData)
+  )
+  const fechaHoraValid = validateFechaHora()
+  
+  return fieldsValid && fechaHoraValid
 }
 
 const clearFieldError = (field: keyof typeof errors) => {
@@ -424,6 +485,9 @@ const resetForm = () => {
   formData.id_duenio = 0
   formData.estado = 'pendiente'
   
+  fechaSeleccionada.value = ''
+  horaSeleccionada.value = ''
+  
   Object.keys(errors).forEach(key => {
     errors[key as keyof typeof errors] = ''
   })
@@ -439,7 +503,30 @@ const resetForm = () => {
 const loadTurnoData = () => {
   if (props.turno && props.mode === 'edit') {
     formData.nombre_mascota = props.turno.nombre_mascota
-    formData.fecha_turno = props.turno.fecha_turno
+    
+    // Separar fecha y hora desde formato backend (YYYY-MM-DD HH:MM:SS)
+    if (props.turno.fecha_turno) {
+      const fechaBackend = props.turno.fecha_turno
+      
+      if (fechaBackend.includes('T')) {
+        // Formato ISO: YYYY-MM-DDTHH:MM:SS
+        const partes = fechaBackend.split('T')
+        fechaSeleccionada.value = partes[0] // YYYY-MM-DD
+        horaSeleccionada.value = partes[1].slice(0, 5) // HH:MM
+      } else if (fechaBackend.includes(' ')) {
+        // Formato backend: YYYY-MM-DD HH:MM:SS
+        const partes = fechaBackend.split(' ')
+        fechaSeleccionada.value = partes[0] // YYYY-MM-DD
+        horaSeleccionada.value = partes[1].slice(0, 5) // HH:MM
+      } else {
+        fechaSeleccionada.value = ''
+        horaSeleccionada.value = ''
+      }
+    } else {
+      fechaSeleccionada.value = ''
+      horaSeleccionada.value = ''
+    }
+    
     formData.tratamiento = props.turno.tratamiento
     formData.id_duenio = props.turno.id_duenio
     formData.estado = props.turno.estado
@@ -466,11 +553,13 @@ const handleSubmit = () => {
     return
   }
   
-  // Emit data
+  // El formato ya está correctamente establecido en validateFechaHora como "YYYY-MM-DD HH:MM:00"
   const submitData = { ...formData }
+  
   emit('submit', submitData)
   
   console.log(`📝 Formulario turno ${props.mode} enviado:`, submitData)
+  console.log(`📅 Fecha formateada para backend: ${submitData.fecha_turno}`)
 }
 
 const handleCancel = () => {

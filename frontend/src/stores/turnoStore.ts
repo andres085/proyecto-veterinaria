@@ -74,11 +74,6 @@ export const useTurnoStore = defineStore("turno", () => {
       .sort((a, b) => a.fecha_turno.localeCompare(b.fecha_turno));
   });
 
-  // 🔄 Acciones
-
-  /**
-   * 7.2.3 - Obtener todos los turnos
-   */
   const fetchAll = async (): Promise<void> => {
     try {
       loading.value = true;
@@ -99,9 +94,6 @@ export const useTurnoStore = defineStore("turno", () => {
     }
   };
 
-  /**
-   * Obtener un turno específico por ID
-   */
   const fetchOne = async (id: number): Promise<Turno | null> => {
     try {
       loading.value = true;
@@ -125,9 +117,6 @@ export const useTurnoStore = defineStore("turno", () => {
     }
   };
 
-  /**
-   * 7.2.4 - Crear nuevo turno
-   */
   const create = async (data: CreateTurnoPayload): Promise<Turno | null> => {
     try {
       loading.value = true;
@@ -145,7 +134,7 @@ export const useTurnoStore = defineStore("turno", () => {
       console.log("➕ Creando nuevo turno:", data.nombre_mascota);
       const response = await ApiService.createTurno(data);
 
-      const newTurno = response.data || response;
+      const { turno: newTurno } = response.data || response;
       turnos.value.push(newTurno);
       currentTurno.value = newTurno;
 
@@ -161,9 +150,6 @@ export const useTurnoStore = defineStore("turno", () => {
     }
   };
 
-  /**
-   * 7.2.5 - Actualizar turno existente
-   */
   const update = async (
     id: number,
     data: UpdateTurnoPayload
