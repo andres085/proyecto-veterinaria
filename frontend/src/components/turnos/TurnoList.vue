@@ -291,23 +291,10 @@
       </div>
     </div>
 
-    <!-- Confirm Dialog -->
-    <ConfirmDialog
-      :is-visible="showDeleteDialog"
-      :title="deleteDialog.title"
-      :message="deleteDialog.message"
-      :confirm-text="deleteDialog.confirmText"
-      :cancel-text="deleteDialog.cancelText"
-      type="danger"
-      :loading="deletingTurno"
-      @confirm="confirmDelete"
-      @cancel="cancelDelete"
-    />
   </div>
 </template>
 
 <script setup lang="ts">
-import ConfirmDialog from '@/components/shared/ConfirmDialog.vue'
 import LoadingSpinner from '@/components/shared/LoadingSpinner.vue'
 import type { EstadoTurno, Turno } from '@/types/models'
 import { computed, ref } from 'vue'
@@ -341,17 +328,7 @@ const emit = defineEmits<TurnoListEmits>()
 const sortField = ref<string>('fecha_turno')
 const sortDirection = ref<'asc' | 'desc'>('asc')
 const activeStateFilter = ref<string>('all')
-const showDeleteDialog = ref(false)
-const turnoToDelete = ref<Turno | null>(null)
-const deletingTurno = ref(false)
 
-// Borrar dialogo de estado
-const deleteDialog = computed(() => ({
-  title: 'Eliminar Turno',
-  message: `¿Estás seguro que deseas eliminar el turno de "${turnoToDelete.value?.nombre_mascota}" programado para ${formatDateTime(turnoToDelete.value?.fecha_turno || '')}?`,
-  confirmText: 'Sí, Eliminar',
-  cancelText: 'Cancelar'
-}))
 
 // Computed
 const totalTurnos = computed(() => props.turnos.length)
@@ -547,28 +524,9 @@ const truncateText = (text: string, maxLength: number): string => {
 }
 
 const handleDelete = (turno: Turno) => {
-  turnoToDelete.value = turno
-  showDeleteDialog.value = true
+  emit('delete', turno)
 }
 
-const confirmDelete = async () => {
-  if (!turnoToDelete.value) return
-  
-  deletingTurno.value = true
-  
-  try {
-    emit('delete', turnoToDelete.value)
-    showDeleteDialog.value = false
-  } finally {
-    deletingTurno.value = false
-    turnoToDelete.value = null
-  }
-}
-
-const cancelDelete = () => {
-  showDeleteDialog.value = false
-  turnoToDelete.value = null
-}
 
 const refreshList = () => {
   emit('refresh')
