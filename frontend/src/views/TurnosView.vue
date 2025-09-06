@@ -110,20 +110,9 @@ const createTurno = () => {
   showTurnoForm.value = true
 }
 
-const editTurno = async (turno: Turno) => {
+const editTurno = (turno: Turno) => {
   selectedTurno.value = turno
   turnoFormMode.value = 'edit'
-  
-  // Asegurar que tenemos los dueños cargados antes de mostrar el modal
-  if (duenioStore.duenios.length === 0) {
-    console.log('🔄 Cargando dueños para editar turno...')
-    try {
-      await duenioStore.fetchAll()
-    } catch (error) {
-      console.error('❌ Error cargando dueños:', error)
-    }
-  }
-  
   showTurnoForm.value = true
 }
 
