@@ -21,6 +21,7 @@
         </label>
         
         <!-- Dueño seleccionado (vista compacta) -->
+        <!-- Debug: {{ debugState }} -->
         <div v-if="selectedDuenio && !showDuenioSelector" class="selected-duenio">
           <div class="selected-duenio__info">
             <h4>{{ selectedDuenio.nombre_apellido }}</h4>
@@ -349,6 +350,20 @@ const isFormValid = computed(() => {
          !Object.values(errors).some(error => error)
 })
 
+// Debug computed para ver el estado en tiempo real
+const debugState = computed(() => {
+  const state = {
+    selectedDuenio: selectedDuenio.value,
+    showDuenioSelector: showDuenioSelector.value,
+    formDataIdDuenio: formData.id_duenio,
+    propsMode: props.mode,
+    shouldShowSelected: selectedDuenio.value && !showDuenioSelector.value,
+    shouldShowSelector: !selectedDuenio.value || showDuenioSelector.value
+  }
+  console.log('🐛 Debug state:', state)
+  return state
+})
+
 // Methods
 const validateField = (field: keyof typeof formData): boolean => {
   errors[field] = ''
@@ -502,6 +517,9 @@ const resetForm = () => {
 
 const loadTurnoData = () => {
   if (props.turno && props.mode === 'edit') {
+    console.log('🔧 Cargando datos del turno para edición:', props.turno)
+    console.log('👤 Dueño en el turno:', props.turno.duenio)
+    
     formData.nombre_mascota = props.turno.nombre_mascota
     
     // Separar fecha y hora desde formato backend (YYYY-MM-DD HH:MM:SS)
@@ -531,13 +549,24 @@ const loadTurnoData = () => {
     formData.id_duenio = props.turno.id_duenio
     formData.estado = props.turno.estado
     
-    // Find and set the selected duenio
-    const duenio = props.duenios.find(d => d.id === props.turno?.id_duenio) ||
-                   duenioStore.duenios.find(d => d.id === props.turno?.id_duenio)
+    // El dueño viene directamente en props.turno.duenio
+    const duenio = props.turno.duenio
     
     if (duenio) {
+      console.log('✅ Dueño encontrado:', duenio.nombre_apellido)
       selectedDuenio.value = duenio
       showDuenioSelector.value = false
+      console.log('🎛️ Estado después de asignar dueño:')
+      console.log('  - selectedDuenio.value:', selectedDuenio.value)
+      console.log('  - showDuenioSelector.value:', showDuenioSelector.value)
+    } else {
+      console.log('❌ Dueño no encontrado para ID:', props.turno.id_duenio)
+      // Si no encontramos el dueño, asegurarnos de mostrar el selector
+      selectedDuenio.value = null
+      showDuenioSelector.value = true
+      console.log('🎛️ Estado después de no encontrar dueño:')
+      console.log('  - selectedDuenio.value:', selectedDuenio.value)
+      console.log('  - showDuenioSelector.value:', showDuenioSelector.value)
     }
   }
 }
@@ -604,6 +633,14 @@ watch(() => props.mode, () => {
     resetForm()
   }
 }, { immediate: true })
+
+// Watch for duenios prop changes to reload turno data
+watch(() => props.duenios, () => {
+  if (props.mode === 'edit' && props.turno) {
+    console.log('🔄 Props duenios cambiaron, recargar datos del turno')
+    loadTurnoData()
+  }
+}, { immediate: false })
 
 // Load duenios on mount if not provided
 onMounted(async () => {
