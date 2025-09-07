@@ -115,17 +115,7 @@ class TurnoController:
     
     
     def get_one(self, turno_id: int) -> tuple:
-        """
-        Obtiene un turno específico por ID
-        
-        Args:
-            turno_id: ID del turno
-            
-        Returns:
-            tuple: (response_data, status_code)
-        """
         try:
-            # Validar ID
             if not isinstance(turno_id, int) or turno_id <= 0:
                 return create_error_response(
                     "ID de turno debe ser un número entero positivo", 
@@ -133,7 +123,6 @@ class TurnoController:
                     "Parámetro inválido"
                 )
             
-            # Obtener turno del modelo
             turno = self.turno_model.get_one(turno_id)
             
             if not turno:
@@ -160,17 +149,7 @@ class TurnoController:
     
     
     def create(self, data: Dict[str, Any]) -> tuple:
-        """
-        Crea un nuevo turno
-        
-        Args:
-            data: Datos del turno a crear
-            
-        Returns:
-            tuple: (response_data, status_code)
-        """
         try:
-            # El modelo ya maneja las validaciones manuales
             result = self.turno_model.create(data)
             
             if result['success']:
@@ -182,7 +161,6 @@ class TurnoController:
                     status_code=201
                 )
             else:
-                # Errores de validación o FK constraint
                 return create_validation_error_response(
                     result['errors'], 
                     400
@@ -198,18 +176,7 @@ class TurnoController:
     
     
     def update(self, turno_id: int, data: Dict[str, Any]) -> tuple:
-        """
-        Actualiza un turno existente
-        
-        Args:
-            turno_id: ID del turno a actualizar
-            data: Datos a actualizar
-            
-        Returns:
-            tuple: (response_data, status_code)
-        """
         try:
-            # Validar ID
             if not isinstance(turno_id, int) or turno_id <= 0:
                 return create_error_response(
                     "ID de turno debe ser un número entero positivo", 
@@ -217,7 +184,6 @@ class TurnoController:
                     "Parámetro inválido"
                 )
             
-            # Validar que hay datos para actualizar
             if not data:
                 return create_error_response(
                     "No se proporcionaron datos para actualizar", 
@@ -225,7 +191,6 @@ class TurnoController:
                     "Datos faltantes"
                 )
             
-            # El modelo maneja validaciones y verificación de existencia
             result = self.turno_model.update(turno_id, data)
             
             if result['success']:
@@ -236,7 +201,6 @@ class TurnoController:
                     message="Turno actualizado correctamente"
                 )
             else:
-                # Errores de validación o turno no encontrado
                 return create_validation_error_response(
                     result['errors'], 
                     400
@@ -252,17 +216,7 @@ class TurnoController:
     
     
     def delete(self, turno_id: int) -> tuple:
-        """
-        Elimina un turno
-        
-        Args:
-            turno_id: ID del turno a eliminar
-            
-        Returns:
-            tuple: (response_data, status_code)
-        """
         try:
-            # Validar ID
             if not isinstance(turno_id, int) or turno_id <= 0:
                 return create_error_response(
                     "ID de turno debe ser un número entero positivo", 
@@ -270,7 +224,6 @@ class TurnoController:
                     "Parámetro inválido"
                 )
             
-            # El modelo maneja la verificación de existencia
             result = self.turno_model.delete(turno_id)
             
             if result['success']:
@@ -282,7 +235,6 @@ class TurnoController:
                     status_code=204
                 )
             else:
-                # Turno no encontrado
                 return create_error_response(
                     result['errors'][0] if result['errors'] else "Error al eliminar", 
                     404, 
@@ -299,18 +251,7 @@ class TurnoController:
     
     
     def get_by_duenio(self, id_duenio: int, limit: int = 50) -> tuple:
-        """
-        Obtiene turnos de un dueño específico
-        
-        Args:
-            id_duenio: ID del dueño
-            limit: Límite de resultados
-            
-        Returns:
-            tuple: (response_data, status_code)
-        """
         try:
-            # Validar ID de dueño
             if not isinstance(id_duenio, int) or id_duenio <= 0:
                 return create_error_response(
                     "ID de dueño debe ser un número entero positivo", 
@@ -318,14 +259,11 @@ class TurnoController:
                     "Parámetro inválido"
                 )
             
-            # Validar límite
             if limit <= 0 or limit > 100:
                 limit = 50  # Valor por defecto
             
-            # Obtener turnos del modelo
             turnos = self.turno_model.get_by_duenio(id_duenio, limit)
             
-            # Si la lista está vacía, podría ser que el dueño no existe o no tiene turnos
             logger.info(f"Retrieved {len(turnos)} turnos for duenio ID: {id_duenio}")
             
             return create_success_response(
@@ -348,18 +286,7 @@ class TurnoController:
     
     
     def get_by_fecha(self, fecha: str, limit: int = 100) -> tuple:
-        """
-        Obtiene turnos por fecha específica
-        
-        Args:
-            fecha: Fecha en formato YYYY-MM-DD
-            limit: Límite de resultados
-            
-        Returns:
-            tuple: (response_data, status_code)
-        """
         try:
-            # Validar formato de fecha
             try:
                 fecha_obj = datetime.strptime(fecha, '%Y-%m-%d')
             except ValueError:
@@ -369,11 +296,9 @@ class TurnoController:
                     "Formato de fecha inválido"
                 )
             
-            # Validar límite
             if limit <= 0 or limit > 200:
                 limit = 100  # Valor por defecto
             
-            # Obtener turnos del modelo
             turnos = self.turno_model.get_by_fecha(fecha, limit)
             
             logger.info(f"Retrieved {len(turnos)} turnos for date: {fecha}")
@@ -400,18 +325,7 @@ class TurnoController:
     
     
     def update_estado(self, turno_id: int, nuevo_estado: str) -> tuple:
-        """
-        Actualiza el estado de un turno con validaciones de transición
-        
-        Args:
-            turno_id: ID del turno
-            nuevo_estado: Nuevo estado del turno
-            
-        Returns:
-            tuple: (response_data, status_code)
-        """
         try:
-            # Validar ID
             if not isinstance(turno_id, int) or turno_id <= 0:
                 return create_error_response(
                     "ID de turno debe ser un número entero positivo", 
@@ -419,7 +333,6 @@ class TurnoController:
                     "Parámetro inválido"
                 )
             
-            # Validar que se proporciona el estado
             if not nuevo_estado or not nuevo_estado.strip():
                 return create_error_response(
                     "El estado es requerido", 
@@ -429,7 +342,6 @@ class TurnoController:
             
             nuevo_estado = nuevo_estado.strip().lower()
             
-            # El modelo maneja las validaciones de estado y transiciones
             result = self.turno_model.update_estado(turno_id, nuevo_estado)
             
             if result['success']:
@@ -440,7 +352,6 @@ class TurnoController:
                     message=result.get('message', 'Estado actualizado correctamente')
                 )
             else:
-                # Errores de validación o turno no encontrado
                 return create_validation_error_response(
                     result['errors'], 
                     400
@@ -456,16 +367,9 @@ class TurnoController:
     
     
     def get_statistics(self) -> tuple:
-        """
-        Obtiene estadísticas básicas de turnos
-        
-        Returns:
-            tuple: (response_data, status_code)  
-        """
         try:
             total_turnos = self.turno_model.get_count()
             
-            # Estadísticas por estado
             estados = ['pendiente', 'confirmado', 'completado', 'cancelado']
             stats_por_estado = {}
             
@@ -473,7 +377,6 @@ class TurnoController:
                 count = self.turno_model.get_count(estado=estado)
                 stats_por_estado[estado] = count
             
-            # Fecha de hoy para turnos de hoy
             fecha_hoy = datetime.now().strftime('%Y-%m-%d')
             turnos_hoy = self.turno_model.get_count(fecha_desde=fecha_hoy, fecha_hasta=fecha_hoy)
             

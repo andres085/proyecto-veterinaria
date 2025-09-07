@@ -24,7 +24,7 @@ def create_app():
     def home():
         return {
             'message': '🐾 API Veterinaria Turnos',
-            'status': 'running',
+            'status': 'corriendo',
             'version': '1.0.0',
             'endpoints': {
                 'health': '/api/health',

@@ -21,14 +21,9 @@ DB_CONFIG = {
     'raise_on_warnings': True
 }
 
-# Pool de conexiones global
 connection_pool = None
 
 def init_connection_pool():
-    """
-    Inicializa el pool de conexiones MySQL
-    Basado en la experiencia del proyecto anterior (database.py:11-21)
-    """
     global connection_pool
     
     try:
@@ -62,16 +57,8 @@ def init_connection_pool():
     return True
 
 def get_db_connection():
-    """
-    Obtiene una conexión del pool
-    Implementa reconexión automática como en el proyecto anterior
-    
-    Returns:
-        mysql.connector.connection: Conexión de base de datos
-    """
     global connection_pool
     
-    # Inicializar pool si no existe
     if connection_pool is None:
         if not init_connection_pool():
             raise Exception("No se pudo inicializar el pool de conexiones")
@@ -79,7 +66,6 @@ def get_db_connection():
     try:
         connection = connection_pool.get_connection()
         
-        # Verificar que la conexión esté activa
         if not connection.is_connected():
             connection.reconnect(attempts=3, delay=1)
             
@@ -88,7 +74,6 @@ def get_db_connection():
     except Error as e:
         logger.error(f"❌ Error al obtener conexión del pool: {e}")
         
-        # Intentar reinicializar el pool
         logger.info("🔄 Intentando reinicializar pool de conexiones...")
         if init_connection_pool():
             try:
@@ -135,21 +120,12 @@ def execute_query(query, params=None, fetch=False, fetch_one=False):
             connection.close()
 
 def execute_transaction(queries_with_params):
-    """
-    Ejecuta múltiples consultas en una transacción
-    
-    Args:
-        queries_with_params (list): Lista de tuplas (query, params)
-        
-    Returns:
-        bool: True si la transacción fue exitosa
-    """
     connection = None
     cursor = None
     
     try:
         connection = get_db_connection()
-        connection.autocommit = False  # Desactivar autocommit para transacción
+        connection.autocommit = False 
         cursor = connection.cursor(dictionary=True)
         
         results = []
@@ -180,12 +156,6 @@ def execute_transaction(queries_with_params):
             connection.close()
 
 def get_db_info():
-    """
-    Obtiene información sobre la base de datos y el pool de conexiones
-    
-    Returns:
-        dict: Información de la base de datos
-    """
     try:
         connection = get_db_connection()
         cursor = connection.cursor(dictionary=True)

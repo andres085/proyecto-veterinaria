@@ -1,7 +1,5 @@
-# Usar imagen oficial de Python 3.11
 FROM python:3.11-slim
 
-# Establecer directorio de trabajo
 WORKDIR /app
 
 # Instalar dependencias del sistema necesarias para mysql-connector-python

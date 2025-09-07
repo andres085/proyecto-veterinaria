@@ -1,8 +1,3 @@
-"""
-Módulo de validaciones manuales para el sistema veterinaria
-Sistema de Gestión de Turnos - Validaciones básicas MVP
-"""
-
 import re
 from datetime import datetime
 from typing import Any, List, Optional, Dict
@@ -19,15 +14,6 @@ def validate_required(value: Any, field_name: str) -> Optional[str]:
 
 
 def validate_email(email: str) -> Optional[str]:
-    """
-    Valida formato básico de email
-    
-    Args:
-        email: Email a validar
-        
-    Returns:
-        str: Mensaje de error si falla, None si es válido
-    """
     if not email:
         return "Email no puede estar vacío"
     
@@ -41,15 +27,6 @@ def validate_email(email: str) -> Optional[str]:
 
 
 def validate_phone(phone: str) -> Optional[str]:
-    """
-    Valida formato básico de teléfono
-    
-    Args:
-        phone: Teléfono a validar
-        
-    Returns:
-        str: Mensaje de error si falla, None si es válido
-    """
     if not phone:
         return "Teléfono no puede estar vacío"
     
@@ -81,16 +58,6 @@ def validate_length(value: str, min_len: int, max_len: int, field_name: str) -> 
 
 
 def validate_datetime(date_str: str, field_name: str = "fecha") -> Optional[str]:
-    """
-    Valida formato datetime
-    
-    Args:
-        date_str: String de fecha/hora a validar
-        field_name: Nombre del campo
-        
-    Returns:
-        str: Mensaje de error si falla, None si es válido
-    """
     if not date_str:
         return f"El campo '{field_name}' es requerido"
     
@@ -113,16 +80,6 @@ def validate_datetime(date_str: str, field_name: str = "fecha") -> Optional[str]
 
 
 def validate_future_datetime(date_str: str, field_name: str = "fecha") -> Optional[str]:
-    """
-    Valida que la fecha sea futura
-    
-    Args:
-        date_str: String de fecha/hora a validar
-        field_name: Nombre del campo
-        
-    Returns:
-        str: Mensaje de error si falla, None si es válido
-    """
     # Primero validar formato
     format_error = validate_datetime(date_str, field_name)
     if format_error:
@@ -151,17 +108,6 @@ def validate_future_datetime(date_str: str, field_name: str = "fecha") -> Option
 
 
 def validate_enum(value: str, allowed_values: List[str], field_name: str) -> Optional[str]:
-    """
-    Valida que el valor esté en la lista de valores permitidos
-    
-    Args:
-        value: Valor a validar
-        allowed_values: Lista de valores permitidos
-        field_name: Nombre del campo
-        
-    Returns:
-        str: Mensaje de error si falla, None si es válido
-    """
     if value not in allowed_values:
         return f"El campo '{field_name}' debe ser uno de: {', '.join(allowed_values)}"
     

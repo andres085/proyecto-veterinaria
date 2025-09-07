@@ -187,17 +187,7 @@ class DuenioController:
     
     
     def delete(self, duenio_id: int) -> tuple:
-        """
-        Elimina un dueño y sus turnos asociados
-        
-        Args:
-            duenio_id: ID del dueño a eliminar
-            
-        Returns:
-            tuple: (response_data, status_code)
-        """
         try:
-            # Validar ID
             if not isinstance(duenio_id, int) or duenio_id <= 0:
                 return create_error_response(
                     "ID de dueño debe ser un número entero positivo", 
@@ -205,7 +195,6 @@ class DuenioController:
                     "Parámetro inválido"
                 )
             
-            # El modelo maneja la verificación de existencia
             result = self.duenio_model.delete(duenio_id)
             
             if result['success']:
@@ -217,7 +206,6 @@ class DuenioController:
                     status_code=204
                 )
             else:
-                # Dueño no encontrado
                 return create_error_response(
                     result['errors'][0] if result['errors'] else "Error al eliminar", 
                     404, 
@@ -234,18 +222,7 @@ class DuenioController:
     
     
     def search(self, query: str, limit: int = 50) -> tuple:
-        """
-        Busca dueños por nombre o email
-        
-        Args:
-            query: Término de búsqueda
-            limit: Límite de resultados
-            
-        Returns:
-            tuple: (response_data, status_code)
-        """
         try:
-            # Validar query
             if not query or not query.strip():
                 return create_error_response(
                     "El parámetro de búsqueda 'q' es requerido", 
@@ -255,7 +232,6 @@ class DuenioController:
             
             query = query.strip()
             
-            # Validar longitud mínima
             if len(query) < 2:
                 return create_error_response(
                     "El término de búsqueda debe tener al menos 2 caracteres", 
@@ -263,11 +239,9 @@ class DuenioController:
                     "Parámetro inválido"
                 )
             
-            # Validar límite
             if limit <= 0 or limit > 100:
                 limit = 50  # Valor por defecto
             
-            # Buscar en el modelo
             duenios = self.duenio_model.search(query, limit)
             
             logger.info(f"Search '{query}' returned {len(duenios)} results")
@@ -292,12 +266,6 @@ class DuenioController:
     
     
     def get_statistics(self) -> tuple:
-        """
-        Obtiene estadísticas básicas de dueños
-        
-        Returns:
-            tuple: (response_data, status_code)  
-        """
         try:
             total_duenios = self.duenio_model.get_count()
             
