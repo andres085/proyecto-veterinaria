@@ -1,6 +1,5 @@
 <template>
   <div class="duenio-buscar">
-    <!-- Search Header -->
     <div class="duenio-buscar__header">
       <h3 class="duenio-buscar__title">🔍 Buscar Dueños</h3>
       <p class="duenio-buscar__subtitle">
@@ -8,9 +7,7 @@
       </p>
     </div>
 
-    <!-- Search Controls -->
     <div class="duenio-buscar__controls">
-      <!-- Main search input -->
       <div class="search-main">
         <SearchInput
           v-model="searchQuery"
@@ -27,10 +24,8 @@
           @enter="handleEnter"
         />
       </div>
-
     </div>
 
-    <!-- Search Results Summary -->
     <div v-if="hasSearched" class="duenio-buscar__results">
       <div class="results-summary">
         <div class="results-info">
@@ -75,7 +70,6 @@
         </div>
       </div>
 
-      <!-- Search suggestions -->
       <div
         v-if="searchQuery && resultsCount === 0 && !loading"
         class="search-suggestions"
@@ -90,7 +84,6 @@
       </div>
     </div>
 
-    <!-- Quick Actions -->
     <div
       v-if="!hasSearched || (searchQuery && resultsCount === 0)"
       class="duenio-buscar__quick-actions"
@@ -135,7 +128,7 @@ import SearchInput from "@/components/shared/SearchInput.vue";
 import { useDuenioStore } from "@/stores/duenioStore";
 
 const duenioStore = useDuenioStore();
-// Types
+
 export interface DuenioBuscarProps {
   loading?: boolean;
   resultsCount?: number;
@@ -150,33 +143,26 @@ export interface DuenioBuscarEmits {
   (e: "view-all"): void;
 }
 
-
-// Props
 const props = withDefaults(defineProps<DuenioBuscarProps>(), {
   loading: false,
   resultsCount: 0,
   totalDuenios: 0,
 });
 
-// Emits
 const emit = defineEmits<DuenioBuscarEmits>();
 
-// State
 const searchQuery = ref<string>("");
 const hasSearched = ref<boolean>(false);
 
-// Methods
 const handleSearch = (query: string) => {
   hasSearched.value = true;
   emit("search", query, {});
-  console.log("🔍 Búsqueda:", query);
 };
 
 const handleClear = () => {
   searchQuery.value = "";
   hasSearched.value = false;
   emit("clear");
-  console.log("🧹 Búsqueda limpiada");
 };
 
 const handleEnter = (query: string) => {
@@ -185,9 +171,7 @@ const handleEnter = (query: string) => {
 
 const handleRefresh = () => {
   emit("refresh");
-  console.log("🔄 Actualizando resultados");
 };
-
 
 const formatResultsText = (count: number): string => {
   if (count === 0) return "No se encontraron dueños";
@@ -195,12 +179,11 @@ const formatResultsText = (count: number): string => {
   return `${count} dueños encontrados`;
 };
 
-// Watch for external changes
 watch(
   () => props.resultsCount,
   (newValue) => {
     if (newValue !== undefined && hasSearched.value) {
-      console.log(`📊 Resultados actualizados: ${newValue}`);
+      console.log(`Resultados actualizados: ${newValue}`);
     }
   }
 );
@@ -216,7 +199,6 @@ console.log("🔧 Componente DuenioBuscar cargado");
   overflow: hidden;
 }
 
-/* Header */
 .duenio-buscar__header {
   padding: var(--spacing-lg) var(--spacing-lg) var(--spacing-md);
   border-bottom: 1px solid var(--border-light);
@@ -236,7 +218,6 @@ console.log("🔧 Componente DuenioBuscar cargado");
   font-size: var(--font-size-sm);
 }
 
-/* Controls */
 .duenio-buscar__controls {
   padding: var(--spacing-lg);
 }
@@ -245,8 +226,6 @@ console.log("🔧 Componente DuenioBuscar cargado");
   margin-bottom: var(--spacing-md);
 }
 
-
-/* Results */
 .duenio-buscar__results {
   padding: var(--spacing-lg);
   border-top: 1px solid var(--border-light);
@@ -278,7 +257,6 @@ console.log("🔧 Componente DuenioBuscar cargado");
   gap: var(--spacing-sm);
 }
 
-/* Search Suggestions */
 .search-suggestions {
   background: white;
   padding: var(--spacing-md);
@@ -304,7 +282,6 @@ console.log("🔧 Componente DuenioBuscar cargado");
   font-size: var(--font-size-sm);
 }
 
-/* Quick Actions */
 .duenio-buscar__quick-actions {
   padding: var(--spacing-lg);
   border-top: 1px solid var(--border-light);
@@ -367,8 +344,6 @@ console.log("🔧 Componente DuenioBuscar cargado");
   font-size: var(--font-size-sm);
 }
 
-
-/* Responsive */
 @media (max-width: 768px) {
   .duenio-buscar__header,
   .duenio-buscar__controls,

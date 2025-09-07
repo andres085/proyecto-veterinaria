@@ -62,10 +62,10 @@ class TurnoModel:
             return turnos
             
         except MySQLError as e:
-            logger.error(f"MySQL error in get_all: {e}")
+            logger.error(f"MySQL error en get_all: {e}")
             raise
         except Exception as e:
-            logger.error(f"Unexpected error in get_all: {e}")
+            logger.error(f"Unexpected error en get_all: {e}")
             raise
     
     
@@ -96,10 +96,10 @@ class TurnoModel:
             return turno
                 
         except MySQLError as e:
-            logger.error(f"MySQL error in get_one: {e}")
+            logger.error(f"MySQL error en get_one: {e}")
             raise
         except Exception as e:
-            logger.error(f"Unexpected error in get_one: {e}")
+            logger.error(f"Unexpected error en get_one: {e}")
             raise
     
     
@@ -151,7 +151,7 @@ class TurnoModel:
             }
                 
         except MySQLError as e:
-            logger.error(f"MySQL error in create: {e}")
+            logger.error(f"MySQL error en create: {e}")
             
             # Manejar errores específicos de MySQL
             if e.errno == 1452:  # Foreign key constraint fails
@@ -163,7 +163,7 @@ class TurnoModel:
                 raise
                 
         except Exception as e:
-            logger.error(f"Unexpected error in create: {e}")
+            logger.error(f"Unexpected error en create: {e}")
             raise
     
     
@@ -258,7 +258,7 @@ class TurnoModel:
                 raise
                 
         except Exception as e:
-            logger.error(f"Unexpected error in update: {e}")
+            logger.error(f"Unexpected error en update: {e}")
             raise
     
     
@@ -289,10 +289,10 @@ class TurnoModel:
                 }
                 
         except MySQLError as e:
-            logger.error(f"MySQL error in delete: {e}")
+            logger.error(f"MySQL error en delete: {e}")
             raise
         except Exception as e:
-            logger.error(f"Unexpected error in delete: {e}")
+            logger.error(f"Unexpected error en delete: {e}")
             raise
     
     
@@ -324,10 +324,10 @@ class TurnoModel:
             return turnos
             
         except MySQLError as e:
-            logger.error(f"MySQL error in get_by_duenio: {e}")
+            logger.error(f"MySQL error en get_by_duenio: {e}")
             raise
         except Exception as e:
-            logger.error(f"Unexpected error in get_by_duenio: {e}")
+            logger.error(f"Unexpected error en get_by_duenio: {e}")
             raise
     
     
@@ -361,10 +361,10 @@ class TurnoModel:
             return turnos
             
         except MySQLError as e:
-            logger.error(f"MySQL error in get_by_fecha: {e}")
+            logger.error(f"MySQL error en get_by_fecha: {e}")
             raise
         except Exception as e:
-            logger.error(f"Unexpected error in get_by_fecha: {e}")
+            logger.error(f"Unexpected error en get_by_fecha: {e}")
             raise
     
     
@@ -438,10 +438,10 @@ class TurnoModel:
                 }
                 
         except MySQLError as e:
-            logger.error(f"MySQL error in update_estado: {e}")
+            logger.error(f"MySQL error en update_estado: {e}")
             raise
         except Exception as e:
-            logger.error(f"Unexpected error in update_estado: {e}")
+            logger.error(f"Unexpected error en update_estado: {e}")
             raise
     
     
@@ -466,10 +466,10 @@ class TurnoModel:
             return result['total'] if result else 0
             
         except MySQLError as e:
-            logger.error(f"MySQL error in get_count: {e}")
+            logger.error(f"MySQL error en get_count: {e}")
             raise
         except Exception as e:
-            logger.error(f"Unexpected error in get_count: {e}")
+            logger.error(f"Unexpected error en get_count: {e}")
             raise
     
     

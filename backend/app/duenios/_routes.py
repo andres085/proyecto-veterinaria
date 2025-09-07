@@ -42,7 +42,7 @@ def get_all_duenios():
         return response_data, status_code
         
     except Exception as e:
-        logger.error(f"Error in get_all_duenios route: {e}")
+        logger.error(f"Error en get_all_duenios route: {e}")
         return create_error_response(
             "Error interno del servidor", 
             500, 
@@ -57,7 +57,7 @@ def get_duenio(duenio_id):
         return response_data, status_code
         
     except Exception as e:
-        logger.error(f"Error in get_duenio route: {e}")
+        logger.error(f"Error en get_duenio route: {e}")
         return create_error_response(
             "Error interno del servidor", 
             500, 
@@ -77,7 +77,7 @@ def create_duenio():
         return response_data, status_code
         
     except Exception as e:
-        logger.error(f"Error in create_duenio route: {e}")
+        logger.error(f"Error en create_duenio route: {e}")
         return create_error_response(
             "Error interno del servidor", 
             500, 
@@ -96,7 +96,7 @@ def update_duenio(duenio_id):
         return response_data, status_code
         
     except Exception as e:
-        logger.error(f"Error in update_duenio route: {e}")
+        logger.error(f"Error en update_duenio route: {e}")
         return create_error_response(
             "Error interno del servidor", 
             500, 
@@ -115,7 +115,7 @@ def delete_duenio(duenio_id):
             return response_data, status_code
         
     except Exception as e:
-        logger.error(f"Error in delete_duenio route: {e}")
+        logger.error(f"Error en delete_duenio route: {e}")
         return create_error_response(
             "Error interno del servidor", 
             500, 
@@ -144,7 +144,7 @@ def search_duenios():
         return response_data, status_code
         
     except Exception as e:
-        logger.error(f"Error in search_duenios route: {e}")
+        logger.error(f"Error en search_duenios route: {e}")
         return create_error_response(
             "Error interno del servidor", 
             500, 
@@ -159,7 +159,7 @@ def get_duenios_statistics():
         return response_data, status_code
         
     except Exception as e:
-        logger.error(f"Error in get_duenios_statistics route: {e}")
+        logger.error(f"Error en get_duenios_statistics route: {e}")
         return create_error_response(
             "Error interno del servidor", 
             500, 

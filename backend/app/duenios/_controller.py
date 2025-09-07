@@ -62,7 +62,7 @@ class DuenioController:
             )
             
         except Exception as e:
-            logger.error(f"Error in get_all: {e}")
+            logger.error(f"Error en get_all: {e}")
             return create_error_response(
                 "Error al obtener los dueños", 
                 500, 
@@ -96,7 +96,7 @@ class DuenioController:
             )
             
         except Exception as e:
-            logger.error(f"Error in get_one: {e}")
+            logger.error(f"Error en get_one: {e}")
             return create_error_response(
                 "Error al obtener el dueño", 
                 500, 
@@ -124,7 +124,7 @@ class DuenioController:
                 )
                 
         except Exception as e:
-            logger.error(f"Error in create: {e}")
+            logger.error(f"Error en create: {e}")
             return create_error_response(
                 "Error al crear el dueño", 
                 500, 
@@ -178,7 +178,7 @@ class DuenioController:
                 )
                 
         except Exception as e:
-            logger.error(f"Error in update: {e}")
+            logger.error(f"Error en update: {e}")
             return create_error_response(
                 "Error al actualizar el dueño", 
                 500, 
@@ -213,7 +213,7 @@ class DuenioController:
                 )
                 
         except Exception as e:
-            logger.error(f"Error in delete: {e}")
+            logger.error(f"Error en delete: {e}")
             return create_error_response(
                 "Error al eliminar el dueño", 
                 500, 
@@ -257,7 +257,7 @@ class DuenioController:
             )
             
         except Exception as e:
-            logger.error(f"Error in search: {e}")
+            logger.error(f"Error en search: {e}")
             return create_error_response(
                 "Error al realizar la búsqueda", 
                 500, 
@@ -279,7 +279,7 @@ class DuenioController:
             )
             
         except Exception as e:
-            logger.error(f"Error in get_statistics: {e}")
+            logger.error(f"Error en get_statistics: {e}")
             return create_error_response(
                 "Error al obtener estadísticas", 
                 500, 

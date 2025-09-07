@@ -106,7 +106,7 @@ class TurnoController:
             )
             
         except Exception as e:
-            logger.error(f"Error in get_all: {e}")
+            logger.error(f"Error en get_all: {e}")
             return create_error_response(
                 "Error al obtener los turnos", 
                 500, 
@@ -140,7 +140,7 @@ class TurnoController:
             )
             
         except Exception as e:
-            logger.error(f"Error in get_one: {e}")
+            logger.error(f"Error en get_one: {e}")
             return create_error_response(
                 "Error al obtener el turno", 
                 500, 
@@ -167,7 +167,7 @@ class TurnoController:
                 )
                 
         except Exception as e:
-            logger.error(f"Error in create: {e}")
+            logger.error(f"Error en create: {e}")
             return create_error_response(
                 "Error al crear el turno", 
                 500, 
@@ -207,7 +207,7 @@ class TurnoController:
                 )
                 
         except Exception as e:
-            logger.error(f"Error in update: {e}")
+            logger.error(f"Error en update: {e}")
             return create_error_response(
                 "Error al actualizar el turno", 
                 500, 
@@ -242,7 +242,7 @@ class TurnoController:
                 )
                 
         except Exception as e:
-            logger.error(f"Error in delete: {e}")
+            logger.error(f"Error en delete: {e}")
             return create_error_response(
                 "Error al eliminar el turno", 
                 500, 
@@ -277,7 +277,7 @@ class TurnoController:
             )
             
         except Exception as e:
-            logger.error(f"Error in get_by_duenio: {e}")
+            logger.error(f"Error en get_by_duenio: {e}")
             return create_error_response(
                 "Error al obtener turnos del dueño", 
                 500, 
@@ -316,7 +316,7 @@ class TurnoController:
             )
             
         except Exception as e:
-            logger.error(f"Error in get_by_fecha: {e}")
+            logger.error(f"Error en get_by_fecha: {e}")
             return create_error_response(
                 "Error al obtener turnos por fecha", 
                 500, 
@@ -358,7 +358,7 @@ class TurnoController:
                 )
                 
         except Exception as e:
-            logger.error(f"Error in update_estado: {e}")
+            logger.error(f"Error en update_estado: {e}")
             return create_error_response(
                 "Error al actualizar el estado del turno", 
                 500, 

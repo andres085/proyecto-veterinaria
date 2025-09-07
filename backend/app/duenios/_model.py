@@ -39,10 +39,10 @@ class DuenioModel:
             return duenios
             
         except MySQLError as e:
-            logger.error(f"MySQL error in get_all: {e}")
+            logger.error(f"MySQL error en get_all: {e}")
             raise
         except Exception as e:
-            logger.error(f"Unexpected error in get_all: {e}")
+            logger.error(f"Unexpected error en get_all: {e}")
             raise
     
     
@@ -66,10 +66,10 @@ class DuenioModel:
             return duenio
                 
         except MySQLError as e:
-            logger.error(f"MySQL error in get_one: {e}")
+            logger.error(f"MySQL error en get_one: {e}")
             raise
         except Exception as e:
-            logger.error(f"Unexpected error in get_one: {e}")
+            logger.error(f"Unexpected error en get_one: {e}")
             raise
     
     
@@ -117,7 +117,7 @@ class DuenioModel:
                 }
                 
         except MySQLError as e:
-            logger.error(f"MySQL error in create: {e}")
+            logger.error(f"MySQL error en create: {e}")
             
             if e.errno == 1062:
                 return {
@@ -128,7 +128,7 @@ class DuenioModel:
                 raise
                 
         except Exception as e:
-            logger.error(f"Unexpected error in create: {e}")
+            logger.error(f"Unexpected error en create: {e}")
             raise
     
     
@@ -195,7 +195,7 @@ class DuenioModel:
                 }
                 
         except MySQLError as e:
-            logger.error(f"MySQL error in update: {e}")
+            logger.error(f"MySQL error en update: {e}")
             
             if e.errno == 1062:  # Duplicate entry
                 return {
@@ -206,7 +206,7 @@ class DuenioModel:
                 raise
                 
         except Exception as e:
-            logger.error(f"Unexpected error in update: {e}")
+            logger.error(f"Unexpected error en update: {e}")
             raise
     
     
@@ -235,10 +235,10 @@ class DuenioModel:
                 }
                 
         except MySQLError as e:
-            logger.error(f"MySQL error in delete: {e}")
+            logger.error(f"MySQL error en delete: {e}")
             raise
         except Exception as e:
-            logger.error(f"Unexpected error in delete: {e}")
+            logger.error(f"Unexpected error en delete: {e}")
             raise
     
     
@@ -269,10 +269,10 @@ class DuenioModel:
             return duenios
             
         except MySQLError as e:
-            logger.error(f"MySQL error in search: {e}")
+            logger.error(f"MySQL error en search: {e}")
             raise
         except Exception as e:
-            logger.error(f"Unexpected error in search: {e}")
+            logger.error(f"Unexpected error en search: {e}")
             raise
     
     
@@ -283,10 +283,10 @@ class DuenioModel:
             return result is not None
             
         except MySQLError as e:
-            logger.error(f"MySQL error in exists: {e}")
+            logger.error(f"MySQL error en exists: {e}")
             raise
         except Exception as e:
-            logger.error(f"Unexpected error in exists: {e}")
+            logger.error(f"Unexpected error en exists: {e}")
             raise
     
     
@@ -297,10 +297,10 @@ class DuenioModel:
             return result['total'] if result else 0
             
         except MySQLError as e:
-            logger.error(f"MySQL error in get_count: {e}")
+            logger.error(f"MySQL error en get_count: {e}")
             raise
         except Exception as e:
-            logger.error(f"Unexpected error in get_count: {e}")
+            logger.error(f"Unexpected error en get_count: {e}")
             raise
     
     
