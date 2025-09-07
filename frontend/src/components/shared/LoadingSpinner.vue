@@ -3,16 +3,13 @@
     class="loading-spinner"
     :class="[
       `loading-spinner--${size}`,
-      { 'loading-spinner--overlay': overlay }
+      { 'loading-spinner--overlay': overlay },
     ]"
     role="status"
     :aria-label="ariaLabel"
   >
-    <div
-      class="loading-spinner__spinner"
-      :style="spinnerStyle"
-    ></div>
-    
+    <div class="loading-spinner__spinner" :style="spinnerStyle"></div>
+
     <div
       v-if="text"
       class="loading-spinner__text"
@@ -24,50 +21,46 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed } from "vue";
 
-// Types
 export interface LoadingSpinnerProps {
-  size?: 'small' | 'medium' | 'large'
-  color?: string
-  text?: string
-  overlay?: boolean
-  speed?: 'slow' | 'normal' | 'fast'
+  size?: "small" | "medium" | "large";
+  color?: string;
+  text?: string;
+  overlay?: boolean;
+  speed?: "slow" | "normal" | "fast";
 }
 
-// Props
 const props = withDefaults(defineProps<LoadingSpinnerProps>(), {
-  size: 'medium',
-  color: '#2c5aa0',
+  size: "medium",
+  color: "#2c5aa0",
   overlay: false,
-  speed: 'normal'
-})
+  speed: "normal",
+});
 
-// Computed
 const spinnerStyle = computed(() => ({
   borderTopColor: props.color,
   borderRightColor: props.color,
-  animationDuration: getAnimationDuration()
-}))
+  animationDuration: getAnimationDuration(),
+}));
 
 const ariaLabel = computed(() => {
   if (props.text) {
-    return `Cargando: ${props.text}`
+    return `Cargando: ${props.text}`;
   }
-  return 'Cargando contenido'
-})
+  return "Cargando contenido";
+});
 
-// Methods
 const getAnimationDuration = (): string => {
   const durations = {
-    slow: '2s',
-    normal: '1s',
-    fast: '0.5s'
-  }
-  return durations[props.speed]
-}
+    slow: "2s",
+    normal: "1s",
+    fast: "0.5s",
+  };
+  return durations[props.speed];
+};
 
-console.log('🔧 Componente LoadingSpinner cargado')
+console.log("🔧 Componente LoadingSpinner cargado");
 </script>
 
 <style scoped>
@@ -90,7 +83,6 @@ console.log('🔧 Componente LoadingSpinner cargado')
   backdrop-filter: blur(2px);
 }
 
-/* Spinner sizes */
 .loading-spinner__spinner {
   border: 3px solid #f3f3f3;
   border-top: 3px solid #2c5aa0;
@@ -117,7 +109,6 @@ console.log('🔧 Componente LoadingSpinner cargado')
   border-width: 4px;
 }
 
-/* Text styles */
 .loading-spinner__text {
   color: #666;
   font-weight: 500;
@@ -137,41 +128,41 @@ console.log('🔧 Componente LoadingSpinner cargado')
   font-size: 1.125rem;
 }
 
-/* Animations */
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
-/* Accessibility */
 @media (prefers-reduced-motion: reduce) {
   .loading-spinner__spinner {
     animation: spin 2s linear infinite;
   }
 }
 
-/* Dark theme support */
 @media (prefers-color-scheme: dark) {
   .loading-spinner--overlay {
     background-color: rgba(30, 30, 30, 0.9);
   }
-  
+
   .loading-spinner__text {
     color: #ccc;
   }
-  
+
   .loading-spinner__spinner {
     border-color: #444;
   }
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
   .loading-spinner--large .loading-spinner__spinner {
     width: 50px;
     height: 50px;
   }
-  
+
   .loading-spinner__text--large {
     font-size: 1rem;
   }

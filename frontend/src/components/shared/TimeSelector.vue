@@ -8,7 +8,7 @@
     >
       {{ label }}
     </label>
-    
+
     <div class="time-selector__wrapper">
       <select
         :id="inputId"
@@ -16,7 +16,7 @@
         class="time-selector__input"
         :class="{
           'time-selector__input--error': hasError,
-          'time-selector__input--disabled': disabled
+          'time-selector__input--disabled': disabled,
         }"
         :value="modelValue"
         :required="required"
@@ -48,13 +48,10 @@
           <option value="20:00">20:00</option>
         </optgroup>
       </select>
-      
-      <div class="time-selector__icon">
-        🕐
-      </div>
+
+      <div class="time-selector__icon">🕐</div>
     </div>
-    
-    <!-- Error message -->
+
     <div
       v-if="errorMessage"
       class="time-selector__error"
@@ -63,131 +60,118 @@
     >
       {{ errorMessage }}
     </div>
-    
-    <!-- Helper text -->
-    <div
-      v-if="helperText && !errorMessage"
-      class="time-selector__helper"
-    >
+
+    <div v-if="helperText && !errorMessage" class="time-selector__helper">
       {{ helperText }}
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed } from "vue";
 
-// Types
 export interface TimeSelectorProps {
-  modelValue: string
-  label?: string
-  placeholder?: string
-  required?: boolean
-  disabled?: boolean
-  helperText?: string
-  errorMessage?: string
-  validateOnBlur?: boolean
-  id?: string
+  modelValue: string;
+  label?: string;
+  placeholder?: string;
+  required?: boolean;
+  disabled?: boolean;
+  helperText?: string;
+  errorMessage?: string;
+  validateOnBlur?: boolean;
+  id?: string;
 }
 
 export interface TimeSelectorEmits {
-  (e: 'update:modelValue', value: string): void
-  (e: 'change', value: string): void
-  (e: 'focus', event: FocusEvent): void
-  (e: 'blur', event: FocusEvent): void
-  (e: 'validation', isValid: boolean): void
+  (e: "update:modelValue", value: string): void;
+  (e: "change", value: string): void;
+  (e: "focus", event: FocusEvent): void;
+  (e: "blur", event: FocusEvent): void;
+  (e: "validation", isValid: boolean): void;
 }
 
-// Props
 const props = withDefaults(defineProps<TimeSelectorProps>(), {
-  placeholder: 'Selecciona una hora',
+  placeholder: "Selecciona una hora",
   required: false,
   disabled: false,
-  validateOnBlur: true
-})
+  validateOnBlur: true,
+});
 
-// Emits
-const emit = defineEmits<TimeSelectorEmits>()
+const emit = defineEmits<TimeSelectorEmits>();
 
-// Refs
-const timeSelect = ref<HTMLSelectElement>()
-const internalError = ref<string>('')
-const isFocused = ref(false)
+const timeSelect = ref<HTMLSelectElement>();
+const internalError = ref<string>("");
+const isFocused = ref(false);
 
-// Computed
-const inputId = computed(() => props.id || `time-selector-${Math.random().toString(36).substr(2, 9)}`)
+const inputId = computed(
+  () => props.id || `time-selector-${Math.random().toString(36).substr(2, 9)}`
+);
 
-const hasError = computed(() => !!(props.errorMessage || internalError.value))
+const hasError = computed(() => !!(props.errorMessage || internalError.value));
 
-// Methods
 const validateTime = (value: string): string => {
   if (!value && props.required) {
-    return 'Debe seleccionar una hora'
+    return "Debe seleccionar una hora";
   }
-  
-  return ''
-}
+
+  return "";
+};
 
 const handleInput = (event: Event) => {
-  const target = event.target as HTMLSelectElement
-  const value = target.value
-  
-  emit('update:modelValue', value)
-  
-  // Limpiar error interno al seleccionar
+  const target = event.target as HTMLSelectElement;
+  const value = target.value;
+
+  emit("update:modelValue", value);
+
   if (internalError.value) {
-    internalError.value = ''
+    internalError.value = "";
   }
-}
+};
 
 const handleChange = (event: Event) => {
-  const target = event.target as HTMLSelectElement
-  const value = target.value
-  
-  emit('change', value)
-  
-  // Validar inmediatamente en change
-  const error = validateTime(value)
-  internalError.value = error
-  emit('validation', !error)
-}
+  const target = event.target as HTMLSelectElement;
+  const value = target.value;
+
+  emit("change", value);
+
+  const error = validateTime(value);
+  internalError.value = error;
+  emit("validation", !error);
+};
 
 const handleFocus = (event: FocusEvent) => {
-  isFocused.value = true
-  emit('focus', event)
-}
+  isFocused.value = true;
+  emit("focus", event);
+};
 
 const handleBlur = (event: FocusEvent) => {
-  isFocused.value = false
-  emit('blur', event)
-  
-  // Validar en blur si está habilitado
-  if (props.validateOnBlur) {
-    const error = validateTime(props.modelValue)
-    internalError.value = error
-    emit('validation', !error)
-  }
-}
+  isFocused.value = false;
+  emit("blur", event);
 
-// Public methods
+  if (props.validateOnBlur) {
+    const error = validateTime(props.modelValue);
+    internalError.value = error;
+    emit("validation", !error);
+  }
+};
+
 const focus = () => {
-  timeSelect.value?.focus()
-}
+  timeSelect.value?.focus();
+};
 
 const validate = (): boolean => {
-  const error = validateTime(props.modelValue)
-  internalError.value = error
-  emit('validation', !error)
-  return !error
-}
+  const error = validateTime(props.modelValue);
+  internalError.value = error;
+  emit("validation", !error);
+  return !error;
+};
 
-// Expose methods
 defineExpose({
   focus,
-  validate
-})
+  validate,
+});
 
-console.log('🔧 Componente TimeSelector cargado')
+console.log("🔧 Componente TimeSelector cargado");
 </script>
 
 <style scoped>
@@ -210,7 +194,7 @@ console.log('🔧 Componente TimeSelector cargado')
 }
 
 .time-selector__label--required::after {
-  content: ' *';
+  content: " *";
   color: #dc3545;
 }
 
@@ -277,7 +261,7 @@ console.log('🔧 Componente TimeSelector cargado')
 }
 
 .time-selector__error::before {
-  content: '⚠️';
+  content: "⚠️";
   font-size: 0.75rem;
 }
 
@@ -287,7 +271,6 @@ console.log('🔧 Componente TimeSelector cargado')
   margin-top: 0.25rem;
 }
 
-/* Custom select styling */
 .time-selector__input option {
   padding: 0.5rem;
   background-color: white;
@@ -305,59 +288,56 @@ console.log('🔧 Componente TimeSelector cargado')
   color: white;
 }
 
-/* Responsive */
 @media (max-width: 768px) {
   .time-selector__input {
     padding: 1rem 2.5rem 1rem 1rem;
-    font-size: 16px; /* Prevents zoom on iOS */
+    font-size: 16px;
   }
 }
 
-/* Dark theme support */
 @media (prefers-color-scheme: dark) {
   .time-selector__label {
     color: #e0e0e0;
   }
-  
+
   .time-selector__input {
     background-color: #2d2d2d;
     border-color: #555;
     color: #e0e0e0;
   }
-  
+
   .time-selector__input:focus {
     border-color: #4a90e2;
   }
-  
+
   .time-selector__input--disabled {
     background-color: #1a1a1a;
   }
-  
+
   .time-selector__icon {
     color: #ccc;
   }
-  
+
   .time-selector__helper {
     color: #ccc;
   }
-  
+
   .time-selector__input option {
     background-color: #2d2d2d;
     color: #e0e0e0;
   }
-  
+
   .time-selector__input optgroup {
     background-color: #1a1a1a;
     color: #4a90e2;
   }
 }
 
-/* High contrast mode */
 @media (prefers-contrast: high) {
   .time-selector__input {
     border-width: 3px;
   }
-  
+
   .time-selector__input:focus {
     box-shadow: 0 0 0 3px;
   }

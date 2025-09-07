@@ -2,19 +2,19 @@
   <form @submit.prevent="handleSubmit" class="duenio-form">
     <div class="duenio-form__header">
       <h2 class="duenio-form__title">
-        {{ mode === 'create' ? '➕ Nuevo Dueño' : '✏️ Editar Dueño' }}
+        {{ mode === "create" ? "➕ Nuevo Dueño" : "✏️ Editar Dueño" }}
       </h2>
-      
+
       <p class="duenio-form__subtitle">
-        {{ mode === 'create' 
-          ? 'Ingresa los datos del propietario de la mascota' 
-          : 'Modifica los datos del dueño seleccionado' 
+        {{
+          mode === "create"
+            ? "Ingresa los datos del propietario de la mascota"
+            : "Modifica los datos del dueño seleccionado"
         }}
       </p>
     </div>
 
     <div class="duenio-form__body">
-      <!-- Nombre y Apellido -->
       <div class="form-group">
         <label for="nombre_apellido" class="form-label form-label--required">
           👤 Nombre y Apellido
@@ -42,7 +42,6 @@
         </span>
       </div>
 
-      <!-- Teléfono -->
       <div class="form-group">
         <label for="telefono" class="form-label form-label--required">
           📱 Teléfono
@@ -63,12 +62,9 @@
         <span v-if="errors.telefono" class="form-error">
           {{ errors.telefono }}
         </span>
-        <span v-else class="form-help">
-          Número de contacto principal
-        </span>
+        <span v-else class="form-help"> Número de contacto principal </span>
       </div>
 
-      <!-- Email -->
       <div class="form-group">
         <label for="email" class="form-label form-label--required">
           📧 Email
@@ -94,7 +90,6 @@
         </span>
       </div>
 
-      <!-- Dirección -->
       <div class="form-group">
         <label for="direccion" class="form-label form-label--required">
           📍 Dirección
@@ -122,7 +117,6 @@
       </div>
     </div>
 
-    <!-- Actions -->
     <div class="duenio-form__footer">
       <button
         type="button"
@@ -132,29 +126,23 @@
       >
         ❌ Cancelar
       </button>
-      
+
       <button
         type="submit"
         class="btn btn--primary"
         :disabled="loading || !isFormValid"
       >
-        <LoadingSpinner 
-          v-if="loading" 
-          size="small" 
-          color="white"
-        />
+        <LoadingSpinner v-if="loading" size="small" color="white" />
         <span v-else>
-          {{ mode === 'create' ? '💾 Crear Dueño' : '💾 Guardar Cambios' }}
+          {{ mode === "create" ? "💾 Crear Dueño" : "💾 Guardar Cambios" }}
         </span>
       </button>
     </div>
 
-    <!-- Success Message -->
     <div v-if="successMessage" class="duenio-form__success">
       ✅ {{ successMessage }}
     </div>
 
-    <!-- Error Message -->
     <div v-if="generalError" class="duenio-form__error">
       ❌ {{ generalError }}
     </div>
@@ -162,223 +150,227 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, watch, nextTick, onMounted } from 'vue'
-import LoadingSpinner from '@/components/shared/LoadingSpinner.vue'
-import type { Duenio, CreateDuenioPayload, UpdateDuenioPayload } from '@/types/models'
+import { ref, reactive, computed, watch, nextTick, onMounted } from "vue";
+import LoadingSpinner from "@/components/shared/LoadingSpinner.vue";
+import type {
+  Duenio,
+  CreateDuenioPayload,
+  UpdateDuenioPayload,
+} from "@/types/models";
 
-// Types
 export interface DuenioFormProps {
-  duenio?: Duenio | null
-  mode?: 'create' | 'edit'
-  loading?: boolean
+  duenio?: Duenio | null;
+  mode?: "create" | "edit";
+  loading?: boolean;
 }
 
 export interface DuenioFormEmits {
-  (e: 'submit', data: CreateDuenioPayload | UpdateDuenioPayload): void
-  (e: 'cancel'): void
-  (e: 'success', duenio: Duenio): void
+  (e: "submit", data: CreateDuenioPayload | UpdateDuenioPayload): void;
+  (e: "cancel"): void;
+  (e: "success", duenio: Duenio): void;
 }
 
-// Props
 const props = withDefaults(defineProps<DuenioFormProps>(), {
   duenio: null,
-  mode: 'create',
-  loading: false
-})
+  mode: "create",
+  loading: false,
+});
 
-// Emits
-const emit = defineEmits<DuenioFormEmits>()
+const emit = defineEmits<DuenioFormEmits>();
 
-// Refs
-const nombreInput = ref<HTMLInputElement>()
+const nombreInput = ref<HTMLInputElement>();
 
-// Reactive state
 const formData = reactive<CreateDuenioPayload>({
-  nombre_apellido: '',
-  telefono: '',
-  email: '',
-  direccion: ''
-})
+  nombre_apellido: "",
+  telefono: "",
+  email: "",
+  direccion: "",
+});
 
 const errors = reactive<Record<string, string>>({
-  nombre_apellido: '',
-  telefono: '',
-  email: '',
-  direccion: ''
-})
+  nombre_apellido: "",
+  telefono: "",
+  email: "",
+  direccion: "",
+});
 
-const successMessage = ref<string>('')
-const generalError = ref<string>('')
+const successMessage = ref<string>("");
+const generalError = ref<string>("");
 
-// Computed
 const isFormValid = computed(() => {
-  return formData.nombre_apellido.length >= 2 &&
-         formData.telefono.length >= 8 &&
-         isValidEmail(formData.email) &&
-         formData.direccion.length >= 5 &&
-         !Object.values(errors).some(error => error)
-})
+  return (
+    formData.nombre_apellido.length >= 2 &&
+    formData.telefono.length >= 8 &&
+    isValidEmail(formData.email) &&
+    formData.direccion.length >= 5 &&
+    !Object.values(errors).some((error) => error)
+  );
+});
 
-// Methods
 const validateField = (field: keyof typeof formData): boolean => {
-  errors[field] = ''
-  
+  errors[field] = "";
+
   switch (field) {
-    case 'nombre_apellido':
+    case "nombre_apellido":
       if (!formData.nombre_apellido.trim()) {
-        errors[field] = 'El nombre es requerido'
+        errors[field] = "El nombre es requerido";
       } else if (formData.nombre_apellido.length < 2) {
-        errors[field] = 'El nombre debe tener al menos 2 caracteres'
+        errors[field] = "El nombre debe tener al menos 2 caracteres";
       } else if (formData.nombre_apellido.length > 100) {
-        errors[field] = 'El nombre no puede exceder 100 caracteres'
+        errors[field] = "El nombre no puede exceder 100 caracteres";
       } else if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(formData.nombre_apellido)) {
-        errors[field] = 'El nombre solo puede contener letras y espacios'
+        errors[field] = "El nombre solo puede contener letras y espacios";
       }
-      break
-      
-    case 'telefono':
+      break;
+
+    case "telefono":
       if (!formData.telefono.trim()) {
-        errors[field] = 'El teléfono es requerido'
+        errors[field] = "El teléfono es requerido";
       } else if (formData.telefono.length < 8) {
-        errors[field] = 'El teléfono debe tener al menos 8 caracteres'
+        errors[field] = "El teléfono debe tener al menos 8 caracteres";
       } else if (!/^[\d\s\-\+\(\)]+$/.test(formData.telefono)) {
-        errors[field] = 'Formato de teléfono inválido'
+        errors[field] = "Formato de teléfono inválido";
       }
-      break
-      
-    case 'email':
+      break;
+
+    case "email":
       if (!formData.email.trim()) {
-        errors[field] = 'El email es requerido'
+        errors[field] = "El email es requerido";
       } else if (!isValidEmail(formData.email)) {
-        errors[field] = 'Formato de email inválido'
+        errors[field] = "Formato de email inválido";
       }
-      break
-      
-    case 'direccion':
+      break;
+
+    case "direccion":
       if (!formData.direccion.trim()) {
-        errors[field] = 'La dirección es requerida'
+        errors[field] = "La dirección es requerida";
       } else if (formData.direccion.length < 5) {
-        errors[field] = 'La dirección debe tener al menos 5 caracteres'
+        errors[field] = "La dirección debe tener al menos 5 caracteres";
       } else if (formData.direccion.length > 500) {
-        errors[field] = 'La dirección no puede exceder 500 caracteres'
+        errors[field] = "La dirección no puede exceder 500 caracteres";
       }
-      break
+      break;
   }
-  
-  return !errors[field]
-}
+
+  return !errors[field];
+};
 
 const validateAllFields = (): boolean => {
-  const fields: (keyof typeof formData)[] = ['nombre_apellido', 'telefono', 'email', 'direccion']
-  return fields.every(field => validateField(field))
-}
+  const fields: (keyof typeof formData)[] = [
+    "nombre_apellido",
+    "telefono",
+    "email",
+    "direccion",
+  ];
+  return fields.every((field) => validateField(field));
+};
 
 const clearFieldError = (field: keyof typeof errors) => {
   if (errors[field]) {
-    errors[field] = ''
+    errors[field] = "";
   }
-}
+};
 
 const isValidEmail = (email: string): boolean => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-  return emailRegex.test(email)
-}
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
 
 const resetForm = () => {
-  formData.nombre_apellido = ''
-  formData.telefono = ''
-  formData.email = ''
-  formData.direccion = ''
-  
-  Object.keys(errors).forEach(key => {
-    errors[key as keyof typeof errors] = ''
-  })
-  
-  successMessage.value = ''
-  generalError.value = ''
-}
+  formData.nombre_apellido = "";
+  formData.telefono = "";
+  formData.email = "";
+  formData.direccion = "";
+
+  Object.keys(errors).forEach((key) => {
+    errors[key as keyof typeof errors] = "";
+  });
+
+  successMessage.value = "";
+  generalError.value = "";
+};
 
 const loadDuenioData = () => {
-  if (props.duenio && props.mode === 'edit') {
-    formData.nombre_apellido = props.duenio.nombre_apellido
-    formData.telefono = props.duenio.telefono
-    formData.email = props.duenio.email
-    formData.direccion = props.duenio.direccion
+  if (props.duenio && props.mode === "edit") {
+    formData.nombre_apellido = props.duenio.nombre_apellido;
+    formData.telefono = props.duenio.telefono;
+    formData.email = props.duenio.email;
+    formData.direccion = props.duenio.direccion;
   }
-}
+};
 
 const handleSubmit = () => {
-  // Limpiar mensajes previos
-  successMessage.value = ''
-  generalError.value = ''
-  
-  // Validar formulario
+  successMessage.value = "";
+  generalError.value = "";
+
   if (!validateAllFields()) {
-    generalError.value = 'Por favor corrige los errores en el formulario'
-    return
+    generalError.value = "Por favor corrige los errores en el formulario";
+    return;
   }
-  
-  // Emitir datos
-  const submitData = { ...formData }
-  emit('submit', submitData)
-  
-  console.log(`📝 Formulario ${props.mode} enviado:`, submitData)
-}
+
+  const submitData = { ...formData };
+  emit("submit", submitData);
+
+  console.log(`📝 Formulario ${props.mode} enviado:`, submitData);
+};
 
 const handleCancel = () => {
-  emit('cancel')
-}
+  emit("cancel");
+};
 
 const showSuccess = (message: string) => {
-  successMessage.value = message
-  generalError.value = ''
-  
-  // Limpiar después de 3 segundos
+  successMessage.value = message;
+  generalError.value = "";
+
   setTimeout(() => {
-    successMessage.value = ''
-  }, 3000)
-}
+    successMessage.value = "";
+  }, 3000);
+};
 
 const showError = (message: string) => {
-  generalError.value = message
-  successMessage.value = ''
-}
+  generalError.value = message;
+  successMessage.value = "";
+};
 
-// Focus management
 const focusFirstField = async () => {
-  await nextTick()
-  nombreInput.value?.focus()
-}
+  await nextTick();
+  nombreInput.value?.focus();
+};
 
-// Watchers
-watch(() => props.duenio, () => {
-  loadDuenioData()
-}, { immediate: true })
+watch(
+  () => props.duenio,
+  () => {
+    loadDuenioData();
+  },
+  { immediate: true }
+);
 
-watch(() => props.mode, () => {
-  if (props.mode === 'create') {
-    resetForm()
-  }
-}, { immediate: true })
+watch(
+  () => props.mode,
+  () => {
+    if (props.mode === "create") {
+      resetForm();
+    }
+  },
+  { immediate: true }
+);
 
-// Lifecycle
 onMounted(() => {
-  loadDuenioData()
-  if (props.mode === 'create') {
-    focusFirstField()
+  loadDuenioData();
+  if (props.mode === "create") {
+    focusFirstField();
   }
-})
+});
 
-// Expose methods
 defineExpose({
   resetForm,
   validateAllFields,
   showSuccess,
   showError,
-  focusFirstField
-})
+  focusFirstField,
+});
 
-console.log('🔧 Componente DuenioForm cargado')
+console.log("🔧 Componente DuenioForm cargado");
 </script>
 
 <style scoped>
@@ -460,24 +452,23 @@ console.log('🔧 Componente DuenioForm cargado')
     border-radius: 0;
     box-shadow: none;
   }
-  
+
   .duenio-form__header,
   .duenio-form__body,
   .duenio-form__footer {
     padding-left: var(--spacing-md);
     padding-right: var(--spacing-md);
   }
-  
+
   .duenio-form__footer {
     flex-direction: column-reverse;
   }
-  
+
   .btn {
     width: 100%;
   }
 }
 
-/* Form validation states */
 .form-input:valid:not(:placeholder-shown) {
   border-color: var(--success-color);
 }
@@ -486,13 +477,11 @@ console.log('🔧 Componente DuenioForm cargado')
   border-color: var(--warning-color);
 }
 
-/* Focus states */
 .form-input:focus-visible {
   outline: 2px solid var(--primary-color);
   outline-offset: 2px;
 }
 
-/* Animation for messages */
 .duenio-form__success,
 .duenio-form__error {
   animation: slideDown 0.3s ease-out;

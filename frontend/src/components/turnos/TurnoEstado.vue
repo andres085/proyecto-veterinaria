@@ -1,11 +1,8 @@
 <template>
   <div class="turno-estado">
-    <!-- Header with current state -->
     <div class="turno-estado__header">
-      <h3 class="turno-estado__title">
-        🔄 Cambiar Estado del Turno
-      </h3>
-      
+      <h3 class="turno-estado__title">🔄 Cambiar Estado del Turno</h3>
+
       <div class="current-estado">
         <span class="current-estado__label">Estado actual:</span>
         <span class="estado-badge" :class="`estado-badge--${currentEstado}`">
@@ -14,7 +11,6 @@
       </div>
     </div>
 
-    <!-- Turno info -->
     <div v-if="turno" class="turno-estado__info">
       <div class="turno-info">
         <div class="info-item">
@@ -23,11 +19,15 @@
         </div>
         <div class="info-item">
           <span class="info-label">👤 Dueño:</span>
-          <span class="info-value">{{ turno.duenio?.nombre_apellido || 'N/A' }}</span>
+          <span class="info-value">{{
+            turno.duenio?.nombre_apellido || "N/A"
+          }}</span>
         </div>
         <div class="info-item">
           <span class="info-label">📅 Fecha:</span>
-          <span class="info-value">{{ formatDateTime(turno.fecha_turno) }}</span>
+          <span class="info-value">{{
+            formatDateTime(turno.fecha_turno)
+          }}</span>
         </div>
         <div class="info-item">
           <span class="info-label">🏥 Tratamiento:</span>
@@ -36,19 +36,18 @@
       </div>
     </div>
 
-    <!-- Estado transition options -->
     <div class="turno-estado__options">
       <h4 class="options-title">Seleccionar nuevo estado:</h4>
-      
+
       <div class="estado-grid">
         <button
           v-for="estado in availableStates"
           :key="estado.value"
           @click="selectEstado(estado.value)"
           class="estado-option"
-          :class="{ 
+          :class="{
             'estado-option--selected': selectedEstado === estado.value,
-            'estado-option--disabled': !estado.enabled 
+            'estado-option--disabled': !estado.enabled,
           }"
           :disabled="!estado.enabled || loading"
           :title="estado.description"
@@ -60,24 +59,26 @@
             <h5>{{ estado.label }}</h5>
             <p>{{ estado.description }}</p>
           </div>
-          <div v-if="!estado.enabled" class="estado-option__disabled">
-            ❌
-          </div>
+          <div v-if="!estado.enabled" class="estado-option__disabled">❌</div>
         </button>
       </div>
     </div>
 
-    <!-- Transition info -->
-    <div v-if="selectedEstado && selectedEstado !== currentEstado" class="turno-estado__transition">
+    <div
+      v-if="selectedEstado && selectedEstado !== currentEstado"
+      class="turno-estado__transition"
+    >
       <div class="transition-info">
         <h4>📋 Información del cambio:</h4>
         <div class="transition-flow">
           <span class="estado-badge" :class="`estado-badge--${currentEstado}`">
-            {{ getEstadoIcon(currentEstado) }} {{ getEstadoLabel(currentEstado) }}
+            {{ getEstadoIcon(currentEstado) }}
+            {{ getEstadoLabel(currentEstado) }}
           </span>
           <span class="transition-arrow">➡️</span>
           <span class="estado-badge" :class="`estado-badge--${selectedEstado}`">
-            {{ getEstadoIcon(selectedEstado) }} {{ getEstadoLabel(selectedEstado) }}
+            {{ getEstadoIcon(selectedEstado) }}
+            {{ getEstadoLabel(selectedEstado) }}
           </span>
         </div>
         <p class="transition-description">
@@ -86,7 +87,6 @@
       </div>
     </div>
 
-    <!-- Actions -->
     <div class="turno-estado__actions">
       <button
         @click="handleCancel"
@@ -95,251 +95,257 @@
       >
         ❌ Cancelar
       </button>
-      
+
       <button
         @click="handleConfirm"
         class="btn btn--primary"
-        :disabled="loading || !selectedEstado || selectedEstado === currentEstado"
+        :disabled="
+          loading || !selectedEstado || selectedEstado === currentEstado
+        "
       >
-        <LoadingSpinner 
-          v-if="loading" 
-          size="small" 
-          color="white"
-        />
-        <span v-else>
-          ✅ Confirmar Cambio
-        </span>
+        <LoadingSpinner v-if="loading" size="small" color="white" />
+        <span v-else> ✅ Confirmar Cambio </span>
       </button>
     </div>
 
-    <!-- Error message -->
-    <div v-if="error" class="turno-estado__error">
-      ❌ {{ error }}
-    </div>
+    <div v-if="error" class="turno-estado__error">❌ {{ error }}</div>
 
-    <!-- Success message -->
-    <div v-if="success" class="turno-estado__success">
-      ✅ {{ success }}
-    </div>
+    <div v-if="success" class="turno-estado__success">✅ {{ success }}</div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue'
-import LoadingSpinner from '@/components/shared/LoadingSpinner.vue'
-import type { Turno, EstadoTurno } from '@/types/models'
+import { ref, computed, watch, onMounted } from "vue";
+import LoadingSpinner from "@/components/shared/LoadingSpinner.vue";
+import type { Turno, EstadoTurno } from "@/types/models";
 
-// Types
 interface EstadoOption {
-  value: EstadoTurno
-  label: string
-  icon: string
-  description: string
-  enabled: boolean
+  value: EstadoTurno;
+  label: string;
+  icon: string;
+  description: string;
+  enabled: boolean;
 }
 
 export interface TurnoEstadoProps {
-  turno?: Turno | null
-  loading?: boolean
+  turno?: Turno | null;
+  loading?: boolean;
 }
 
 export interface TurnoEstadoEmits {
-  (e: 'change', turno: Turno, newEstado: EstadoTurno): void
-  (e: 'cancel'): void
-  (e: 'success', turno: Turno, oldEstado: EstadoTurno, newEstado: EstadoTurno): void
+  (e: "change", turno: Turno, newEstado: EstadoTurno): void;
+  (e: "cancel"): void;
+  (
+    e: "success",
+    turno: Turno,
+    oldEstado: EstadoTurno,
+    newEstado: EstadoTurno
+  ): void;
 }
 
-// Props
 const props = withDefaults(defineProps<TurnoEstadoProps>(), {
   turno: null,
-  loading: false
-})
+  loading: false,
+});
 
-// Emits
-const emit = defineEmits<TurnoEstadoEmits>()
+const emit = defineEmits<TurnoEstadoEmits>();
 
-// State
-const selectedEstado = ref<EstadoTurno | null>(null)
-const error = ref<string>('')
-const success = ref<string>('')
+const selectedEstado = ref<EstadoTurno | null>(null);
+const error = ref<string>("");
+const success = ref<string>("");
 
-// Computed
-const currentEstado = computed(() => props.turno?.estado || 'pendiente')
+const currentEstado = computed(() => props.turno?.estado || "pendiente");
 
 const availableStates = computed((): EstadoOption[] => {
-  const current = currentEstado.value
-  
+  const current = currentEstado.value;
+
   const states: EstadoOption[] = [
     {
-      value: 'pendiente',
-      label: 'Pendiente',
-      icon: '⏳',
-      description: 'En espera de confirmación',
-      enabled: false // No se puede volver a pendiente - eliminar turno si es necesario
+      value: "pendiente",
+      label: "Pendiente",
+      icon: "⏳",
+      description: "En espera de confirmación",
+      enabled: false, // No se puede volver a pendiente - eliminar turno si es necesario
     },
     {
-      value: 'confirmado',
-      label: 'Confirmado',
-      icon: '✅',
-      description: 'Turno confirmado por el dueño',
-      enabled: current === 'pendiente'
+      value: "confirmado",
+      label: "Confirmado",
+      icon: "✅",
+      description: "Turno confirmado por el dueño",
+      enabled: current === "pendiente",
     },
     {
-      value: 'completado',
-      label: 'Completado',
-      icon: '🏁',
-      description: 'Consulta realizada exitosamente',
-      enabled: current === 'confirmado' || current === 'pendiente'
+      value: "completado",
+      label: "Completado",
+      icon: "🏁",
+      description: "Consulta realizada exitosamente",
+      enabled: current === "confirmado" || current === "pendiente",
     },
     {
-      value: 'cancelado',
-      label: 'Cancelado',
-      icon: '❌',
-      description: 'Turno cancelado (no se puede revertir)',
-      enabled: current !== 'cancelado' && current !== 'completado'
-    }
-  ]
-  
-  return states
-})
+      value: "cancelado",
+      label: "Cancelado",
+      icon: "❌",
+      description: "Turno cancelado (no se puede revertir)",
+      enabled: current !== "cancelado" && current !== "completado",
+    },
+  ];
+
+  return states;
+});
 
 // Methods
 const getEstadoIcon = (estado: EstadoTurno): string => {
   const icons = {
-    pendiente: '⏳',
-    confirmado: '✅',
-    completado: '🏁',
-    cancelado: '❌'
-  }
-  return icons[estado] || '❓'
-}
+    pendiente: "⏳",
+    confirmado: "✅",
+    completado: "🏁",
+    cancelado: "❌",
+  };
+  return icons[estado] || "❓";
+};
 
 const getEstadoLabel = (estado: EstadoTurno): string => {
   const labels = {
-    pendiente: 'Pendiente',
-    confirmado: 'Confirmado',
-    completado: 'Completado',
-    cancelado: 'Cancelado'
-  }
-  return labels[estado] || estado
-}
+    pendiente: "Pendiente",
+    confirmado: "Confirmado",
+    completado: "Completado",
+    cancelado: "Cancelado",
+  };
+  return labels[estado] || estado;
+};
 
 const formatDateTime = (dateString?: string): string => {
-  if (!dateString) return 'N/A'
-  
-  try {
-    const date = new Date(dateString)
-    return date.toLocaleString('es-ES', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    })
-  } catch {
-    return 'N/A'
-  }
-}
+  if (!dateString) return "N/A";
 
-const getTransitionDescription = (from: EstadoTurno, to: EstadoTurno): string => {
-  const transitions: Record<string, string> = {
-    'pendiente->confirmado': 'El turno será marcado como confirmado. El dueño ha aceptado la cita.',
-    'pendiente->completado': 'El turno será marcado como completado directamente. La consulta se realizó exitosamente.',
-    'pendiente->cancelado': 'El turno será cancelado. Esta acción no se puede deshacer.',
-    'confirmado->completado': 'El turno será marcado como completado. La consulta se realizó exitosamente.',
-    'confirmado->cancelado': 'El turno confirmado será cancelado. Esta acción no se puede deshacer.',
+  try {
+    const date = new Date(dateString);
+    return date.toLocaleString("es-ES", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  } catch {
+    return "N/A";
   }
-  
-  const key = `${from}->${to}`
-  return transitions[key] || `El estado cambiará de ${getEstadoLabel(from)} a ${getEstadoLabel(to)}.`
-}
+};
+
+const getTransitionDescription = (
+  from: EstadoTurno,
+  to: EstadoTurno
+): string => {
+  const transitions: Record<string, string> = {
+    "pendiente->confirmado":
+      "El turno será marcado como confirmado. El dueño ha aceptado la cita.",
+    "pendiente->completado":
+      "El turno será marcado como completado directamente. La consulta se realizó exitosamente.",
+    "pendiente->cancelado":
+      "El turno será cancelado. Esta acción no se puede deshacer.",
+    "confirmado->completado":
+      "El turno será marcado como completado. La consulta se realizó exitosamente.",
+    "confirmado->cancelado":
+      "El turno confirmado será cancelado. Esta acción no se puede deshacer.",
+  };
+
+  const key = `${from}->${to}`;
+  return (
+    transitions[key] ||
+    `El estado cambiará de ${getEstadoLabel(from)} a ${getEstadoLabel(to)}.`
+  );
+};
 
 const selectEstado = (estado: EstadoTurno) => {
-  if (estado === currentEstado.value) return
-  
-  selectedEstado.value = estado
-  error.value = ''
-  success.value = ''
-}
+  if (estado === currentEstado.value) return;
+
+  selectedEstado.value = estado;
+  error.value = "";
+  success.value = "";
+};
 
 const handleConfirm = () => {
-  if (!props.turno || !selectedEstado.value || selectedEstado.value === currentEstado.value) {
-    error.value = 'Por favor selecciona un estado válido'
-    return
+  if (
+    !props.turno ||
+    !selectedEstado.value ||
+    selectedEstado.value === currentEstado.value
+  ) {
+    error.value = "Por favor selecciona un estado válido";
+    return;
   }
 
-  // Validate transition
-  const isValidTransition = validateTransition(currentEstado.value, selectedEstado.value)
+  const isValidTransition = validateTransition(
+    currentEstado.value,
+    selectedEstado.value
+  );
   if (!isValidTransition) {
-    error.value = 'Transición de estado no válida'
-    return
+    error.value = "Transición de estado no válida";
+    return;
   }
 
-  // Clear messages
-  error.value = ''
-  success.value = ''
+  error.value = "";
+  success.value = "";
 
-  // Emit change
-  emit('change', props.turno, selectedEstado.value)
-  
-  console.log(`🔄 Cambiando estado de turno ${props.turno.id}: ${currentEstado.value} -> ${selectedEstado.value}`)
-}
+  emit("change", props.turno, selectedEstado.value);
+
+  console.log(
+    `🔄 Cambiando estado de turno ${props.turno.id}: ${currentEstado.value} -> ${selectedEstado.value}`
+  );
+};
 
 const handleCancel = () => {
-  emit('cancel')
-}
+  emit("cancel");
+};
 
 const validateTransition = (from: EstadoTurno, to: EstadoTurno): boolean => {
-  // Define valid transitions
   const validTransitions: Record<EstadoTurno, EstadoTurno[]> = {
-    pendiente: ['confirmado', 'completado', 'cancelado'],
-    confirmado: ['completado', 'cancelado'],
-    completado: [], // Terminal state
-    cancelado: []   // Terminal state
-  }
-  
-  return validTransitions[from]?.includes(to) || false
-}
+    pendiente: ["confirmado", "completado", "cancelado"],
+    confirmado: ["completado", "cancelado"],
+    completado: [], // Estado final
+    cancelado: [], // Estado final
+  };
+
+  return validTransitions[from]?.includes(to) || false;
+};
 
 const showSuccess = (message: string) => {
-  success.value = message
-  error.value = ''
-  
-  // Clear after 3 seconds
+  success.value = message;
+  error.value = "";
+
   setTimeout(() => {
-    success.value = ''
-  }, 3000)
-}
+    success.value = "";
+  }, 3000);
+};
 
 const showError = (message: string) => {
-  error.value = message
-  success.value = ''
-}
+  error.value = message;
+  success.value = "";
+};
 
 const reset = () => {
-  selectedEstado.value = null
-  error.value = ''
-  success.value = ''
-}
+  selectedEstado.value = null;
+  error.value = "";
+  success.value = "";
+};
 
-// Watchers
-watch(() => props.turno, () => {
-  reset()
-}, { immediate: true })
+watch(
+  () => props.turno,
+  () => {
+    reset();
+  },
+  { immediate: true }
+);
 
-// Lifecycle
 onMounted(() => {
-  reset()
-})
+  reset();
+});
 
-// Expose methods
 defineExpose({
   reset,
   showSuccess,
-  showError
-})
+  showError,
+});
 
-console.log('🔧 Componente TurnoEstado cargado')
+console.log("🔧 Componente TurnoEstado cargado");
 </script>
 
 <style scoped>
@@ -352,7 +358,6 @@ console.log('🔧 Componente TurnoEstado cargado')
   margin: 0 auto;
 }
 
-/* Header */
 .turno-estado__header {
   padding: var(--spacing-xl) var(--spacing-xl) var(--spacing-lg);
   border-bottom: 1px solid var(--border-light);
@@ -378,7 +383,6 @@ console.log('🔧 Componente TurnoEstado cargado')
   font-size: var(--font-size-sm);
 }
 
-/* Turno Info */
 .turno-estado__info {
   padding: var(--spacing-lg) var(--spacing-xl);
   border-bottom: 1px solid var(--border-light);
@@ -408,7 +412,6 @@ console.log('🔧 Componente TurnoEstado cargado')
   color: var(--text-color);
 }
 
-/* Estado Options */
 .turno-estado__options {
   padding: var(--spacing-xl);
 }
@@ -518,7 +521,6 @@ console.log('🔧 Componente TurnoEstado cargado')
   color: var(--danger-color);
 }
 
-/* Transition Info */
 .turno-estado__transition {
   padding: var(--spacing-lg) var(--spacing-xl);
   border-bottom: 1px solid var(--border-light);
@@ -552,7 +554,6 @@ console.log('🔧 Componente TurnoEstado cargado')
   line-height: 1.4;
 }
 
-/* Actions */
 .turno-estado__actions {
   display: flex;
   gap: var(--spacing-md);
@@ -560,7 +561,6 @@ console.log('🔧 Componente TurnoEstado cargado')
   justify-content: flex-end;
 }
 
-/* Messages */
 .turno-estado__error {
   margin: var(--spacing-md) var(--spacing-xl) 0;
   padding: var(--spacing-md);
@@ -588,7 +588,7 @@ console.log('🔧 Componente TurnoEstado cargado')
     border-radius: 0;
     box-shadow: none;
   }
-  
+
   .turno-estado__header,
   .turno-estado__info,
   .turno-estado__options,
@@ -597,34 +597,33 @@ console.log('🔧 Componente TurnoEstado cargado')
     padding-left: var(--spacing-md);
     padding-right: var(--spacing-md);
   }
-  
+
   .turno-info {
     grid-template-columns: 1fr;
   }
-  
+
   .estado-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .turno-estado__actions {
     flex-direction: column-reverse;
   }
-  
+
   .btn {
     width: 100%;
   }
-  
+
   .transition-flow {
     flex-direction: column;
     gap: var(--spacing-sm);
   }
-  
+
   .transition-arrow {
     transform: rotate(90deg);
   }
 }
 
-/* Animations */
 .turno-estado__error,
 .turno-estado__success {
   animation: slideDown 0.3s ease-out;
@@ -641,7 +640,6 @@ console.log('🔧 Componente TurnoEstado cargado')
   }
 }
 
-/* Focus states */
 .estado-option:focus-visible {
   outline: 2px solid var(--primary-color);
   outline-offset: 2px;

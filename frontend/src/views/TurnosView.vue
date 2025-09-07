@@ -36,8 +36,8 @@
 
       <!-- Botón de crear turno -->
       <div class="actions-section">
-        <button 
-          @click="createTurno" 
+        <button
+          @click="createTurno"
           class="btn btn--primary"
           :disabled="turnoStore.loading"
         >
@@ -73,195 +73,203 @@
     />
 
     <!-- Toast notifications -->
-    <div v-if="notification" class="notification" :class="`notification--${notification.type}`">
+    <div
+      v-if="notification"
+      class="notification"
+      :class="`notification--${notification.type}`"
+    >
       {{ notification.message }}
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { useTurnoStore } from '@/stores/turnoStore'
-import { useDuenioStore } from '@/stores/duenioStore'
-import TurnoForm from '@/components/turnos/TurnoForm.vue'
-import TurnoList from '@/components/turnos/TurnoList.vue'
-import TurnoEstado from '@/components/turnos/TurnoEstado.vue'
-import ConfirmDialog from '@/components/shared/ConfirmDialog.vue'
-import type { Turno, CreateTurnoPayload, UpdateTurnoPayload, EstadoTurno } from '@/types/models'
+import { ref, onMounted } from "vue";
+import { useTurnoStore } from "@/stores/turnoStore";
+import { useDuenioStore } from "@/stores/duenioStore";
+import TurnoForm from "@/components/turnos/TurnoForm.vue";
+import TurnoList from "@/components/turnos/TurnoList.vue";
+import TurnoEstado from "@/components/turnos/TurnoEstado.vue";
+import ConfirmDialog from "@/components/shared/ConfirmDialog.vue";
+import type {
+  Turno,
+  CreateTurnoPayload,
+  UpdateTurnoPayload,
+  EstadoTurno,
+} from "@/types/models";
 
 // Stores
-const turnoStore = useTurnoStore()
-const duenioStore = useDuenioStore()
+const turnoStore = useTurnoStore();
+const duenioStore = useDuenioStore();
 
 // State
-const showTurnoForm = ref(false)
-const showEstadoForm = ref(false)
-const showDeleteDialog = ref(false)
-const selectedTurno = ref<Turno | null>(null)
-const turnoFormMode = ref<'create' | 'edit'>('create')
-const turnoToDelete = ref<Turno | null>(null)
-const deletingTurno = ref(false)
-const notification = ref<{ message: string; type: 'success' | 'error' } | null>(null)
+const showTurnoForm = ref(false);
+const showEstadoForm = ref(false);
+const showDeleteDialog = ref(false);
+const selectedTurno = ref<Turno | null>(null);
+const turnoFormMode = ref<"create" | "edit">("create");
+const turnoToDelete = ref<Turno | null>(null);
+const deletingTurno = ref(false);
+const notification = ref<{ message: string; type: "success" | "error" } | null>(
+  null
+);
 
-// Methods
+// Metodos
 const createTurno = () => {
-  selectedTurno.value = null
-  turnoFormMode.value = 'create'
-  showTurnoForm.value = true
-}
+  selectedTurno.value = null;
+  turnoFormMode.value = "create";
+  showTurnoForm.value = true;
+};
 
 const editTurno = (turno: Turno) => {
-  selectedTurno.value = turno
-  turnoFormMode.value = 'edit'
-  showTurnoForm.value = true
-}
+  selectedTurno.value = turno;
+  turnoFormMode.value = "edit";
+  showTurnoForm.value = true;
+};
 
 const viewTurno = (turno: Turno) => {
-  // For now, just edit the turno when viewed
-  editTurno(turno)
-}
+  editTurno(turno);
+};
 
 const changeEstado = (turno: Turno) => {
-  selectedTurno.value = turno
-  showEstadoForm.value = true
-}
+  selectedTurno.value = turno;
+  showEstadoForm.value = true;
+};
 
 const deleteTurno = (turno: Turno) => {
-  turnoToDelete.value = turno
-  showDeleteDialog.value = true
-}
+  turnoToDelete.value = turno;
+  showDeleteDialog.value = true;
+};
 
 const closeTurnoForm = () => {
-  showTurnoForm.value = false
-  selectedTurno.value = null
-}
+  showTurnoForm.value = false;
+  selectedTurno.value = null;
+};
 
 const closeEstadoForm = () => {
-  showEstadoForm.value = false
-  selectedTurno.value = null
-}
+  showEstadoForm.value = false;
+  selectedTurno.value = null;
+};
 
-const handleTurnoSubmit = async (data: CreateTurnoPayload | UpdateTurnoPayload) => {
+const handleTurnoSubmit = async (
+  data: CreateTurnoPayload | UpdateTurnoPayload
+) => {
   try {
-    if (turnoFormMode.value === 'create') {
-      await turnoStore.create(data as CreateTurnoPayload)
-      showNotification('Turno creado exitosamente', 'success')
+    if (turnoFormMode.value === "create") {
+      await turnoStore.create(data as CreateTurnoPayload);
+      showNotification("Turno creado exitosamente", "success");
     } else {
-      const turnoId = selectedTurno.value?.id
+      const turnoId = selectedTurno.value?.id;
       if (turnoId) {
-        await turnoStore.update(turnoId, data as UpdateTurnoPayload)
-        showNotification('Turno actualizado exitosamente', 'success')
+        await turnoStore.update(turnoId, data as UpdateTurnoPayload);
+        showNotification("Turno actualizado exitosamente", "success");
       }
     }
-    closeTurnoForm()
+    closeTurnoForm();
   } catch (error) {
-    console.error('Error al guardar turno:', error)
+    console.error("Error al guardar turno:", error);
     showNotification(
-      error instanceof Error ? error.message : 'Error al guardar turno',
-      'error'
-    )
+      error instanceof Error ? error.message : "Error al guardar turno",
+      "error"
+    );
   }
-}
+};
 
 const handleTurnoSuccess = () => {
-  closeTurnoForm()
-}
+  closeTurnoForm();
+};
 
 const handleEstadoChange = async (turno: Turno, newEstado: EstadoTurno) => {
   try {
-    await turnoStore.updateEstado(turno.id!, newEstado)
-    showNotification(`Estado cambiado a ${newEstado}`, 'success')
-    closeEstadoForm()
+    await turnoStore.updateEstado(turno.id!, newEstado);
+    showNotification(`Estado cambiado a ${newEstado}`, "success");
+    closeEstadoForm();
   } catch (error) {
-    console.error('Error al cambiar estado:', error)
+    console.error("Error al cambiar estado:", error);
     showNotification(
-      error instanceof Error ? error.message : 'Error al cambiar estado',
-      'error'
-    )
+      error instanceof Error ? error.message : "Error al cambiar estado",
+      "error"
+    );
   }
-}
+};
 
 const handleEstadoSuccess = () => {
-  closeEstadoForm()
-}
+  closeEstadoForm();
+};
 
 const confirmDelete = async () => {
-  if (!turnoToDelete.value?.id) return
-  
-  deletingTurno.value = true
-  
+  if (!turnoToDelete.value?.id) return;
+
+  deletingTurno.value = true;
+
   try {
-    await turnoStore.remove(turnoToDelete.value.id)
-    showNotification('Turno eliminado exitosamente', 'success')
-    showDeleteDialog.value = false
+    await turnoStore.remove(turnoToDelete.value.id);
+    showNotification("Turno eliminado exitosamente", "success");
+    showDeleteDialog.value = false;
   } catch (error) {
-    console.error('Error al eliminar turno:', error)
+    console.error("Error al eliminar turno:", error);
     showNotification(
-      error instanceof Error ? error.message : 'Error al eliminar turno',
-      'error'
-    )
+      error instanceof Error ? error.message : "Error al eliminar turno",
+      "error"
+    );
   } finally {
-    deletingTurno.value = false
-    turnoToDelete.value = null
+    deletingTurno.value = false;
+    turnoToDelete.value = null;
   }
-}
+};
 
 const cancelDelete = () => {
-  showDeleteDialog.value = false
-  turnoToDelete.value = null
-}
+  showDeleteDialog.value = false;
+  turnoToDelete.value = null;
+};
 
 const refreshTurnos = async () => {
   try {
-    await turnoStore.fetchAll()
-    showNotification('Turnos actualizados', 'success')
+    await turnoStore.fetchAll();
+    showNotification("Turnos actualizados", "success");
   } catch (error) {
-    console.error('Error al actualizar turnos:', error)
+    console.error("Error al actualizar turnos:", error);
     showNotification(
-      error instanceof Error ? error.message : 'Error al actualizar turnos',
-      'error'
-    )
+      error instanceof Error ? error.message : "Error al actualizar turnos",
+      "error"
+    );
   }
-}
+};
 
-const showNotification = (message: string, type: 'success' | 'error') => {
-  notification.value = { message, type }
-  
-  // Auto-hide after 3 seconds
+const showNotification = (message: string, type: "success" | "error") => {
+  notification.value = { message, type };
+
   setTimeout(() => {
-    notification.value = null
-  }, 3000)
-}
+    notification.value = null;
+  }, 3000);
+};
 
 const loadInitialData = async () => {
   try {
-    // Load duenios first (needed for turno form)
     if (duenioStore.duenios.length === 0) {
-      await duenioStore.fetchAll()
+      await duenioStore.fetchAll();
     }
-    
-    // Then load turnos
-    await turnoStore.fetchAll()
-    
-    console.log('✅ Datos iniciales cargados:', {
+
+    await turnoStore.fetchAll();
+
+    console.log("✅ Datos iniciales cargados:", {
       turnos: turnoStore.turnos.length,
-      duenios: duenioStore.duenios.length
-    })
+      duenios: duenioStore.duenios.length,
+    });
   } catch (error) {
-    console.error('❌ Error al cargar datos iniciales:', error)
+    console.error("❌ Error al cargar datos iniciales:", error);
     showNotification(
-      error instanceof Error ? error.message : 'Error al cargar datos',
-      'error'
-    )
+      error instanceof Error ? error.message : "Error al cargar datos",
+      "error"
+    );
   }
-}
+};
 
-// Lifecycle
 onMounted(() => {
-  loadInitialData()
-})
+  loadInitialData();
+});
 
-console.log('📱 Vista TurnosView integrada con stores cargada')
+console.log("📱 Vista TurnosView integrada con stores cargada");
 </script>
 
 <style scoped>
@@ -305,7 +313,6 @@ console.log('📱 Vista TurnosView integrada con stores cargada')
   box-shadow: var(--shadow-sm);
 }
 
-/* Modal styles */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -341,7 +348,6 @@ console.log('📱 Vista TurnosView integrada con stores cargada')
   }
 }
 
-/* Notifications */
 .notification {
   position: fixed;
   top: var(--spacing-lg);
@@ -383,29 +389,29 @@ console.log('📱 Vista TurnosView integrada con stores cargada')
   .turnos-view {
     padding: var(--spacing-md);
   }
-  
+
   .page-header h1 {
     font-size: var(--font-size-xl);
   }
-  
+
   .page-header p {
     font-size: var(--font-size-md);
   }
-  
+
   .actions-section {
     padding: var(--spacing-md);
     justify-content: center;
   }
-  
+
   .modal-overlay {
     padding: var(--spacing-sm);
   }
-  
+
   .modal-content {
     max-width: 100%;
     margin: 0;
   }
-  
+
   .notification {
     top: var(--spacing-sm);
     right: var(--spacing-sm);
@@ -414,7 +420,6 @@ console.log('📱 Vista TurnosView integrada con stores cargada')
   }
 }
 
-/* Button overrides for consistency */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -447,7 +452,6 @@ console.log('📱 Vista TurnosView integrada con stores cargada')
   box-shadow: var(--shadow-md);
 }
 
-/* Loading state for modal */
 .modal-content:has(.loading-spinner) {
   min-height: 200px;
   display: flex;

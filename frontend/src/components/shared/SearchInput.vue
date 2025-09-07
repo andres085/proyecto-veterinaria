@@ -1,20 +1,12 @@
 <template>
   <div class="search-input" :class="{ 'search-input--disabled': disabled }">
-    <label
-      v-if="label"
-      :for="inputId"
-      class="search-input__label"
-    >
+    <label v-if="label" :for="inputId" class="search-input__label">
       {{ label }}
     </label>
-    
+
     <div class="search-input__wrapper">
-      <!-- Search icon -->
-      <div class="search-input__icon search-input__icon--search">
-        🔍
-      </div>
-      
-      <!-- Input field -->
+      <div class="search-input__icon search-input__icon--search">🔍</div>
+
       <input
         :id="inputId"
         ref="searchInput"
@@ -23,7 +15,7 @@
         :class="{
           'search-input__input--loading': loading,
           'search-input__input--disabled': disabled,
-          'search-input__input--clearable': clearable && modelValue
+          'search-input__input--clearable': clearable && modelValue,
         }"
         :value="modelValue"
         :placeholder="placeholder"
@@ -35,8 +27,7 @@
         @keydown.enter="handleEnter"
         @keydown.escape="handleEscape"
       />
-      
-      <!-- Loading spinner -->
+
       <div
         v-if="loading"
         class="search-input__icon search-input__icon--loading"
@@ -45,8 +36,7 @@
       >
         <div class="search-input__spinner"></div>
       </div>
-      
-      <!-- Clear button -->
+
       <button
         v-else-if="clearable && modelValue && !disabled"
         type="button"
@@ -58,192 +48,177 @@
         ❌
       </button>
     </div>
-    
-    <!-- Results count -->
+
     <div
       v-if="showResultsCount && resultsCount !== undefined"
       class="search-input__results"
     >
       {{ formatResultsCount(resultsCount) }}
     </div>
-    
-    <!-- Helper text -->
-    <div
-      v-if="helperText"
-      class="search-input__helper"
-    >
+
+    <div v-if="helperText" class="search-input__helper">
       {{ helperText }}
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onUnmounted } from 'vue'
+import { ref, computed, watch, onUnmounted } from "vue";
 
-// Types
 export interface SearchInputProps {
-  modelValue: string
-  label?: string
-  placeholder?: string
-  disabled?: boolean
-  loading?: boolean
-  clearable?: boolean
-  debounce?: number
-  minLength?: number
-  maxLength?: number
-  autocomplete?: string
-  helperText?: string
-  showResultsCount?: boolean
-  resultsCount?: number
-  id?: string
+  modelValue: string;
+  label?: string;
+  placeholder?: string;
+  disabled?: boolean;
+  loading?: boolean;
+  clearable?: boolean;
+  debounce?: number;
+  minLength?: number;
+  maxLength?: number;
+  autocomplete?: string;
+  helperText?: string;
+  showResultsCount?: boolean;
+  resultsCount?: number;
+  id?: string;
 }
 
 export interface SearchInputEmits {
-  (e: 'update:modelValue', value: string): void
-  (e: 'search', query: string): void
-  (e: 'clear'): void
-  (e: 'focus', event: FocusEvent): void
-  (e: 'blur', event: FocusEvent): void
-  (e: 'enter', query: string): void
+  (e: "update:modelValue", value: string): void;
+  (e: "search", query: string): void;
+  (e: "clear"): void;
+  (e: "focus", event: FocusEvent): void;
+  (e: "blur", event: FocusEvent): void;
+  (e: "enter", query: string): void;
 }
 
-// Props
 const props = withDefaults(defineProps<SearchInputProps>(), {
-  placeholder: 'Buscar...',
+  placeholder: "Buscar...",
   disabled: false,
   loading: false,
   clearable: true,
   debounce: 300,
   minLength: 0,
-  autocomplete: 'off',
-  showResultsCount: false
-})
+  autocomplete: "off",
+  showResultsCount: false,
+});
 
-// Emits
-const emit = defineEmits<SearchInputEmits>()
+const emit = defineEmits<SearchInputEmits>();
 
-// Refs
-const searchInput = ref<HTMLInputElement>()
-const debounceTimer = ref<number | null>(null)
-const isFocused = ref(false)
+const searchInput = ref<HTMLInputElement>();
+const debounceTimer = ref<number | null>(null);
+const isFocused = ref(false);
 
-// Computed
-const inputId = computed(() => props.id || `search-input-${Math.random().toString(36).substr(2, 9)}`)
+const inputId = computed(
+  () => props.id || `search-input-${Math.random().toString(36).substr(2, 9)}`
+);
 
-// Methods
 const handleInput = (event: Event) => {
-  const target = event.target as HTMLInputElement
-  const value = target.value
-  
+  const target = event.target as HTMLInputElement;
+  const value = target.value;
+
   // Aplicar límite de caracteres
   if (props.maxLength && value.length > props.maxLength) {
-    return
+    return;
   }
-  
-  emit('update:modelValue', value)
-  
-  // Debounced search
+
+  emit("update:modelValue", value);
+
   if (debounceTimer.value) {
-    clearTimeout(debounceTimer.value)
+    clearTimeout(debounceTimer.value);
   }
-  
+
   debounceTimer.value = window.setTimeout(() => {
     if (value.length >= props.minLength) {
-      emit('search', value)
+      emit("search", value);
     } else if (value.length === 0) {
-      emit('search', '')
+      emit("search", "");
     }
-  }, props.debounce)
-}
+  }, props.debounce);
+};
 
 const handleFocus = (event: FocusEvent) => {
-  isFocused.value = true
-  emit('focus', event)
-}
+  isFocused.value = true;
+  emit("focus", event);
+};
 
 const handleBlur = (event: FocusEvent) => {
-  isFocused.value = false
-  emit('blur', event)
-}
+  isFocused.value = false;
+  emit("blur", event);
+};
 
 const handleEnter = (event: KeyboardEvent) => {
-  event.preventDefault()
-  
-  // Cancelar debounce y buscar inmediatamente
+  event.preventDefault();
+
   if (debounceTimer.value) {
-    clearTimeout(debounceTimer.value)
-    debounceTimer.value = null
+    clearTimeout(debounceTimer.value);
+    debounceTimer.value = null;
   }
-  
-  emit('search', props.modelValue)
-  emit('enter', props.modelValue)
-}
+
+  emit("search", props.modelValue);
+  emit("enter", props.modelValue);
+};
 
 const handleEscape = () => {
   if (props.modelValue) {
-    handleClear()
+    handleClear();
   } else {
-    searchInput.value?.blur()
+    searchInput.value?.blur();
   }
-}
+};
 
 const handleClear = () => {
-  emit('update:modelValue', '')
-  emit('clear')
-  emit('search', '')
-  
-  // Cancelar búsqueda pendiente
+  emit("update:modelValue", "");
+  emit("clear");
+  emit("search", "");
+
   if (debounceTimer.value) {
-    clearTimeout(debounceTimer.value)
-    debounceTimer.value = null
+    clearTimeout(debounceTimer.value);
+    debounceTimer.value = null;
   }
-  
-  // Mantener el foco
-  searchInput.value?.focus()
-}
+
+  searchInput.value?.focus();
+};
 
 const formatResultsCount = (count: number): string => {
   if (count === 0) {
-    return 'No se encontraron resultados'
+    return "No se encontraron resultados";
   } else if (count === 1) {
-    return '1 resultado encontrado'
+    return "1 resultado encontrado";
   } else {
-    return `${count} resultados encontrados`
+    return `${count} resultados encontrados`;
   }
-}
+};
 
-// Public methods
 const focus = () => {
-  searchInput.value?.focus()
-}
+  searchInput.value?.focus();
+};
 
 const clear = () => {
-  handleClear()
-}
+  handleClear();
+};
 
-// Cleanup
 onUnmounted(() => {
   if (debounceTimer.value) {
-    clearTimeout(debounceTimer.value)
+    clearTimeout(debounceTimer.value);
   }
-})
+});
 
-// Watch for external model changes
-watch(() => props.modelValue, (newValue, oldValue) => {
-  // Si el valor se limpia externamente, cancelar búsqueda pendiente
-  if (!newValue && oldValue && debounceTimer.value) {
-    clearTimeout(debounceTimer.value)
-    debounceTimer.value = null
+watch(
+  () => props.modelValue,
+  (newValue, oldValue) => {
+    if (!newValue && oldValue && debounceTimer.value) {
+      clearTimeout(debounceTimer.value);
+      debounceTimer.value = null;
+    }
   }
-})
+);
 
-// Expose methods
 defineExpose({
   focus,
-  clear
-})
+  clear,
+});
 
-console.log('🔧 Componente SearchInput cargado')
+console.log("🔧 Componente SearchInput cargado");
 </script>
 
 <style scoped>
@@ -377,8 +352,12 @@ console.log('🔧 Componente SearchInput cargado')
 
 /* Animations */
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Responsive */
@@ -394,34 +373,34 @@ console.log('🔧 Componente SearchInput cargado')
   .search-input__label {
     color: #e0e0e0;
   }
-  
+
   .search-input__input {
     background-color: #2d2d2d;
     border-color: #555;
     color: #e0e0e0;
   }
-  
+
   .search-input__input:focus {
     border-color: #4a90e2;
   }
-  
+
   .search-input__input--disabled {
     background-color: #1a1a1a;
   }
-  
+
   .search-input__icon {
     color: #ccc;
   }
-  
+
   .search-input__clear {
     color: #ccc;
   }
-  
+
   .search-input__clear:hover {
     background-color: #444;
     color: #e0e0e0;
   }
-  
+
   .search-input__results,
   .search-input__helper {
     color: #ccc;
@@ -433,7 +412,7 @@ console.log('🔧 Componente SearchInput cargado')
   .search-input__input {
     border-width: 3px;
   }
-  
+
   .search-input__input:focus {
     box-shadow: 0 0 0 3px;
   }
@@ -444,7 +423,7 @@ console.log('🔧 Componente SearchInput cargado')
   .search-input__spinner {
     animation: spin 2s linear infinite;
   }
-  
+
   .search-input__input,
   .search-input__clear {
     transition: none;

@@ -319,7 +319,6 @@ const refreshDuenios = async () => {
     await duenioStore.fetchAll();
     showNotification("Dueños actualizados", "success");
 
-    // Refresh search results if searching
     if (isSearching.value && searchQuery.value) {
       await handleSearch(searchQuery.value, {});
     }
@@ -335,7 +334,6 @@ const refreshDuenios = async () => {
 const showNotification = (message: string, type: "success" | "error") => {
   notification.value = { message, type };
 
-  // Auto-hide after 3 seconds
   setTimeout(() => {
     notification.value = null;
   }, 3000);
@@ -373,7 +371,6 @@ const loadInitialData = async () => {
   }
 };
 
-// Lifecycle
 onMounted(() => {
   loadInitialData();
 });

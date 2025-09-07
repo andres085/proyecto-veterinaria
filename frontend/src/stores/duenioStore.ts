@@ -8,14 +8,12 @@ import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 
 export const useDuenioStore = defineStore("duenio", () => {
-  // Estado reactivo
   const duenios = ref<Duenio[]>([]);
   const currentDuenio = ref<Duenio | null>(null);
   const searchResults = ref<Duenio[]>([]);
   const loading = ref<boolean>(false);
   const error = ref<string | null>(null);
 
-  // Getters computados
   const totalDuenios = computed(() => duenios.value.length);
   const hasError = computed(() => error.value !== null);
   const isLoading = computed(() => loading.value);
@@ -232,7 +230,7 @@ export const useDuenioStore = defineStore("duenio", () => {
     );
   });
 
-  // 🔄 Retornar estado y acciones
+  // Retornar estado y acciones
   return {
     // Estado
     duenios,

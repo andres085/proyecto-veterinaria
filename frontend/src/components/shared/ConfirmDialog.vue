@@ -24,7 +24,7 @@
             <span v-else-if="type === 'info'">ℹ️</span>
             <span v-else>❓</span>
           </div>
-          
+
           <h3 :id="titleId" class="confirm-dialog__title">
             {{ title }}
           </h3>
@@ -35,7 +35,7 @@
           <p :id="messageId" class="confirm-dialog__message">
             {{ message }}
           </p>
-          
+
           <!-- Slot para contenido adicional -->
           <div v-if="$slots.default" class="confirm-dialog__content">
             <slot />
@@ -52,7 +52,7 @@
           >
             {{ cancelText }}
           </button>
-          
+
           <button
             type="button"
             class="btn"
@@ -71,74 +71,76 @@
 </template>
 
 <script setup lang="ts">
-import { ref, nextTick, watch, computed } from 'vue'
+import { ref, nextTick, watch, computed } from "vue";
 
-// Types
 export interface ConfirmDialogProps {
-  title: string
-  message: string
-  confirmText?: string
-  cancelText?: string
-  type?: 'danger' | 'warning' | 'info' | 'default'
-  isVisible: boolean
-  loading?: boolean
-  closeOnBackdrop?: boolean
+  title: string;
+  message: string;
+  confirmText?: string;
+  cancelText?: string;
+  type?: "danger" | "warning" | "info" | "default";
+  isVisible: boolean;
+  loading?: boolean;
+  closeOnBackdrop?: boolean;
 }
 
 export interface ConfirmDialogEmits {
-  (e: 'confirm'): void
-  (e: 'cancel'): void
-  (e: 'update:isVisible', value: boolean): void
+  (e: "confirm"): void;
+  (e: "cancel"): void;
+  (e: "update:isVisible", value: boolean): void;
 }
 
-// Props
 const props = withDefaults(defineProps<ConfirmDialogProps>(), {
-  confirmText: 'Confirmar',
-  cancelText: 'Cancelar',
-  type: 'default',
+  confirmText: "Confirmar",
+  cancelText: "Cancelar",
+  type: "default",
   loading: false,
-  closeOnBackdrop: true
-})
+  closeOnBackdrop: true,
+});
 
-// Emits
-const emit = defineEmits<ConfirmDialogEmits>()
+const emit = defineEmits<ConfirmDialogEmits>();
 
-// Refs
-const confirmButton = ref<HTMLButtonElement>()
+const confirmButton = ref<HTMLButtonElement>();
 
-// Computed
-const titleId = computed(() => `confirm-title-${Math.random().toString(36).substr(2, 9)}`)
-const messageId = computed(() => `confirm-message-${Math.random().toString(36).substr(2, 9)}`)
+const titleId = computed(
+  () => `confirm-title-${Math.random().toString(36).substr(2, 9)}`
+);
+const messageId = computed(
+  () => `confirm-message-${Math.random().toString(36).substr(2, 9)}`
+);
 
-// Methods
 const handleConfirm = () => {
   if (!props.loading) {
-    emit('confirm')
+    emit("confirm");
   }
-}
+};
 
 const handleCancel = () => {
   if (!props.loading) {
-    emit('cancel')
-    emit('update:isVisible', false)
+    emit("cancel");
+    emit("update:isVisible", false);
   }
-}
+};
 
 const handleBackdropClick = () => {
   if (props.closeOnBackdrop && !props.loading) {
-    handleCancel()
+    handleCancel();
   }
-}
+};
 
 // Focus management
-watch(() => props.isVisible, async (newValue) => {
-  if (newValue) {
-    await nextTick()
-    confirmButton.value?.focus()
-  }
-}, { immediate: true })
+watch(
+  () => props.isVisible,
+  async (newValue) => {
+    if (newValue) {
+      await nextTick();
+      confirmButton.value?.focus();
+    }
+  },
+  { immediate: true }
+);
 
-console.log('🔧 Componente ConfirmDialog cargado')
+console.log("🔧 Componente ConfirmDialog cargado");
 </script>
 
 <style scoped>
@@ -286,7 +288,6 @@ console.log('🔧 Componente ConfirmDialog cargado')
   animation: spin 1s linear infinite;
 }
 
-/* Dialog type styles */
 .confirm-dialog--danger .confirm-dialog__header {
   border-bottom-color: #dc3545;
 }
@@ -299,7 +300,6 @@ console.log('🔧 Componente ConfirmDialog cargado')
   border-bottom-color: #17a2b8;
 }
 
-/* Animations */
 @keyframes slideIn {
   from {
     opacity: 0;
@@ -312,11 +312,14 @@ console.log('🔧 Componente ConfirmDialog cargado')
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
-/* Transition classes */
 .modal-enter-active,
 .modal-leave-active {
   transition: opacity 0.3s ease;
@@ -343,18 +346,18 @@ console.log('🔧 Componente ConfirmDialog cargado')
     margin: 1rem;
     max-width: none;
   }
-  
+
   .confirm-dialog__header,
   .confirm-dialog__body,
   .confirm-dialog__footer {
     padding-left: 1rem;
     padding-right: 1rem;
   }
-  
+
   .confirm-dialog__footer {
     flex-direction: column-reverse;
   }
-  
+
   .btn {
     width: 100%;
   }

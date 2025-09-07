@@ -1,6 +1,5 @@
 <template>
   <div class="turno-list">
-    <!-- Header con estadísticas -->
     <div class="turno-list__header">
       <div class="turno-list__stats">
         <div class="stat-item">
@@ -20,9 +19,9 @@
           <span class="stat-label">Hoy</span>
         </div>
       </div>
-      
+
       <div class="turno-list__actions">
-        <button 
+        <button
           @click="refreshList"
           class="btn btn--secondary btn--small"
           :disabled="loading"
@@ -48,38 +47,36 @@
           class="filter-chip"
           :class="{ 'filter-chip--active': activeStateFilter === 'pendiente' }"
         >
-          ⏳ Pendientes ({{ getTurnosByEstado('pendiente').length }})
+          ⏳ Pendientes ({{ getTurnosByEstado("pendiente").length }})
         </button>
         <button
           @click="setStateFilter('confirmado')"
           class="filter-chip"
           :class="{ 'filter-chip--active': activeStateFilter === 'confirmado' }"
         >
-          ✅ Confirmados ({{ getTurnosByEstado('confirmado').length }})
+          ✅ Confirmados ({{ getTurnosByEstado("confirmado").length }})
         </button>
         <button
           @click="setStateFilter('completado')"
           class="filter-chip"
           :class="{ 'filter-chip--active': activeStateFilter === 'completado' }"
         >
-          🏁 Completados ({{ getTurnosByEstado('completado').length }})
+          🏁 Completados ({{ getTurnosByEstado("completado").length }})
         </button>
         <button
           @click="setStateFilter('cancelado')"
           class="filter-chip"
           :class="{ 'filter-chip--active': activeStateFilter === 'cancelado' }"
         >
-          ❌ Cancelados ({{ getTurnosByEstado('cancelado').length }})
+          ❌ Cancelados ({{ getTurnosByEstado("cancelado").length }})
         </button>
       </div>
     </div>
 
-    <!-- Loading state -->
     <div v-if="loading" class="turno-list__loading">
       <LoadingSpinner size="large" text="Cargando turnos..." />
     </div>
 
-    <!-- Error state -->
     <div v-else-if="error" class="turno-list__error">
       <div class="error-content">
         <div class="error-icon">❌</div>
@@ -91,17 +88,18 @@
       </div>
     </div>
 
-    <!-- Empty state -->
     <div v-else-if="filteredTurnos.length === 0" class="turno-list__empty">
       <div class="empty-content">
         <div class="empty-icon">📅</div>
         <h3 v-if="activeStateFilter === 'all'">No hay turnos registrados</h3>
         <h3 v-else>No hay turnos {{ getEstadoLabel(activeStateFilter) }}</h3>
-        <p v-if="activeStateFilter === 'all'">Comienza agendando el primer turno</p>
+        <p v-if="activeStateFilter === 'all'">
+          Comienza agendando el primer turno
+        </p>
         <p v-else>Cambia el filtro para ver otros turnos</p>
-        <button 
+        <button
           v-if="activeStateFilter === 'all'"
-          @click="$emit('create')" 
+          @click="$emit('create')"
           class="btn btn--primary"
         >
           📅 Agendar Primer Turno
@@ -111,49 +109,48 @@
 
     <!-- Lista de turnos -->
     <div v-else class="turno-list__content">
-      <!-- Vista de tabla (desktop) -->
       <div class="turno-table-wrapper">
         <table class="turno-table">
           <thead>
             <tr>
-              <th 
+              <th
                 @click="setSortField('fecha_turno')"
                 class="sortable"
-                :class="{ 'sorted': sortField === 'fecha_turno' }"
+                :class="{ sorted: sortField === 'fecha_turno' }"
               >
                 📅 Fecha
                 <span class="sort-indicator">
-                  {{ getSortIcon('fecha_turno') }}
+                  {{ getSortIcon("fecha_turno") }}
                 </span>
               </th>
-              <th 
+              <th
                 @click="setSortField('nombre_mascota')"
                 class="sortable"
-                :class="{ 'sorted': sortField === 'nombre_mascota' }"
+                :class="{ sorted: sortField === 'nombre_mascota' }"
               >
                 🐕 Mascota
                 <span class="sort-indicator">
-                  {{ getSortIcon('nombre_mascota') }}
+                  {{ getSortIcon("nombre_mascota") }}
                 </span>
               </th>
               <th>👤 Dueño</th>
               <th class="turno-table__tratamiento">🏥 Tratamiento</th>
-              <th 
+              <th
                 @click="setSortField('estado')"
                 class="sortable"
-                :class="{ 'sorted': sortField === 'estado' }"
+                :class="{ sorted: sortField === 'estado' }"
               >
                 🔄 Estado
                 <span class="sort-indicator">
-                  {{ getSortIcon('estado') }}
+                  {{ getSortIcon("estado") }}
                 </span>
               </th>
               <th class="turno-table__actions">Acciones</th>
             </tr>
           </thead>
           <tbody>
-            <tr 
-              v-for="turno in sortedTurnos" 
+            <tr
+              v-for="turno in sortedTurnos"
               :key="turno.id"
               class="turno-row"
               :class="getTurnoRowClass(turno)"
@@ -161,20 +158,28 @@
             >
               <td class="turno-table__fecha">
                 <div class="fecha-cell">
-                  <span class="fecha-main">{{ formatDateTime(turno.fecha_turno) }}</span>
-                  <small class="fecha-relative">{{ getRelativeTime(turno.fecha_turno) }}</small>
+                  <span class="fecha-main">{{
+                    formatDateTime(turno.fecha_turno)
+                  }}</span>
+                  <small class="fecha-relative">{{
+                    getRelativeTime(turno.fecha_turno)
+                  }}</small>
                 </div>
               </td>
               <td class="turno-table__mascota">
                 <div class="mascota-cell">
                   <strong>{{ turno.nombre_mascota }}</strong>
-                  <small v-if="turno.id" class="turno-id">ID: {{ turno.id }}</small>
+                  <small v-if="turno.id" class="turno-id"
+                    >ID: {{ turno.id }}</small
+                  >
                 </div>
               </td>
               <td class="turno-table__duenio">
                 <div class="duenio-cell">
-                  <strong>{{ turno.duenio?.nombre_apellido || 'N/A' }}</strong>
-                  <small v-if="turno.duenio?.telefono">{{ turno.duenio.telefono }}</small>
+                  <strong>{{ turno.duenio?.nombre_apellido || "N/A" }}</strong>
+                  <small v-if="turno.duenio?.telefono">{{
+                    turno.duenio.telefono
+                  }}</small>
                 </div>
               </td>
               <td class="turno-table__tratamiento">
@@ -183,8 +188,12 @@
                 </div>
               </td>
               <td class="turno-table__estado">
-                <span class="estado-badge" :class="`estado-badge--${turno.estado}`">
-                  {{ getEstadoIcon(turno.estado) }} {{ getEstadoLabel(turno.estado) }}
+                <span
+                  class="estado-badge"
+                  :class="`estado-badge--${turno.estado}`"
+                >
+                  {{ getEstadoIcon(turno.estado) }}
+                  {{ getEstadoLabel(turno.estado) }}
                 </span>
               </td>
               <td class="turno-table__actions" @click.stop>
@@ -225,7 +234,6 @@
         </table>
       </div>
 
-      <!-- Vista de cards (mobile) -->
       <div class="turno-cards">
         <div
           v-for="turno in sortedTurnos"
@@ -240,26 +248,32 @@
               <small>{{ formatTime(turno.fecha_turno) }}</small>
             </div>
             <span class="estado-badge" :class="`estado-badge--${turno.estado}`">
-              {{ getEstadoIcon(turno.estado) }} {{ getEstadoLabel(turno.estado) }}
+              {{ getEstadoIcon(turno.estado) }}
+              {{ getEstadoLabel(turno.estado) }}
             </span>
           </div>
-          
+
           <div class="turno-card__body">
             <div class="turno-card__mascota">
               <h4>🐕 {{ turno.nombre_mascota }}</h4>
-              <p>👤 {{ turno.duenio?.nombre_apellido || 'N/A' }}</p>
-              <p v-if="turno.duenio?.telefono">📱 {{ turno.duenio.telefono }}</p>
+              <p>👤 {{ turno.duenio?.nombre_apellido || "N/A" }}</p>
+              <p v-if="turno.duenio?.telefono">
+                📱 {{ turno.duenio.telefono }}
+              </p>
             </div>
-            
+
             <div class="turno-card__tratamiento">
               🏥 {{ turno.tratamiento }}
             </div>
-            
+
             <div class="turno-card__meta">
-              <small>ID: {{ turno.id }} • {{ getRelativeTime(turno.fecha_turno) }}</small>
+              <small
+                >ID: {{ turno.id }} •
+                {{ getRelativeTime(turno.fecha_turno) }}</small
+              >
             </div>
           </div>
-          
+
           <div class="turno-card__actions" @click.stop>
             <button
               @click="$emit('view', turno)"
@@ -290,249 +304,244 @@
         </div>
       </div>
     </div>
-
   </div>
 </template>
 
 <script setup lang="ts">
-import LoadingSpinner from '@/components/shared/LoadingSpinner.vue'
-import type { EstadoTurno, Turno } from '@/types/models'
-import { computed, ref } from 'vue'
+import LoadingSpinner from "@/components/shared/LoadingSpinner.vue";
+import type { EstadoTurno, Turno } from "@/types/models";
+import { computed, ref } from "vue";
 
-// Types
 export interface TurnoListProps {
-  turnos: Turno[]
-  loading?: boolean
-  error?: string | null
+  turnos: Turno[];
+  loading?: boolean;
+  error?: string | null;
 }
 
 export interface TurnoListEmits {
-  (e: 'view', turno: Turno): void
-  (e: 'edit', turno: Turno): void
-  (e: 'delete', turno: Turno): void
-  (e: 'change-estado', turno: Turno): void
-  (e: 'create'): void
-  (e: 'refresh'): void
+  (e: "view", turno: Turno): void;
+  (e: "edit", turno: Turno): void;
+  (e: "delete", turno: Turno): void;
+  (e: "change-estado", turno: Turno): void;
+  (e: "create"): void;
+  (e: "refresh"): void;
 }
 
-// Props
 const props = withDefaults(defineProps<TurnoListProps>(), {
   loading: false,
-  error: null
-})
+  error: null,
+});
 
-// Emits
-const emit = defineEmits<TurnoListEmits>()
+const emit = defineEmits<TurnoListEmits>();
 
-// State
-const sortField = ref<string>('fecha_turno')
-const sortDirection = ref<'asc' | 'desc'>('asc')
-const activeStateFilter = ref<string>('all')
+const sortField = ref<string>("fecha_turno");
+const sortDirection = ref<"asc" | "desc">("asc");
+const activeStateFilter = ref<string>("all");
 
-
-// Computed
-const totalTurnos = computed(() => props.turnos.length)
+const totalTurnos = computed(() => props.turnos.length);
 
 const filteredTurnos = computed(() => {
-  if (activeStateFilter.value === 'all') {
-    return props.turnos
+  if (activeStateFilter.value === "all") {
+    return props.turnos;
   }
-  return props.turnos.filter(turno => turno.estado === activeStateFilter.value)
-})
+  return props.turnos.filter(
+    (turno) => turno.estado === activeStateFilter.value
+  );
+});
 
-const filteredCount = computed(() => filteredTurnos.value.length)
+const filteredCount = computed(() => filteredTurnos.value.length);
 
-const turnosPendientes = computed(() => 
-  props.turnos.filter(turno => turno.estado === 'pendiente').length
-)
+const turnosPendientes = computed(
+  () => props.turnos.filter((turno) => turno.estado === "pendiente").length
+);
 
 const turnosHoy = computed(() => {
-  const today = new Date().toDateString()
-  return props.turnos.filter(turno => {
-    const turnoDate = new Date(turno.fecha_turno).toDateString()
-    return turnoDate === today
-  }).length
-})
+  const today = new Date().toDateString();
+  return props.turnos.filter((turno) => {
+    const turnoDate = new Date(turno.fecha_turno).toDateString();
+    return turnoDate === today;
+  }).length;
+});
 
 const sortedTurnos = computed(() => {
-  if (!filteredTurnos.value.length) return []
-  
-  const sorted = [...filteredTurnos.value].sort((a, b) => {
-    let aValue: any = a[sortField.value as keyof Turno]
-    let bValue: any = b[sortField.value as keyof Turno]
-    
-    // Handle undefined values
-    if (aValue === undefined) aValue = ''
-    if (bValue === undefined) bValue = ''
-    
-    // Special handling for dates
-    if (sortField.value === 'fecha_turno') {
-      aValue = new Date(aValue).getTime()
-      bValue = new Date(bValue).getTime()
-    } else {
-      // Convert to string for comparison
-      aValue = String(aValue).toLowerCase()
-      bValue = String(bValue).toLowerCase()
-    }
-    
-    if (sortDirection.value === 'asc') {
-      return aValue < bValue ? -1 : aValue > bValue ? 1 : 0
-    } else {
-      return aValue > bValue ? -1 : aValue < bValue ? 1 : 0
-    }
-  })
-  
-  return sorted
-})
+  if (!filteredTurnos.value.length) return [];
 
-// Methods
+  const sorted = [...filteredTurnos.value].sort((a, b) => {
+    let aValue: any = a[sortField.value as keyof Turno];
+    let bValue: any = b[sortField.value as keyof Turno];
+
+    if (aValue === undefined) aValue = "";
+    if (bValue === undefined) bValue = "";
+
+    if (sortField.value === "fecha_turno") {
+      aValue = new Date(aValue).getTime();
+      bValue = new Date(bValue).getTime();
+    } else {
+      aValue = String(aValue).toLowerCase();
+      bValue = String(bValue).toLowerCase();
+    }
+
+    if (sortDirection.value === "asc") {
+      return aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
+    } else {
+      return aValue > bValue ? -1 : aValue < bValue ? 1 : 0;
+    }
+  });
+
+  return sorted;
+});
+
 const setSortField = (field: string) => {
   if (sortField.value === field) {
-    sortDirection.value = sortDirection.value === 'asc' ? 'desc' : 'asc'
+    sortDirection.value = sortDirection.value === "asc" ? "desc" : "asc";
   } else {
-    sortField.value = field
-    sortDirection.value = 'asc'
+    sortField.value = field;
+    sortDirection.value = "asc";
   }
-}
+};
 
 const getSortIcon = (field: string): string => {
-  if (sortField.value !== field) return '↕️'
-  return sortDirection.value === 'asc' ? '⬆️' : '⬇️'
-}
+  if (sortField.value !== field) return "↕️";
+  return sortDirection.value === "asc" ? "⬆️" : "⬇️";
+};
 
 const setStateFilter = (estado: string) => {
-  activeStateFilter.value = estado
-}
+  activeStateFilter.value = estado;
+};
 
 const getTurnosByEstado = (estado: EstadoTurno) => {
-  return props.turnos.filter(turno => turno.estado === estado)
-}
+  return props.turnos.filter((turno) => turno.estado === estado);
+};
 
 const formatDateTime = (dateString?: string): string => {
-  if (!dateString) return 'N/A'
-  
+  if (!dateString) return "N/A";
+
   try {
-    const date = new Date(dateString)
-    return date.toLocaleString('es-ES', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    })
+    const date = new Date(dateString);
+    return date.toLocaleString("es-ES", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
   } catch {
-    return 'N/A'
+    return "N/A";
   }
-}
+};
 
 const formatDate = (dateString?: string): string => {
-  if (!dateString) return 'N/A'
-  
+  if (!dateString) return "N/A";
+
   try {
-    const date = new Date(dateString)
-    return date.toLocaleDateString('es-ES', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    })
+    const date = new Date(dateString);
+    return date.toLocaleDateString("es-ES", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
   } catch {
-    return 'N/A'
+    return "N/A";
   }
-}
+};
 
 const formatTime = (dateString?: string): string => {
-  if (!dateString) return 'N/A'
-  
+  if (!dateString) return "N/A";
+
   try {
-    const date = new Date(dateString)
-    return date.toLocaleTimeString('es-ES', {
-      hour: '2-digit',
-      minute: '2-digit'
-    })
+    const date = new Date(dateString);
+    return date.toLocaleTimeString("es-ES", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
   } catch {
-    return 'N/A'
+    return "N/A";
   }
-}
+};
 
 const getRelativeTime = (dateString?: string): string => {
-  if (!dateString) return 'Fecha desconocida'
-  
+  if (!dateString) return "Fecha desconocida";
+
   try {
-    const date = new Date(dateString)
-    const now = new Date()
-    const diffInMs = date.getTime() - now.getTime()
-    const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24))
-    
-    if (diffInDays === 0) return 'hoy'
-    if (diffInDays === 1) return 'mañana'
-    if (diffInDays === -1) return 'ayer'
-    if (diffInDays > 0 && diffInDays < 7) return `en ${diffInDays} días`
-    if (diffInDays < 0 && diffInDays > -7) return `hace ${Math.abs(diffInDays)} días`
-    if (diffInDays >= 7) return `en ${Math.floor(diffInDays / 7)} semanas`
-    if (diffInDays <= -7) return `hace ${Math.floor(Math.abs(diffInDays) / 7)} semanas`
-    return formatDate(dateString)
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInMs = date.getTime() - now.getTime();
+    const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+
+    if (diffInDays === 0) return "hoy";
+    if (diffInDays === 1) return "mañana";
+    if (diffInDays === -1) return "ayer";
+    if (diffInDays > 0 && diffInDays < 7) return `en ${diffInDays} días`;
+    if (diffInDays < 0 && diffInDays > -7)
+      return `hace ${Math.abs(diffInDays)} días`;
+    if (diffInDays >= 7) return `en ${Math.floor(diffInDays / 7)} semanas`;
+    if (diffInDays <= -7)
+      return `hace ${Math.floor(Math.abs(diffInDays) / 7)} semanas`;
+    return formatDate(dateString);
   } catch {
-    return 'Fecha inválida'
+    return "Fecha inválida";
   }
-}
+};
 
 const getEstadoIcon = (estado: EstadoTurno): string => {
   const icons = {
-    pendiente: '⏳',
-    confirmado: '✅',
-    completado: '🏁',
-    cancelado: '❌'
-  }
-  return icons[estado] || '❓'
-}
+    pendiente: "⏳",
+    confirmado: "✅",
+    completado: "🏁",
+    cancelado: "❌",
+  };
+  return icons[estado] || "❓";
+};
 
 const getEstadoLabel = (estado: EstadoTurno | string): string => {
   const labels = {
-    pendiente: 'Pendiente',
-    confirmado: 'Confirmado',
-    completado: 'Completado',
-    cancelado: 'Cancelado',
-    all: 'Todos'
-  }
-  return labels[estado as keyof typeof labels] || estado
-}
+    pendiente: "Pendiente",
+    confirmado: "Confirmado",
+    completado: "Completado",
+    cancelado: "Cancelado",
+    all: "Todos",
+  };
+  return labels[estado as keyof typeof labels] || estado;
+};
 
 const getTurnoRowClass = (turno: Turno): string => {
-  const classes = [`turno-row--${turno.estado}`]
-  
-  // Add urgency classes
-  const now = new Date()
-  const turnoDate = new Date(turno.fecha_turno)
-  const diffInHours = (turnoDate.getTime() - now.getTime()) / (1000 * 60 * 60)
-  
-  if (diffInHours < 0 && turno.estado === 'pendiente') {
-    classes.push('turno-row--overdue')
-  } else if (diffInHours < 24 && turno.estado !== 'completado' && turno.estado !== 'cancelado') {
-    classes.push('turno-row--upcoming')
+  const classes = [`turno-row--${turno.estado}`];
+
+  const now = new Date();
+  const turnoDate = new Date(turno.fecha_turno);
+  const diffInHours = (turnoDate.getTime() - now.getTime()) / (1000 * 60 * 60);
+
+  if (diffInHours < 0 && turno.estado === "pendiente") {
+    classes.push("turno-row--overdue");
+  } else if (
+    diffInHours < 24 &&
+    turno.estado !== "completado" &&
+    turno.estado !== "cancelado"
+  ) {
+    classes.push("turno-row--upcoming");
   }
-  
-  return classes.join(' ')
-}
+
+  return classes.join(" ");
+};
 
 const getTurnoCardClass = (turno: Turno): string => {
-  return getTurnoRowClass(turno).replace('turno-row', 'turno-card')
-}
+  return getTurnoRowClass(turno).replace("turno-row", "turno-card");
+};
 
 const truncateText = (text: string, maxLength: number): string => {
-  if (text.length <= maxLength) return text
-  return text.substring(0, maxLength) + '...'
-}
+  if (text.length <= maxLength) return text;
+  return text.substring(0, maxLength) + "...";
+};
 
 const handleDelete = (turno: Turno) => {
-  emit('delete', turno)
-}
-
+  emit("delete", turno);
+};
 
 const refreshList = () => {
-  emit('refresh')
-}
+  emit("refresh");
+};
 
-console.log('🔧 Componente TurnoList cargado')
+console.log("🔧 Componente TurnoList cargado");
 </script>
 
 <style scoped>
@@ -543,7 +552,6 @@ console.log('🔧 Componente TurnoList cargado')
   overflow: hidden;
 }
 
-/* Header */
 .turno-list__header {
   display: flex;
   justify-content: space-between;
@@ -575,7 +583,6 @@ console.log('🔧 Componente TurnoList cargado')
   color: var(--text-light);
 }
 
-/* Filters */
 .turno-list__filters {
   padding: var(--spacing-md) var(--spacing-lg);
   border-bottom: 1px solid var(--border-light);
@@ -610,7 +617,6 @@ console.log('🔧 Componente TurnoList cargado')
   color: white;
 }
 
-/* Loading, Error, Empty states */
 .turno-list__loading,
 .turno-list__error,
 .turno-list__empty {
@@ -630,7 +636,6 @@ console.log('🔧 Componente TurnoList cargado')
   margin-bottom: var(--spacing-lg);
 }
 
-/* Table */
 .turno-table-wrapper {
   overflow-x: auto;
 }
@@ -685,7 +690,6 @@ console.log('🔧 Componente TurnoList cargado')
   background-color: var(--background-color);
 }
 
-/* Row states */
 .turno-row--pendiente {
   border-left: 4px solid var(--warning-color);
 }
@@ -711,7 +715,6 @@ console.log('🔧 Componente TurnoList cargado')
   background-color: var(--warning-light);
 }
 
-/* Table cells */
 .fecha-cell {
   display: flex;
   flex-direction: column;
@@ -775,7 +778,6 @@ console.log('🔧 Componente TurnoList cargado')
   gap: var(--spacing-xs);
 }
 
-/* Cards (mobile) */
 .turno-cards {
   display: none;
   gap: var(--spacing-md);
@@ -853,7 +855,6 @@ console.log('🔧 Componente TurnoList cargado')
   flex-wrap: wrap;
 }
 
-/* Card states */
 .turno-card--pendiente {
   border-left: 4px solid var(--warning-color);
 }
@@ -879,40 +880,39 @@ console.log('🔧 Componente TurnoList cargado')
   background-color: var(--warning-light);
 }
 
-/* Responsive */
 @media (max-width: 768px) {
   .turno-list__header {
     flex-direction: column;
     gap: var(--spacing-md);
     align-items: stretch;
   }
-  
+
   .turno-list__stats {
     justify-content: space-around;
     flex-wrap: wrap;
   }
-  
+
   .turno-list__filters {
     padding: var(--spacing-md);
   }
-  
+
   .filter-chips {
     justify-content: center;
   }
-  
+
   .turno-table-wrapper {
     display: none;
   }
-  
+
   .turno-cards {
     display: flex;
     flex-direction: column;
   }
-  
+
   .turno-card__actions {
     flex-direction: column;
   }
-  
+
   .btn {
     width: 100%;
   }

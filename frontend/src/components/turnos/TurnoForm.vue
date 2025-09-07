@@ -2,29 +2,33 @@
   <form @submit.prevent="handleSubmit" class="turno-form">
     <div class="turno-form__header">
       <h2 class="turno-form__title">
-        {{ mode === 'create' ? '📅 Nuevo Turno' : '✏️ Editar Turno' }}
+        {{ mode === "create" ? "📅 Nuevo Turno" : "✏️ Editar Turno" }}
       </h2>
-      
+
       <p class="turno-form__subtitle">
-        {{ mode === 'create' 
-          ? 'Agenda una nueva cita para una mascota' 
-          : 'Modifica los datos del turno seleccionado' 
+        {{
+          mode === "create"
+            ? "Agenda una nueva cita para una mascota"
+            : "Modifica los datos del turno seleccionado"
         }}
       </p>
     </div>
 
     <div class="turno-form__body">
-      <!-- Selección de Dueño -->
       <div class="form-group">
         <label for="id_duenio" class="form-label form-label--required">
           👤 Dueño de la Mascota
         </label>
-        
-        <!-- Dueño seleccionado (vista compacta) -->
-        <div v-if="selectedDuenio && !showDuenioSelector" class="selected-duenio">
+
+        <div
+          v-if="selectedDuenio && !showDuenioSelector"
+          class="selected-duenio"
+        >
           <div class="selected-duenio__info">
             <h4>{{ selectedDuenio.nombre_apellido }}</h4>
-            <p>📧 {{ selectedDuenio.email }} | 📱 {{ selectedDuenio.telefono }}</p>
+            <p>
+              📧 {{ selectedDuenio.email }} | 📱 {{ selectedDuenio.telefono }}
+            </p>
           </div>
           <button
             type="button"
@@ -35,7 +39,6 @@
           </button>
         </div>
 
-        <!-- Selector de dueño -->
         <div v-else class="duenio-selector">
           <div class="duenio-search">
             <input
@@ -58,11 +61,14 @@
                 </div>
               </div>
             </div>
-            <div v-else-if="duenioSearchQuery && !loadingDuenios" class="no-results">
+            <div
+              v-else-if="duenioSearchQuery && !loadingDuenios"
+              class="no-results"
+            >
               ❌ No se encontraron dueños
             </div>
           </div>
-          
+
           <button
             v-if="selectedDuenio"
             type="button"
@@ -72,7 +78,7 @@
             ❌ Limpiar Selección
           </button>
         </div>
-        
+
         <span v-if="errors.id_duenio" class="form-error">
           {{ errors.id_duenio }}
         </span>
@@ -81,7 +87,6 @@
         </span>
       </div>
 
-      <!-- Nombre de la Mascota -->
       <div class="form-group">
         <label for="nombre_mascota" class="form-label form-label--required">
           🐕 Nombre de la Mascota
@@ -109,12 +114,11 @@
         </span>
       </div>
 
-      <!-- Fecha del Turno -->
       <div class="form-group">
         <label for="fecha_turno" class="form-label form-label--required">
           📅 Fecha del Turno
         </label>
-        
+
         <div class="datetime-container">
           <DatePicker
             v-model="fechaSeleccionada"
@@ -127,21 +131,18 @@
             @input="clearFieldError('fecha_turno')"
           />
         </div>
-        
+
         <span v-if="errors.fecha_turno" class="form-error">
           {{ errors.fecha_turno }}
         </span>
-        <span v-else class="form-help">
-          Fecha de la cita veterinaria
-        </span>
+        <span v-else class="form-help"> Fecha de la cita veterinaria </span>
       </div>
 
-      <!-- Hora del Turno -->
       <div class="form-group">
         <label for="hora_turno" class="form-label form-label--required">
           🕐 Hora del Turno
         </label>
-        
+
         <div class="datetime-container">
           <TimeSelector
             v-model="horaSeleccionada"
@@ -152,7 +153,7 @@
             @input="clearFieldError('hora_turno')"
           />
         </div>
-        
+
         <span v-if="errors.hora_turno" class="form-error">
           {{ errors.hora_turno }}
         </span>
@@ -161,7 +162,6 @@
         </span>
       </div>
 
-      <!-- Tratamiento -->
       <div class="form-group">
         <label for="tratamiento" class="form-label form-label--required">
           🏥 Tratamiento / Motivo de la Consulta
@@ -188,11 +188,8 @@
         </span>
       </div>
 
-      <!-- Estado (solo en modo edición) -->
       <div v-if="mode === 'edit'" class="form-group">
-        <label for="estado" class="form-label">
-          🔄 Estado del Turno
-        </label>
+        <label for="estado" class="form-label"> 🔄 Estado del Turno </label>
         <select
           id="estado"
           v-model="formData.estado"
@@ -208,13 +205,10 @@
         <span v-if="errors.estado" class="form-error">
           {{ errors.estado }}
         </span>
-        <span v-else class="form-help">
-          Estado actual del turno
-        </span>
+        <span v-else class="form-help"> Estado actual del turno </span>
       </div>
     </div>
 
-    <!-- Actions -->
     <div class="turno-form__footer">
       <button
         type="button"
@@ -224,29 +218,23 @@
       >
         ❌ Cancelar
       </button>
-      
+
       <button
         type="submit"
         class="btn btn--primary"
         :disabled="loading || !isFormValid"
       >
-        <LoadingSpinner 
-          v-if="loading" 
-          size="small" 
-          color="white"
-        />
+        <LoadingSpinner v-if="loading" size="small" color="white" />
         <span v-else>
-          {{ mode === 'create' ? '📅 Crear Turno' : '💾 Guardar Cambios' }}
+          {{ mode === "create" ? "📅 Crear Turno" : "💾 Guardar Cambios" }}
         </span>
       </button>
     </div>
 
-    <!-- Success Message -->
     <div v-if="successMessage" class="turno-form__success">
       ✅ {{ successMessage }}
     </div>
 
-    <!-- Error Message -->
     <div v-if="generalError" class="turno-form__error">
       ❌ {{ generalError }}
     </div>
@@ -254,403 +242,405 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, watch, nextTick, onMounted } from 'vue'
-import LoadingSpinner from '@/components/shared/LoadingSpinner.vue'
-import DatePicker from '@/components/shared/DatePicker.vue'
-import TimeSelector from '@/components/shared/TimeSelector.vue'
-import { useDuenioStore } from '@/stores/duenioStore'
-import type { 
-  Turno, 
-  Duenio, 
-  CreateTurnoPayload, 
+import { ref, reactive, computed, watch, nextTick, onMounted } from "vue";
+import LoadingSpinner from "@/components/shared/LoadingSpinner.vue";
+import DatePicker from "@/components/shared/DatePicker.vue";
+import TimeSelector from "@/components/shared/TimeSelector.vue";
+import { useDuenioStore } from "@/stores/duenioStore";
+import type {
+  Turno,
+  Duenio,
+  CreateTurnoPayload,
   UpdateTurnoPayload,
-  EstadoTurno 
-} from '@/types/models'
+  EstadoTurno,
+} from "@/types/models";
 
-// Types
 export interface TurnoFormProps {
-  turno?: Turno | null
-  mode?: 'create' | 'edit'
-  loading?: boolean
-  duenios?: Duenio[]
+  turno?: Turno | null;
+  mode?: "create" | "edit";
+  loading?: boolean;
+  duenios?: Duenio[];
 }
 
 export interface TurnoFormEmits {
-  (e: 'submit', data: CreateTurnoPayload | UpdateTurnoPayload): void
-  (e: 'cancel'): void
-  (e: 'success', turno: Turno): void
+  (e: "submit", data: CreateTurnoPayload | UpdateTurnoPayload): void;
+  (e: "cancel"): void;
+  (e: "success", turno: Turno): void;
 }
 
-// Props
 const props = withDefaults(defineProps<TurnoFormProps>(), {
   turno: null,
-  mode: 'create',
+  mode: "create",
   loading: false,
-  duenios: () => []
-})
+  duenios: () => [],
+});
 
-// Emits
-const emit = defineEmits<TurnoFormEmits>()
+const emit = defineEmits<TurnoFormEmits>();
 
-// Stores
-const duenioStore = useDuenioStore()
+const duenioStore = useDuenioStore();
 
-// Refs
-const mascotaInput = ref<HTMLInputElement>()
+const mascotaInput = ref<HTMLInputElement>();
 
-// Reactive state
 const formData = reactive<CreateTurnoPayload>({
-  nombre_mascota: '',
-  fecha_turno: '',
-  tratamiento: '',
+  nombre_mascota: "",
+  fecha_turno: "",
+  tratamiento: "",
   id_duenio: 0,
-  estado: 'pendiente' as EstadoTurno
-})
+  estado: "pendiente" as EstadoTurno,
+});
 
-// Campos separados para fecha y hora
-const fechaSeleccionada = ref<string>('')
-const horaSeleccionada = ref<string>('')
+const fechaSeleccionada = ref<string>("");
+const horaSeleccionada = ref<string>("");
 
 const errors = reactive<Record<string, string>>({
-  nombre_mascota: '',
-  fecha_turno: '',
-  hora_turno: '',
-  tratamiento: '',
-  id_duenio: '',
-  estado: ''
-})
+  nombre_mascota: "",
+  fecha_turno: "",
+  hora_turno: "",
+  tratamiento: "",
+  id_duenio: "",
+  estado: "",
+});
 
-const successMessage = ref<string>('')
-const generalError = ref<string>('')
-const showDuenioSelector = ref<boolean>(true)
-const duenioSearchQuery = ref<string>('')
-const duenioSearchResults = ref<Duenio[]>([])
-const selectedDuenio = ref<Duenio | null>(null)
-const loadingDuenios = ref<boolean>(false)
+const successMessage = ref<string>("");
+const generalError = ref<string>("");
+const showDuenioSelector = ref<boolean>(true);
+const duenioSearchQuery = ref<string>("");
+const duenioSearchResults = ref<Duenio[]>([]);
+const selectedDuenio = ref<Duenio | null>(null);
+const loadingDuenios = ref<boolean>(false);
 
-// Computed
 const minDate = computed(() => {
-  const today = new Date()
-  return today.toISOString().slice(0, 10) // YYYY-MM-DD format
-})
+  const today = new Date();
+  return today.toISOString().slice(0, 10); // YYYY-MM-DD formato
+});
 
 const maxDate = computed(() => {
-  const futureDate = new Date()
-  futureDate.setMonth(futureDate.getMonth() + 6) // 6 months from now
-  return futureDate.toISOString().slice(0, 10)
-})
+  const futureDate = new Date();
+  futureDate.setMonth(futureDate.getMonth() + 6); // 6 a partir de hoy
+  return futureDate.toISOString().slice(0, 10);
+});
 
 const isFormValid = computed(() => {
-  const hasValidDuenio = (formData.id_duenio > 0) || (selectedDuenio.value && selectedDuenio.value.id)
-  
-  return formData.nombre_mascota.length >= 1 &&
-         fechaSeleccionada.value.length > 0 &&
-         horaSeleccionada.value.length > 0 &&
-         formData.tratamiento.length >= 3 &&
-         hasValidDuenio &&
-         !Object.values(errors).some(error => error)
-})
+  const hasValidDuenio =
+    formData.id_duenio > 0 || (selectedDuenio.value && selectedDuenio.value.id);
 
-// Methods
+  return (
+    formData.nombre_mascota.length >= 1 &&
+    fechaSeleccionada.value.length > 0 &&
+    horaSeleccionada.value.length > 0 &&
+    formData.tratamiento.length >= 3 &&
+    hasValidDuenio &&
+    !Object.values(errors).some((error) => error)
+  );
+});
+
 const validateField = (field: keyof typeof formData): boolean => {
-  errors[field] = ''
-  
+  errors[field] = "";
+
   switch (field) {
-    case 'nombre_mascota':
+    case "nombre_mascota":
       if (!formData.nombre_mascota.trim()) {
-        errors[field] = 'El nombre de la mascota es requerido'
+        errors[field] = "El nombre de la mascota es requerido";
       } else if (formData.nombre_mascota.length > 80) {
-        errors[field] = 'El nombre no puede exceder 80 caracteres'
+        errors[field] = "El nombre no puede exceder 80 caracteres";
       }
-      break
-      
-    case 'tratamiento':
+      break;
+
+    case "tratamiento":
       if (!formData.tratamiento.trim()) {
-        errors[field] = 'El tratamiento es requerido'
+        errors[field] = "El tratamiento es requerido";
       } else if (formData.tratamiento.length < 3) {
-        errors[field] = 'El tratamiento debe tener al menos 3 caracteres'
+        errors[field] = "El tratamiento debe tener al menos 3 caracteres";
       } else if (formData.tratamiento.length > 500) {
-        errors[field] = 'El tratamiento no puede exceder 500 caracteres'
+        errors[field] = "El tratamiento no puede exceder 500 caracteres";
       }
-      break
-      
-    case 'id_duenio':
-      if ((!formData.id_duenio || formData.id_duenio <= 0) && !selectedDuenio.value) {
-        errors[field] = 'Debe seleccionar un dueño'
+      break;
+
+    case "id_duenio":
+      if (
+        (!formData.id_duenio || formData.id_duenio <= 0) &&
+        !selectedDuenio.value
+      ) {
+        errors[field] = "Debe seleccionar un dueño";
       }
-      break
+      break;
   }
-  
-  return !errors[field]
-}
+
+  return !errors[field];
+};
 
 const validateFechaHora = (): boolean => {
-  errors.fecha_turno = ''
-  errors.hora_turno = ''
-  
+  errors.fecha_turno = "";
+  errors.hora_turno = "";
+
   // Validar fecha
   if (!fechaSeleccionada.value) {
-    errors.fecha_turno = 'La fecha es requerida'
+    errors.fecha_turno = "La fecha es requerida";
   } else {
-    const selectedDate = new Date(fechaSeleccionada.value)
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
-    
+    const selectedDate = new Date(fechaSeleccionada.value);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
     if (selectedDate < today) {
-      errors.fecha_turno = 'La fecha debe ser futura'
+      errors.fecha_turno = "La fecha debe ser futura";
     }
   }
-  
+
   // Validar hora
   if (!horaSeleccionada.value) {
-    errors.hora_turno = 'La hora es requerida'
+    errors.hora_turno = "La hora es requerida";
   }
-  
+
   // Si ambos están presentes, combinar para fecha_turno
   if (fechaSeleccionada.value && horaSeleccionada.value) {
-    const fechaCompleta = `${fechaSeleccionada.value} ${horaSeleccionada.value}:00`
-    formData.fecha_turno = fechaCompleta
-    
+    const fechaCompleta = `${fechaSeleccionada.value} ${horaSeleccionada.value}:00`;
+    formData.fecha_turno = fechaCompleta;
+
     // Validar que no sea fecha/hora pasada
-    const fechaHoraCompleta = new Date(`${fechaSeleccionada.value}T${horaSeleccionada.value}`)
-    const ahora = new Date()
-    
+    const fechaHoraCompleta = new Date(
+      `${fechaSeleccionada.value}T${horaSeleccionada.value}`
+    );
+    const ahora = new Date();
+
     if (fechaHoraCompleta <= ahora) {
-      errors.hora_turno = 'La fecha y hora deben ser futuras'
+      errors.hora_turno = "La fecha y hora deben ser futuras";
     }
   }
-  
-  return !errors.fecha_turno && !errors.hora_turno
-}
+
+  return !errors.fecha_turno && !errors.hora_turno;
+};
 
 const validateAllFields = (): boolean => {
-  const fieldsValid = ['nombre_mascota', 'tratamiento', 'id_duenio'].every(field => 
-    validateField(field as keyof typeof formData)
-  )
-  const fechaHoraValid = validateFechaHora()
-  
-  return fieldsValid && fechaHoraValid
-}
+  const fieldsValid = ["nombre_mascota", "tratamiento", "id_duenio"].every(
+    (field) => validateField(field as keyof typeof formData)
+  );
+  const fechaHoraValid = validateFechaHora();
+
+  return fieldsValid && fechaHoraValid;
+};
 
 const clearFieldError = (field: keyof typeof errors) => {
   if (errors[field]) {
-    errors[field] = ''
+    errors[field] = "";
   }
-}
+};
 
 const searchDuenios = async () => {
   if (duenioSearchQuery.value.length < 2) {
-    duenioSearchResults.value = []
-    return
+    duenioSearchResults.value = [];
+    return;
   }
 
-  loadingDuenios.value = true
-  
+  loadingDuenios.value = true;
+
   try {
-    // Use existing duenios from props or fetch from store
-    const allDuenios = props.duenios.length > 0 ? props.duenios : duenioStore.duenios
-    
-    // Filter duenios based on search query
-    duenioSearchResults.value = allDuenios.filter(duenio =>
-      duenio.nombre_apellido.toLowerCase().includes(duenioSearchQuery.value.toLowerCase()) ||
-      duenio.email.toLowerCase().includes(duenioSearchQuery.value.toLowerCase())
-    ).slice(0, 5) // Limit to 5 results
-    
+    const allDuenios =
+      props.duenios.length > 0 ? props.duenios : duenioStore.duenios;
+
+    duenioSearchResults.value = allDuenios
+      .filter(
+        (duenio) =>
+          duenio.nombre_apellido
+            .toLowerCase()
+            .includes(duenioSearchQuery.value.toLowerCase()) ||
+          duenio.email
+            .toLowerCase()
+            .includes(duenioSearchQuery.value.toLowerCase())
+      )
+      .slice(0, 5); // Limit a 5 resultados
   } catch (error) {
-    console.error('Error searching duenios:', error)
-    duenioSearchResults.value = []
+    console.error("Error searching duenios:", error);
+    duenioSearchResults.value = [];
   } finally {
-    loadingDuenios.value = false
+    loadingDuenios.value = false;
   }
-}
+};
 
 const selectDuenio = (duenio: Duenio) => {
-  selectedDuenio.value = duenio
-  formData.id_duenio = duenio.id || 0
-  showDuenioSelector.value = false
-  duenioSearchQuery.value = ''
-  duenioSearchResults.value = []
-  clearFieldError('id_duenio')
-}
+  selectedDuenio.value = duenio;
+  formData.id_duenio = duenio.id || 0;
+  showDuenioSelector.value = false;
+  duenioSearchQuery.value = "";
+  duenioSearchResults.value = [];
+  clearFieldError("id_duenio");
+};
 
 const clearDuenioSelection = () => {
-  selectedDuenio.value = null
-  formData.id_duenio = 0
-  duenioSearchQuery.value = ''
-  duenioSearchResults.value = []
-}
+  selectedDuenio.value = null;
+  formData.id_duenio = 0;
+  duenioSearchQuery.value = "";
+  duenioSearchResults.value = [];
+};
 
 const resetForm = () => {
-  formData.nombre_mascota = ''
-  formData.fecha_turno = ''
-  formData.tratamiento = ''
-  formData.id_duenio = 0
-  formData.estado = 'pendiente'
-  
-  fechaSeleccionada.value = ''
-  horaSeleccionada.value = ''
-  
-  Object.keys(errors).forEach(key => {
-    errors[key as keyof typeof errors] = ''
-  })
-  
-  selectedDuenio.value = null
-  showDuenioSelector.value = true
-  duenioSearchQuery.value = ''
-  duenioSearchResults.value = []
-  successMessage.value = ''
-  generalError.value = ''
-}
+  formData.nombre_mascota = "";
+  formData.fecha_turno = "";
+  formData.tratamiento = "";
+  formData.id_duenio = 0;
+  formData.estado = "pendiente";
+
+  fechaSeleccionada.value = "";
+  horaSeleccionada.value = "";
+
+  Object.keys(errors).forEach((key) => {
+    errors[key as keyof typeof errors] = "";
+  });
+
+  selectedDuenio.value = null;
+  showDuenioSelector.value = true;
+  duenioSearchQuery.value = "";
+  duenioSearchResults.value = [];
+  successMessage.value = "";
+  generalError.value = "";
+};
 
 const loadTurnoData = () => {
-  if (props.turno && props.mode === 'edit') {
-    formData.nombre_mascota = props.turno.nombre_mascota
-    
+  if (props.turno && props.mode === "edit") {
+    formData.nombre_mascota = props.turno.nombre_mascota;
+
     // Separar fecha y hora desde formato backend (YYYY-MM-DD HH:MM:SS)
     if (props.turno.fecha_turno) {
-      const fechaBackend = props.turno.fecha_turno
-      
-      if (fechaBackend.includes('T')) {
+      const fechaBackend = props.turno.fecha_turno;
+
+      if (fechaBackend.includes("T")) {
         // Formato ISO: YYYY-MM-DDTHH:MM:SS
-        const partes = fechaBackend.split('T')
-        fechaSeleccionada.value = partes[0] // YYYY-MM-DD
-        horaSeleccionada.value = partes[1].slice(0, 5) // HH:MM
-      } else if (fechaBackend.includes(' ')) {
+        const partes = fechaBackend.split("T");
+        fechaSeleccionada.value = partes[0]; // YYYY-MM-DD
+        horaSeleccionada.value = partes[1].slice(0, 5); // HH:MM
+      } else if (fechaBackend.includes(" ")) {
         // Formato backend: YYYY-MM-DD HH:MM:SS
-        const partes = fechaBackend.split(' ')
-        fechaSeleccionada.value = partes[0] // YYYY-MM-DD
-        horaSeleccionada.value = partes[1].slice(0, 5) // HH:MM
+        const partes = fechaBackend.split(" ");
+        fechaSeleccionada.value = partes[0]; // YYYY-MM-DD
+        horaSeleccionada.value = partes[1].slice(0, 5); // HH:MM
       } else {
-        fechaSeleccionada.value = ''
-        horaSeleccionada.value = ''
+        fechaSeleccionada.value = "";
+        horaSeleccionada.value = "";
       }
     } else {
-      fechaSeleccionada.value = ''
-      horaSeleccionada.value = ''
+      fechaSeleccionada.value = "";
+      horaSeleccionada.value = "";
     }
-    
-    formData.tratamiento = props.turno.tratamiento
-    formData.id_duenio = props.turno.id_duenio
-    formData.estado = props.turno.estado
-    
-    // El dueño viene directamente en props.turno.duenio
-    const duenio = props.turno.duenio
-    
+
+    formData.tratamiento = props.turno.tratamiento;
+    formData.id_duenio = props.turno.id_duenio;
+    formData.estado = props.turno.estado;
+
+    const duenio = props.turno.duenio;
+
     if (duenio) {
-      console.log('✅ Dueño encontrado:', duenio.nombre_apellido)
-      selectedDuenio.value = duenio
-      showDuenioSelector.value = false
+      console.log("✅ Dueño encontrado:", duenio.nombre_apellido);
+      selectedDuenio.value = duenio;
+      showDuenioSelector.value = false;
       // Asegurar que el formData también tenga el ID correcto
-      formData.id_duenio = duenio.id || 0
+      formData.id_duenio = duenio.id || 0;
     } else {
-      console.log('❌ Dueño no encontrado, usando fallback por ID')
-      // Fallback: buscar por ID
-      const duenioFallback = props.duenios.find(d => d.id === props.turno?.id_duenio) ||
-                            duenioStore.duenios.find(d => d.id === props.turno?.id_duenio)
-      
+      console.log("❌ Dueño no encontrado, buscando por ID");
+      const duenioFallback =
+        props.duenios.find((d) => d.id === props.turno?.id_duenio) ||
+        duenioStore.duenios.find((d) => d.id === props.turno?.id_duenio);
+
       if (duenioFallback) {
-        selectedDuenio.value = duenioFallback
-        showDuenioSelector.value = false
-        formData.id_duenio = duenioFallback.id || 0
+        selectedDuenio.value = duenioFallback;
+        showDuenioSelector.value = false;
+        formData.id_duenio = duenioFallback.id || 0;
       } else {
-        selectedDuenio.value = null
-        showDuenioSelector.value = true
+        selectedDuenio.value = null;
+        showDuenioSelector.value = true;
       }
     }
   }
-}
+};
 
 const handleSubmit = () => {
-  // Clear previous messages
-  successMessage.value = ''
-  generalError.value = ''
-  
-  // Validate form
+  successMessage.value = "";
+  generalError.value = "";
+
   if (!validateAllFields()) {
-    generalError.value = 'Por favor corrige los errores en el formulario'
-    return
+    generalError.value = "Por favor corrige los errores en el formulario";
+    return;
   }
-  
-  // El formato ya está correctamente establecido en validateFechaHora como "YYYY-MM-DD HH:MM:00"
-  const submitData = { ...formData }
-  
-  emit('submit', submitData)
-  
-  console.log(`📝 Formulario turno ${props.mode} enviado:`, submitData)
-  console.log(`📅 Fecha formateada para backend: ${submitData.fecha_turno}`)
-}
+
+  const submitData = { ...formData };
+
+  emit("submit", submitData);
+
+  console.log(`📝 Formulario turno ${props.mode} enviado:`, submitData);
+  console.log(`📅 Fecha formateada para backend: ${submitData.fecha_turno}`);
+};
 
 const handleCancel = () => {
-  emit('cancel')
-}
+  emit("cancel");
+};
 
 const showSuccess = (message: string) => {
-  successMessage.value = message
-  generalError.value = ''
-  
-  // Clear after 3 seconds
+  successMessage.value = message;
+  generalError.value = "";
+
   setTimeout(() => {
-    successMessage.value = ''
-  }, 3000)
-}
+    successMessage.value = "";
+  }, 3000);
+};
 
 const showError = (message: string) => {
-  generalError.value = message
-  successMessage.value = ''
-}
+  generalError.value = message;
+  successMessage.value = "";
+};
 
-// Focus management
 const focusFirstField = async () => {
-  await nextTick()
+  await nextTick();
   if (!selectedDuenio.value) {
-    // Focus duenio search if no duenio selected
-    const searchInput = document.querySelector('.duenio-search input') as HTMLInputElement
-    searchInput?.focus()
+    const searchInput = document.querySelector(
+      ".duenio-search input"
+    ) as HTMLInputElement;
+    searchInput?.focus();
   } else {
-    // Focus mascota name input
-    mascotaInput.value?.focus()
+    mascotaInput.value?.focus();
   }
-}
+};
 
-// Watchers
-watch(() => props.turno, () => {
-  loadTurnoData()
-}, { immediate: true })
+watch(
+  () => props.turno,
+  () => {
+    loadTurnoData();
+  },
+  { immediate: true }
+);
 
-watch(() => props.mode, () => {
-  if (props.mode === 'create') {
-    resetForm()
-  }
-}, { immediate: true })
+watch(
+  () => props.mode,
+  () => {
+    if (props.mode === "create") {
+      resetForm();
+    }
+  },
+  { immediate: true }
+);
 
-// Load duenios on mount if not provided
 onMounted(async () => {
-  loadTurnoData()
-  
-  // Load duenios if not provided and store is empty
+  loadTurnoData();
+
   if (props.duenios.length === 0 && duenioStore.duenios.length === 0) {
     try {
-      await duenioStore.fetchAll()
+      await duenioStore.fetchAll();
     } catch (error) {
-      console.error('Error loading duenios:', error)
+      console.error("Error loading duenios:", error);
     }
   }
-  
-  if (props.mode === 'create') {
-    focusFirstField()
-  }
-})
 
-// Expose methods
+  if (props.mode === "create") {
+    focusFirstField();
+  }
+});
+
 defineExpose({
   resetForm,
   validateAllFields,
   showSuccess,
   showError,
-  focusFirstField
-})
+  focusFirstField,
+});
 
-console.log('🔧 Componente TurnoForm cargado')
+console.log("🔧 Componente TurnoForm cargado");
 </script>
 
 <style scoped>
@@ -696,7 +686,6 @@ console.log('🔧 Componente TurnoForm cargado')
   font-family: inherit;
 }
 
-/* Dueño Selection */
 .selected-duenio {
   display: flex;
   justify-content: space-between;
@@ -779,14 +768,12 @@ console.log('🔧 Componente TurnoForm cargado')
   background: white;
 }
 
-/* DateTime Container */
 .datetime-container {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-sm);
 }
 
-/* Footer */
 .turno-form__footer {
   display: flex;
   gap: var(--spacing-md);
@@ -824,22 +811,22 @@ console.log('🔧 Componente TurnoForm cargado')
     border-radius: 0;
     box-shadow: none;
   }
-  
+
   .turno-form__header,
   .turno-form__body,
   .turno-form__footer {
     padding-left: var(--spacing-md);
     padding-right: var(--spacing-md);
   }
-  
+
   .turno-form__footer {
     flex-direction: column-reverse;
   }
-  
+
   .btn {
     width: 100%;
   }
-  
+
   .selected-duenio {
     flex-direction: column;
     gap: var(--spacing-sm);
@@ -847,7 +834,6 @@ console.log('🔧 Componente TurnoForm cargado')
   }
 }
 
-/* Form validation states */
 .form-input:valid:not(:placeholder-shown) {
   border-color: var(--success-color);
 }
@@ -856,13 +842,11 @@ console.log('🔧 Componente TurnoForm cargado')
   border-color: var(--warning-color);
 }
 
-/* Focus states */
 .form-input:focus-visible {
   outline: 2px solid var(--primary-color);
   outline-offset: 2px;
 }
 
-/* Animation for messages */
 .turno-form__success,
 .turno-form__error {
   animation: slideDown 0.3s ease-out;

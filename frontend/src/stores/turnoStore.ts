@@ -9,7 +9,6 @@ import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 
 export const useTurnoStore = defineStore("turno", () => {
-  // 🏪 Estado reactivo
   const turnos = ref<Turno[]>([]);
   const currentTurno = ref<Turno | null>(null);
   const turnosByDuenio = ref<Turno[]>([]);
@@ -17,7 +16,6 @@ export const useTurnoStore = defineStore("turno", () => {
   const loading = ref<boolean>(false);
   const error = ref<string | null>(null);
 
-  // 📊 Getters computados
   const totalTurnos = computed(() => turnos.value.length);
   const hasError = computed(() => error.value !== null);
   const isLoading = computed(() => loading.value);
@@ -160,8 +158,8 @@ export const useTurnoStore = defineStore("turno", () => {
 
       console.log(`✏️ Actualizando turno ID: ${id}`);
       const response = await ApiService.updateTurno(id, data);
-      
-      console.log('🔧 Respuesta del update:', response);
+
+      console.log("🔧 Respuesta del update:", response);
 
       const updatedTurno = response.data?.turno || response.data || response;
 
@@ -190,9 +188,6 @@ export const useTurnoStore = defineStore("turno", () => {
     }
   };
 
-  /**
-   * 7.2.6 - Eliminar turno
-   */
   const remove = async (id: number): Promise<boolean> => {
     try {
       loading.value = true;
@@ -221,9 +216,6 @@ export const useTurnoStore = defineStore("turno", () => {
     }
   };
 
-  /**
-   * 7.2.7 - Obtener turnos por dueño
-   */
   const fetchByDuenio = async (idDuenio: number): Promise<void> => {
     try {
       loading.value = true;
@@ -248,9 +240,6 @@ export const useTurnoStore = defineStore("turno", () => {
     }
   };
 
-  /**
-   * 7.2.8 - Obtener turnos por fecha
-   */
   const fetchByFecha = async (fecha: string): Promise<void> => {
     try {
       loading.value = true;
@@ -275,9 +264,6 @@ export const useTurnoStore = defineStore("turno", () => {
     }
   };
 
-  /**
-   * 7.2.9 - Cambiar estado del turno
-   */
   const updateEstado = async (
     id: number,
     estado: TurnoEstado
@@ -397,7 +383,7 @@ export const useTurnoStore = defineStore("turno", () => {
     return turnos.value.find((t) => t.id === id);
   };
 
-  // 🔄 Retornar estado y acciones
+  // Retornar estado y acciones
   return {
     // Estado
     turnos,

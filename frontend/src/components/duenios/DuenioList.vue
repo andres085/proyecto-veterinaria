@@ -1,6 +1,5 @@
 <template>
   <div class="duenio-list">
-    <!-- Header con estadísticas -->
     <div class="duenio-list__header">
       <div class="duenio-list__stats">
         <div class="stat-item">
@@ -25,12 +24,10 @@
       </div>
     </div>
 
-    <!-- Loading state -->
     <div v-if="loading" class="duenio-list__loading">
       <LoadingSpinner size="large" text="Cargando dueños..." />
     </div>
 
-    <!-- Error state -->
     <div v-else-if="error" class="duenio-list__error">
       <div class="error-content">
         <div class="error-icon">❌</div>
@@ -42,7 +39,6 @@
       </div>
     </div>
 
-    <!-- Empty state -->
     <div v-else-if="duenios.length === 0" class="duenio-list__empty">
       <div class="empty-content">
         <div class="empty-icon">👥</div>
@@ -54,9 +50,7 @@
       </div>
     </div>
 
-    <!-- Lista de dueños -->
     <div v-else class="duenio-list__content">
-      <!-- Vista de tabla (desktop) -->
       <div class="duenio-table-wrapper">
         <table class="duenio-table">
           <thead>
@@ -166,7 +160,6 @@
         </table>
       </div>
 
-      <!-- Vista de cards (mobile) -->
       <div class="duenio-cards">
         <div
           v-for="duenio in sortedDuenios"
@@ -219,7 +212,6 @@
         </div>
       </div>
     </div>
-
   </div>
 </template>
 
@@ -228,7 +220,6 @@ import { ref, computed } from "vue";
 import LoadingSpinner from "@/components/shared/LoadingSpinner.vue";
 import type { Duenio } from "@/types/models";
 
-// Types
 export interface DuenioListProps {
   duenios: Duenio[];
   loading?: boolean;
@@ -243,22 +234,18 @@ export interface DuenioListEmits {
   (e: "refresh"): void;
 }
 
-// Props
 const props = withDefaults(defineProps<DuenioListProps>(), {
   loading: false,
   error: null,
 });
 
-// Emits
 const emit = defineEmits<DuenioListEmits>();
 
-// State
 const sortField = ref<string>("nombre_apellido");
 const sortDirection = ref<"asc" | "desc">("asc");
 
-// Computed
 const totalDuenios = computed(() => props.duenios.length);
-const filteredCount = computed(() => props.duenios.length); // Para filtros futuros
+const filteredCount = computed(() => props.duenios.length);
 
 const sortedDuenios = computed(() => {
   if (!props.duenios.length) return [];
@@ -283,7 +270,6 @@ const sortedDuenios = computed(() => {
   return sorted;
 });
 
-// Methods
 const setSortField = (field: string) => {
   if (sortField.value === field) {
     sortDirection.value = sortDirection.value === "asc" ? "desc" : "asc";
@@ -357,7 +343,6 @@ console.log("🔧 Componente DuenioList cargado");
   overflow: hidden;
 }
 
-/* Header */
 .duenio-list__header {
   display: flex;
   justify-content: space-between;
@@ -389,7 +374,6 @@ console.log("🔧 Componente DuenioList cargado");
   color: var(--text-light);
 }
 
-/* Loading, Error, Empty states */
 .duenio-list__loading,
 .duenio-list__error,
 .duenio-list__empty {
@@ -409,7 +393,6 @@ console.log("🔧 Componente DuenioList cargado");
   margin-bottom: var(--spacing-lg);
 }
 
-/* Table */
 .duenio-table-wrapper {
   overflow-x: auto;
 }
@@ -464,7 +447,6 @@ console.log("🔧 Componente DuenioList cargado");
   background-color: var(--background-color);
 }
 
-/* Table cells */
 .nombre-cell {
   display: flex;
   flex-direction: column;
@@ -508,7 +490,6 @@ console.log("🔧 Componente DuenioList cargado");
   gap: var(--spacing-xs);
 }
 
-/* Cards (mobile) */
 .duenio-cards {
   display: none;
   gap: var(--spacing-md);
