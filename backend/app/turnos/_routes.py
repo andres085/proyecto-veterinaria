@@ -105,7 +105,7 @@ def update_turno(turno_id):
         return response_data, status_code
         
     except Exception as e:
-        logger.error(f"Error in update_turno route: {e}")
+        logger.error(f"Error en update_turno route: {e}")
         return create_error_response(
             "Error interno del servidor", 
             500, 
@@ -124,7 +124,7 @@ def delete_turno(turno_id):
             return response_data, status_code
         
     except Exception as e:
-        logger.error(f"Error in delete_turno route: {e}")
+        logger.error(f"Error en delete_turno route: {e}")
         return create_error_response(
             "Error interno del servidor", 
             500, 
@@ -145,7 +145,7 @@ def get_turnos_by_duenio(id_duenio):
         return response_data, status_code
         
     except Exception as e:
-        logger.error(f"Error in get_turnos_by_duenio route: {e}")
+        logger.error(f"Error en get_turnos_by_duenio route: {e}")
         return create_error_response(
             "Error interno del servidor", 
             500, 
@@ -166,7 +166,7 @@ def get_turnos_by_fecha(fecha):
         return response_data, status_code
         
     except Exception as e:
-        logger.error(f"Error in get_turnos_by_fecha route: {e}")
+        logger.error(f"Error en get_turnos_by_fecha route: {e}")
         return create_error_response(
             "Error interno del servidor", 
             500, 
@@ -194,7 +194,7 @@ def update_turno_estado(turno_id):
         return response_data, status_code
         
     except Exception as e:
-        logger.error(f"Error in update_turno_estado route: {e}")
+        logger.error(f"Error en update_turno_estado route: {e}")
         return create_error_response(
             "Error interno del servidor", 
             500, 
@@ -209,7 +209,7 @@ def get_turnos_statistics():
         return response_data, status_code
         
     except Exception as e:
-        logger.error(f"Error in get_turnos_statistics route: {e}")
+        logger.error(f"Error en get_turnos_statistics route: {e}")
         return create_error_response(
             "Error interno del servidor", 
             500, 
